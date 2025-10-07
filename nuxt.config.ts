@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/content',
     '@nuxtjs/seo',
+    '@netlify/nuxt',
   ],
   css: ['~/assets/css/main.css'],
   colorMode: {
@@ -18,10 +19,10 @@ export default defineNuxtConfig({
     build: {
       markdown: {
         highlight: {
-          theme: 'dark-plus'
-        }
-      }
-    }
+          theme: 'dark-plus',
+        },
+      },
+    },
   },
   app: {
     head: {
@@ -56,7 +57,6 @@ export default defineNuxtConfig({
         output: {
           manualChunks: {
             vendor: ['vue', 'vue-router'],
-            utils: ['date-fns'],
           },
         },
       },
