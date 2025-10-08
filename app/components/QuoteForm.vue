@@ -51,7 +51,9 @@
             >
               Last Name *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">{{ lastNameError || '' }}</p>
+            <p class="text-red-600 text-xs min-h-[1rem]">
+              {{ lastNameError || '' }}
+            </p>
             <input
               v-model="lastName"
               id="lastName"
@@ -73,7 +75,9 @@
             >
               Email Address *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">{{ emailError || '' }}</p>
+            <p class="text-red-600 text-xs min-h-[1rem]">
+              {{ emailError || '' }}
+            </p>
             <input
               v-model="email"
               id="email"
@@ -91,7 +95,9 @@
             >
               Phone Number *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">{{ phoneError || '' }}</p>
+            <p class="text-red-600 text-xs min-h-[1rem]">
+              {{ phoneError || '' }}
+            </p>
             <input
               v-model="phone"
               id="phone"
@@ -239,7 +245,9 @@
           >
             Additional Information (Optional)
           </label>
-          <p class="text-red-600 text-xs min-h-[1rem]">{{ messageError || '' }}</p>
+          <p class="text-red-600 text-xs min-h-[1rem]">
+            {{ messageError || '' }}
+          </p>
           <textarea
             v-model="message"
             id="message"

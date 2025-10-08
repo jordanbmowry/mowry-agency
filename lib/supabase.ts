@@ -28,7 +28,7 @@ export interface Lead {
 // Create Supabase client factory function
 function createSupabaseClient() {
   const config = useRuntimeConfig();
-  
+
   if (!config.supabaseUrl || !config.supabaseAnonKey) {
     throw new Error(
       'SUPABASE_URL and SUPABASE_ANON_KEY must be configured in runtime config'
