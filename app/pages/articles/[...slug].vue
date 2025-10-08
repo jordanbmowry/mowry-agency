@@ -55,7 +55,9 @@
         </article>
 
         <div v-else class="text-center py-8">
-          <h1 class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+          <h1
+            class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100"
+          >
             Article not found
           </h1>
           <p class="mt-4 text-zinc-600 dark:text-zinc-400">
@@ -88,7 +90,7 @@ const {
   error,
   refresh,
 } = await useAsyncData(route.path, () => {
-  return queryCollection('content').path(route.path).first();
+  return queryCollection('articles').path(route.path).first();
 });
 
 // Set page metadata
@@ -103,7 +105,7 @@ if (article.value) {
     twitterTitle: article.value.title,
     twitterDescription: article.value.description,
     twitterCard: 'summary_large_image',
-  })
+  });
 
   // Add article structured data
   useSchemaOrg([
@@ -123,6 +125,6 @@ if (article.value) {
       dateModified: article.value.meta?.date,
       url: `https://spotlightjs.com${route.path}`,
     },
-  ])
+  ]);
 }
 </script>

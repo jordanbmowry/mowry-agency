@@ -1,6 +1,6 @@
 <template>
   <SimpleLayout
-    title="Insurance Education and Financial Planning Insights"
+    title="Insurance Education Articles"
     intro="Expert guidance on life insurance, financial protection, and securing your family's future. Educational articles to help you make informed decisions about your insurance needs."
   >
     <div
@@ -43,25 +43,12 @@ useSeoMeta({
     "Expert guidance on life insurance, financial protection, and securing your family's future. Educational articles to help you make informed insurance decisions.",
 });
 
-// Fetch articles using Nuxt Content v3 with correct collection name
+// Fetch articles using Nuxt Content
 const {
   data: articles,
   pending,
   error,
-} = await useAsyncData('articles', async () => {
-  try {
-    // Query all articles and filter for insurance articles client-side
-    const result = await queryCollection('articles')
-      .order('date', 'DESC')
-      .all();
-
-    // Filter to only show articles authored by Mowry Agency
-    const filtered =
-      result?.filter((article) => article.author === 'Mowry Agency') || [];
-
-    return filtered;
-  } catch (err) {
-    throw err;
-  }
-});
+} = await useAsyncData('articles', () =>
+  queryCollection('articles').order('date', 'DESC').all()
+);
 </script>
