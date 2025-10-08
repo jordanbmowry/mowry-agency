@@ -69,6 +69,7 @@ export default defineNuxtConfig({
     payloadExtraction: false, // Disable payload extraction for better performance
   },
   nitro: {
+    preset: 'netlify',
     prerender: {
       routes: [], // Let crawler find routes
       ignore: ['/admin'], // Exclude admin page from prerendering
