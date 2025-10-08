@@ -38,14 +38,14 @@
               {{ article.title }}
             </h1>
             <time
-              :dateTime="article.meta?.date"
+              :dateTime="article.date"
               class="order-first flex items-center text-base text-zinc-400 dark:text-zinc-500"
             >
               <span
                 class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"
               />
               <span class="ml-3">{{
-                formatDate(article.meta?.date as string)
+                formatDate(article.date as string)
               }}</span>
             </time>
           </header>
