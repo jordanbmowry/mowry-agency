@@ -1,2 +1,11 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.netlify/
+
+# Sitemap
+Sitemap: https://mowryagency.com/sitemap.xml
+
+# Crawl-delay for bots
+Crawl-delay: 1

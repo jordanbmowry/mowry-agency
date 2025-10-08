@@ -88,10 +88,11 @@ export default defineNuxtConfig({
     url: 'https://mowryagency.com',
     name: 'Mowry Agency',
     description:
-      'Protecting What Matters Most to Your Family - Life Insurance Solutions',
+      'Protecting What Matters Most to Your Family - Professional Life Insurance Solutions from Licensed Agents',
     defaultLocale: 'en',
   },
   seo: {
     fallbackTitle: false,
+    redirectToCanonicalSiteUrl: true,
   },
 });

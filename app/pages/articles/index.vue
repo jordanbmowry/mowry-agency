@@ -41,7 +41,36 @@ useSeoMeta({
   title: 'Insurance Education Articles - Mowry Agency',
   description:
     "Expert guidance on life insurance, financial protection, and securing your family's future. Educational articles to help you make informed insurance decisions.",
+  keywords:
+    'life insurance education, insurance articles, term life vs whole life, life insurance guide, family protection',
+  ogTitle: 'Insurance Education Articles - Mowry Agency',
+  ogDescription:
+    "Expert guidance on life insurance, financial protection, and securing your family's future. Educational articles to help you make informed insurance decisions.",
+  ogType: 'website',
+  ogUrl: 'https://mowryagency.com/articles',
+  ogImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
+  twitterTitle: 'Insurance Education Articles - Mowry Agency',
+  twitterDescription:
+    "Expert guidance on life insurance, financial protection, and securing your family's future.",
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
 });
+
+// Add structured data for articles page
+useSchemaOrg([
+  {
+    '@type': 'Blog',
+    name: 'Mowry Agency Insurance Education Center',
+    description:
+      'Educational articles about life insurance and family financial protection',
+    url: 'https://mowryagency.com/articles',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mowry Agency',
+      url: 'https://mowryagency.com',
+    },
+  },
+]);
 
 // Fetch articles using Nuxt Content
 const {

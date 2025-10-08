@@ -44,9 +44,7 @@
               <span
                 class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"
               />
-              <span class="ml-3">{{
-                formatDate(article.date as string)
-              }}</span>
+              <span class="ml-3">{{ formatDate(article.date as string) }}</span>
             </time>
           </header>
           <Prose class="mt-8" data-mdx-content>
@@ -96,15 +94,20 @@ const {
 // Set page metadata
 if (article.value) {
   useSeoMeta({
-    title: `${article.value.title} - Spencer Sharp`,
+    title: `${article.value.title} - Mowry Agency`,
     description: article.value.description,
     ogTitle: article.value.title,
     ogDescription: article.value.description,
     ogType: 'article',
-    ogUrl: `https://spotlightjs.com${route.path}`,
+    ogUrl: `https://mowryagency.com${route.path}`,
+    ogImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
     twitterTitle: article.value.title,
     twitterDescription: article.value.description,
     twitterCard: 'summary_large_image',
+    twitterImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
+    articleAuthor: [article.value.author],
+    articlePublishedTime: article.value.date,
+    articleModifiedTime: article.value.date,
   });
 
   // Add article structured data
@@ -114,16 +117,30 @@ if (article.value) {
       headline: article.value.title,
       description: article.value.description,
       author: {
-        '@type': 'Person',
-        name: 'Spencer Sharp',
+        '@type': 'Organization',
+        name: 'Mowry Agency',
+        url: 'https://mowryagency.com',
       },
       publisher: {
-        '@type': 'Person',
-        name: 'Spencer Sharp',
+        '@type': 'Organization',
+        name: 'Mowry Agency',
+        url: 'https://mowryagency.com',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://mowryagency.com/images/logo.png',
+        },
       },
-      datePublished: article.value.meta?.date,
-      dateModified: article.value.meta?.date,
-      url: `https://spotlightjs.com${route.path}`,
+      datePublished: article.value.date,
+      dateModified: article.value.date,
+      url: `https://mowryagency.com${route.path}`,
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://mowryagency.com${route.path}`,
+      },
+      image: {
+        '@type': 'ImageObject',
+        url: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
+      },
     },
   ]);
 }

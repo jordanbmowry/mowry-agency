@@ -216,5 +216,32 @@ useSeoMeta({
     'Get a personalized life insurance quote from Mowry Agency. Specializing in term life, whole life, IUL, and annuities. Build tax-free wealth while protecting your family. Quick response within 24 hours.',
   keywords:
     'life insurance quote, term life insurance, whole life insurance, indexed universal life, IUL, annuities, mortgage protection, final expense, tax-free wealth building',
+  ogTitle: 'Get Your Free Life Insurance Quote - Mowry Agency',
+  ogDescription:
+    'Get a personalized life insurance quote. Specializing in term life, whole life, IUL, and annuities. Quick response within 24 hours.',
+  ogType: 'website',
+  ogUrl: 'https://mowryagency.com/quote',
+  ogImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
+  twitterTitle: 'Get Your Free Life Insurance Quote - Mowry Agency',
+  twitterDescription:
+    'Get a personalized life insurance quote. Specializing in term life, whole life, IUL, and annuities.',
+  twitterCard: 'summary_large_image',
+  twitterImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
 });
+
+// Add structured data for service page
+useSchemaOrg([
+  {
+    '@type': 'Service',
+    name: 'Life Insurance Quote',
+    description: 'Free personalized life insurance quotes from licensed agents',
+    provider: {
+      '@type': 'Organization',
+      name: 'Mowry Agency',
+      url: 'https://mowryagency.com',
+    },
+    areaServed: 'United States',
+    serviceType: 'Life Insurance',
+  },
+]);
 </script>
