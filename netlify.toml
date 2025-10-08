@@ -1,6 +1,6 @@
 [build]
-  command = "npm rebuild better-sqlite3 && npm run build"
-  publish = ".output/public"
+  command = "npm rebuild better-sqlite3 && npm run generate"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
