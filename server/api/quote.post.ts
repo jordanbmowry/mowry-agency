@@ -1,8 +1,11 @@
 import nodemailer from 'nodemailer';
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabaseServiceRole } from '#supabase/server';
 
 export default defineEventHandler(async (event) => {
   try {
+    // Use serverSupabaseServiceRole for server-side operations (bypasses RLS)
+    const supabase = serverSupabaseServiceRole(event);
+
     const body = await readBody(event);
 
     // Validate required fields
@@ -46,10 +49,7 @@ export default defineEventHandler(async (event) => {
       status: 'new',
     };
 
-    // Save to Supabase - use anon key since we have RLS policy for anonymous inserts
-    const config = useRuntimeConfig();
-    const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
-
+    // Save to Supabase using Nuxt Supabase module
     const { data: savedLead, error } = await supabase
       .from('leads')
       .insert([leadData])

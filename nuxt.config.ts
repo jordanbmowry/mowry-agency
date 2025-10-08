@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/content',
     '@nuxtjs/seo',
+    '@nuxtjs/supabase',
     '@netlify/nuxt',
     '@vee-validate/nuxt',
     '@vue-email/nuxt',
@@ -25,6 +26,10 @@ export default defineNuxtConfig({
         },
       },
     },
+  },
+  supabase: {
+    // Disable authentication redirects for public website
+    redirect: false,
   },
   app: {
     head: {
@@ -57,9 +62,9 @@ export default defineNuxtConfig({
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
     agencyEmail: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
-    // Supabase server-side config
+    // Supabase server-side config (updated for new project)
     supabaseUrl: process.env.SUPABASE_URL,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    supabaseKey: process.env.SUPABASE_KEY,
     // Public keys exposed to client-side
     public: {
       // Add any public config here if needed

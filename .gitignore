@@ -23,5 +23,10 @@ logs
 .env.*
 !.env.example
 
+# Temporary test/setup files
+apply-schema*.js
+test-*.js
+clean-quote-schema.sql
+
 # Local Netlify folder
 .netlify

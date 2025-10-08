@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
-
 // Database types for type safety
+// Note: With @nuxtjs/supabase module, use useSupabaseClient() composable instead of importing a client
+
 export interface Lead {
   id?: string;
   created_at?: string;
@@ -25,24 +25,15 @@ export interface Lead {
   agent_notes?: string;
 }
 
-// Create Supabase client factory function
-function createSupabaseClient() {
-  const config = useRuntimeConfig();
+// Helper functions for database operations using Nuxt Supabase composables
+// Usage: Import these functions and use them with useSupabaseClient() in your components
 
-  if (!config.supabaseUrl || !config.supabaseAnonKey) {
-    throw new Error(
-      'SUPABASE_URL and SUPABASE_ANON_KEY must be configured in runtime config'
-    );
-  }
-
-  return createClient(config.supabaseUrl, config.supabaseAnonKey);
-}
-
-// Helper functions for database operations - LEADS ONLY
 export const supabaseOperations = {
   // Create a new lead
-  async createLead(leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>) {
-    const supabase = createSupabaseClient();
+  async createLead(
+    supabase: any,
+    leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>
+  ) {
     const { data, error } = await supabase
       .from('leads')
       .insert([leadData])
@@ -53,8 +44,7 @@ export const supabaseOperations = {
   },
 
   // Get all leads
-  async getLeads() {
-    const supabase = createSupabaseClient();
+  async getLeads(supabase: any) {
     const { data, error } = await supabase
       .from('leads')
       .select('*')
@@ -65,8 +55,12 @@ export const supabaseOperations = {
   },
 
   // Update lead status
-  async updateLeadStatus(id: string, status: Lead['status'], notes?: string) {
-    const supabase = createSupabaseClient();
+  async updateLeadStatus(
+    supabase: any,
+    id: string,
+    status: Lead['status'],
+    notes?: string
+  ) {
     const updateData: Partial<Lead> = { status };
     if (notes) updateData.agent_notes = notes;
 

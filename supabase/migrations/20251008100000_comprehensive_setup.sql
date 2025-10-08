@@ -1,8 +1,18 @@
 -- Comprehensive Database Setup for Mowry Agency
--- Run this SQL in your Supabase SQL Editor: https://supabase.com/dashboard/project/ihqzdmwyaqnprwdnafcv/sql
+-- Created: 2025-10-08
+-- This migration sets up the complete database schema with RLS policies
+
+-- Drop existing tables if they exist (for fresh start)
+DROP TABLE IF EXISTS public.job_applications CASCADE;
+DROP TABLE IF EXISTS public.leads CASCADE;
+
+-- Drop existing functions if they exist
+DROP FUNCTION IF EXISTS public.update_updated_at_column() CASCADE;
+DROP FUNCTION IF EXISTS public.update_lead_name() CASCADE;
+DROP FUNCTION IF EXISTS public.calculate_age(date) CASCADE;
 
 -- 1. Create leads table with all required fields
-CREATE TABLE IF NOT EXISTS public.leads (
+CREATE TABLE public.leads (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -29,7 +39,7 @@ CREATE TABLE IF NOT EXISTS public.leads (
 );
 
 -- 2. Create job_applications table
-CREATE TABLE IF NOT EXISTS public.job_applications (
+CREATE TABLE public.job_applications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -73,31 +83,43 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION public.calculate_age(birth_date date)
+RETURNS integer
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN EXTRACT(YEAR FROM AGE(birth_date));
+END;
+$$;
+
 -- 4. Create triggers
-DROP TRIGGER IF EXISTS update_leads_updated_at ON public.leads;
 CREATE TRIGGER update_leads_updated_at 
   BEFORE UPDATE ON public.leads 
   FOR EACH ROW 
   EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_job_applications_updated_at ON public.job_applications;
 CREATE TRIGGER update_job_applications_updated_at 
   BEFORE UPDATE ON public.job_applications 
   FOR EACH ROW 
   EXECUTE FUNCTION update_updated_at_column();
 
--- 5. Create indexes for performance
-CREATE INDEX IF NOT EXISTS idx_leads_email ON public.leads(email);
-CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads(status);
-CREATE INDEX IF NOT EXISTS idx_leads_created_at ON public.leads(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_leads_lead_type ON public.leads(lead_type);
-CREATE INDEX IF NOT EXISTS idx_leads_coverage_type ON public.leads(coverage_type);
-CREATE INDEX IF NOT EXISTS idx_leads_first_name ON public.leads(first_name);
-CREATE INDEX IF NOT EXISTS idx_leads_last_name ON public.leads(last_name);
+CREATE TRIGGER trigger_update_lead_name
+  BEFORE INSERT OR UPDATE ON public.leads
+  FOR EACH ROW 
+  EXECUTE FUNCTION update_lead_name();
 
-CREATE INDEX IF NOT EXISTS idx_job_applications_email ON public.job_applications(email);
-CREATE INDEX IF NOT EXISTS idx_job_applications_status ON public.job_applications(status);
-CREATE INDEX IF NOT EXISTS idx_job_applications_created_at ON public.job_applications(created_at DESC);
+-- 5. Create indexes for performance
+CREATE INDEX idx_leads_email ON public.leads(email);
+CREATE INDEX idx_leads_status ON public.leads(status);
+CREATE INDEX idx_leads_created_at ON public.leads(created_at DESC);
+CREATE INDEX idx_leads_lead_type ON public.leads(lead_type);
+CREATE INDEX idx_leads_coverage_type ON public.leads(coverage_type);
+CREATE INDEX idx_leads_first_name ON public.leads(first_name);
+CREATE INDEX idx_leads_last_name ON public.leads(last_name);
+
+CREATE INDEX idx_job_applications_email ON public.job_applications(email);
+CREATE INDEX idx_job_applications_status ON public.job_applications(status);
+CREATE INDEX idx_job_applications_created_at ON public.job_applications(created_at DESC);
 
 -- 6. Enable Row Level Security
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
@@ -105,12 +127,6 @@ ALTER TABLE public.job_applications ENABLE ROW LEVEL SECURITY;
 
 -- 7. Create RLS policies following official Supabase best practices
 -- Reference: https://supabase.com/docs/guides/database/postgres/row-level-security
-
--- Drop any existing policies first
-DROP POLICY IF EXISTS "allow_public_insert_leads" ON public.leads;
-DROP POLICY IF EXISTS "allow_public_insert_job_applications" ON public.job_applications;
-DROP POLICY IF EXISTS "allow_authenticated_all_leads" ON public.leads;
-DROP POLICY IF EXISTS "allow_authenticated_all_job_applications" ON public.job_applications;
 
 -- Create policy for anonymous users to insert leads (for quote/contact forms)
 CREATE POLICY "Anonymous users can submit leads" ON public.leads
@@ -139,16 +155,16 @@ CREATE POLICY "Authenticated users can manage applications" ON public.job_applic
 GRANT INSERT ON public.leads TO anon;
 GRANT INSERT ON public.job_applications TO anon;
 
--- Grant all permissions to authenticated users and service role
+-- 9. Grant all permissions to authenticated users and service role
 GRANT ALL ON public.leads TO authenticated;
 GRANT ALL ON public.job_applications TO authenticated;
 GRANT ALL ON public.leads TO service_role;
 GRANT ALL ON public.job_applications TO service_role;
 
--- Grant usage on sequences (important for UUID generation)
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO service_role;
+-- Grant usage on sequences
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO anon;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO service_role;
 
 -- Ensure anon role can execute functions
 GRANT EXECUTE ON FUNCTION public.update_updated_at_column() TO anon;
