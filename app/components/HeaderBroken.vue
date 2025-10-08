@@ -6,7 +6,7 @@
         <div class="flex items-center">
           <NuxtLink href="/" class="flex items-center space-x-3">
             <NuxtImg
-              src="/images/agency/Mowry_Agency_Logo.png"
+              :src="$colorMode.value === 'dark' ? '/images/mowry_agency_logo_darkmode.png' : '/images/agency/Mowry_Agency_Logo.png'"
               alt="Mowry Agency Logo"
               width="40"
               height="40"

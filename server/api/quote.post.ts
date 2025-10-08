@@ -15,12 +15,14 @@ export default defineEventHandler(async (event) => {
       !body.email ||
       !body.phone ||
       !body.dateOfBirth ||
+      !body.city ||
+      !body.state ||
       !body.coverageType
     ) {
       throw createError({
         statusCode: 400,
         statusMessage:
-          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, and coverageType are required',
+          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, city, state, and coverageType are required',
       });
     }
 
@@ -40,6 +42,8 @@ export default defineEventHandler(async (event) => {
       email: body.email,
       phone: body.phone,
       date_of_birth: body.dateOfBirth,
+      city: body.city,
+      state: body.state,
       coverage_type: body.coverageType,
       health_conditions: body.healthConditions || '',
       current_medications: body.medications || '',
@@ -80,6 +84,7 @@ export default defineEventHandler(async (event) => {
           email: body.email,
           phone: body.phone,
           dateOfBirth: body.dateOfBirth,
+          cityState: body.cityState,
           coverageType: body.coverageType,
           healthConditions: body.healthConditions || 'Not provided',
           medications: body.medications || 'Not provided',
@@ -105,6 +110,7 @@ export default defineEventHandler(async (event) => {
                   <tr><td style="padding: 8px; font-weight: bold;">Name:</td><td style="padding: 8px;">${body.firstName} ${body.lastName}</td></tr>
                   <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;">${body.email}</td></tr>
                   <tr><td style="padding: 8px; font-weight: bold;">Phone:</td><td style="padding: 8px;">${body.phone}</td></tr>
+                  <tr><td style="padding: 8px; font-weight: bold;">Location:</td><td style="padding: 8px;">${body.city}, ${body.state}</td></tr>
                   <tr><td style="padding: 8px; font-weight: bold;">Date of Birth:</td><td style="padding: 8px;">${body.dateOfBirth}</td></tr>
                   <tr><td style="padding: 8px; font-weight: bold;">Coverage Type:</td><td style="padding: 8px;">${body.coverageType}</td></tr>
                   <tr><td style="padding: 8px; font-weight: bold;">Health Conditions:</td><td style="padding: 8px;">${body.healthConditions || 'Not provided'}</td></tr>

@@ -1,7 +1,11 @@
 <template>
   <NuxtLink to="/" aria-label="Home" :class="avatarClasses">
     <img
-      src="/images/agency/Mowry_Agency_Logo.png"
+      :src="
+        $colorMode.value === 'dark'
+          ? '/images/mowry_agency_logo_darkmode.png'
+          : '/images/agency/Mowry_Agency_Logo.png'
+      "
       alt="Mowry Agency Logo"
       :class="imageClasses"
       width="512"

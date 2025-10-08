@@ -137,6 +137,59 @@
             Must be 18 years or older
           </p>
         </div>
+
+        <!-- City and State -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- City -->
+          <div>
+            <label
+              for="city"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              City *
+            </label>
+            <p class="text-red-600 text-xs min-h-[1rem]">
+              {{ cityError || '' }}
+            </p>
+            <input
+              v-model="city"
+              id="city"
+              name="city"
+              type="text"
+              autocomplete="address-level2"
+              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+              placeholder="Enter your city"
+            />
+          </div>
+          <!-- State -->
+          <div>
+            <label
+              for="state"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              State *
+            </label>
+            <p class="text-red-600 text-xs min-h-[1rem]">
+              {{ stateError || '' }}
+            </p>
+            <select
+              v-model="state"
+              id="state"
+              name="state"
+              autocomplete="address-level1"
+              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+            >
+              <option value="">Select a state</option>
+              <option
+                v-for="stateOption in states"
+                :key="stateOption.code"
+                :value="stateOption.code"
+              >
+                {{ stateOption.displayName }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <!-- Insurance Information Section -->
@@ -322,13 +375,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
 // @ts-ignore
 import VueDatePicker from '@vuepic/vue-datepicker';
 import Button from '~/components/Button.vue';
 import MailIcon from '~/components/icons/MailIcon.vue';
+import { useStatesData } from '~/composables/useCitiesData';
 
 const colorMode = useColorMode();
 
@@ -379,6 +433,8 @@ const validations = yup.object({
         return age <= 120; // Maximum reasonable age
       }
     ),
+  city: yup.string().required('City is required'),
+  state: yup.string().required('Please select a state'),
   coverageType: yup.string().required('Please select a coverage type'),
   healthConditions: yup
     .string()
@@ -399,6 +455,8 @@ const { value: email, errorMessage: emailError } = useField<string>('email');
 const { value: phone, errorMessage: phoneError } = useField<string>('phone');
 const { value: dateOfBirth, errorMessage: dateOfBirthError } =
   useField<Date | null>('dateOfBirth');
+const { value: city, errorMessage: cityError } = useField<string>('city');
+const { value: state, errorMessage: stateError } = useField<string>('state');
 const { value: coverageType, errorMessage: coverageTypeError } =
   useField<string>('coverageType');
 const { value: healthConditions, errorMessage: healthConditionsError } =
@@ -407,6 +465,9 @@ const { value: medications, errorMessage: medicationsError } =
   useField<string>('medications');
 const { value: message, errorMessage: messageError } =
   useField<string>('message');
+
+// States data for dropdown
+const { states } = useStatesData();
 
 const onSubmit = handleSubmit(async (formData) => {
   formSubmittingInProcess.value = true;
