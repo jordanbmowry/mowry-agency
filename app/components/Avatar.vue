@@ -1,8 +1,8 @@
 <template>
   <NuxtLink to="/" aria-label="Home" :class="avatarClasses">
     <img
-      src="/images/avatar.jpg"
-      alt=""
+      src="/images/agency/Mowry_Agency_Logo.png"
+      alt="Mowry Agency Logo"
       :class="imageClasses"
       width="512"
       height="512"

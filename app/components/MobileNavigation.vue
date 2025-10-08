@@ -54,9 +54,8 @@
           >
             <MobileNavItem href="/about">About</MobileNavItem>
             <MobileNavItem href="/articles">Articles</MobileNavItem>
-            <MobileNavItem href="/projects">Projects</MobileNavItem>
-            <MobileNavItem href="/speaking">Speaking</MobileNavItem>
-            <MobileNavItem href="/uses">Uses</MobileNavItem>
+            <MobileNavItem href="/carriers">Carriers</MobileNavItem>
+            <MobileNavItem href="/agents">Agents</MobileNavItem>
           </ul>
         </nav>
       </PopoverPanel>

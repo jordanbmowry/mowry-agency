@@ -1,7 +1,7 @@
 <template>
   <SimpleLayout
-    title="Writing on software design, company building, and the aerospace industry."
-    intro="All of my long-form thoughts on programming, leadership, product design, and more, collected in chronological order."
+    title="Insurance Education and Financial Planning Insights"
+    intro="Expert guidance on life insurance, financial protection, and securing your family's future. Educational articles to help you make informed decisions about your insurance needs."
   >
     <div
       class="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40"
@@ -16,9 +16,7 @@
           </p>
         </div>
         <div v-else-if="!articles || articles.length === 0" class="text-center">
-          <p class="text-zinc-600 dark:text-zinc-400">
-            No articles found.
-          </p>
+          <p class="text-zinc-600 dark:text-zinc-400">No articles found.</p>
         </div>
         <ArticleListItem
           v-for="(article, index) in articles"
@@ -40,9 +38,9 @@ import ArticleListItem from '~/components/ArticleListItem.vue';
 
 // Set page metadata
 useSeoMeta({
-  title: 'Articles - Spencer Sharp',
+  title: 'Insurance Education Articles - Mowry Agency',
   description:
-    'All of my long-form thoughts on programming, leadership, product design, and more, collected in chronological order.',
+    "Expert guidance on life insurance, financial protection, and securing your family's future. Educational articles to help you make informed insurance decisions.",
 });
 
 // Fetch articles using Nuxt Content v3 with correct collection name
@@ -52,12 +50,16 @@ const {
   error,
 } = await useAsyncData('articles', async () => {
   try {
-    // Query the articles collection directly
+    // Query all articles and filter for insurance articles client-side
     const result = await queryCollection('articles')
       .order('date', 'DESC')
       .all();
 
-    return result || [];
+    // Filter to only show articles authored by Mowry Agency
+    const filtered =
+      result?.filter((article) => article.author === 'Mowry Agency') || [];
+
+    return filtered;
   } catch (err) {
     throw err;
   }

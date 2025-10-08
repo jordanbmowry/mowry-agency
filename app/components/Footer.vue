@@ -14,24 +14,23 @@
               >About</NuxtLink
             >
             <NuxtLink
-              href="/projects"
+              href="/carriers"
               class="transition hover:text-teal-500 dark:hover:text-teal-400"
-              >Projects</NuxtLink
+              >Carriers</NuxtLink
             >
             <NuxtLink
-              href="/speaking"
+              href="/quote"
               class="transition hover:text-teal-500 dark:hover:text-teal-400"
-              >Speaking</NuxtLink
+              >Get Quote</NuxtLink
             >
             <NuxtLink
-              href="/uses"
+              href="/join-us"
               class="transition hover:text-teal-500 dark:hover:text-teal-400"
-              >Uses</NuxtLink
+              >Join Us</NuxtLink
             >
           </div>
           <p class="text-sm text-zinc-400 dark:text-zinc-500">
-            &copy; {{ new Date().getFullYear() }} Spencer Sharp. All rights
-            reserved.
+            Mowry Agency is owned by Mowry Digital Enterprise.
           </p>
         </div>
       </div>

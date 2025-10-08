@@ -10,6 +10,8 @@ export default defineNuxtConfig({
     '@nuxt/content',
     '@nuxtjs/seo',
     '@netlify/nuxt',
+    '@vee-validate/nuxt',
+    '@vue-email/nuxt',
   ],
   css: ['~/assets/css/main.css'],
   colorMode: {
@@ -48,6 +50,21 @@ export default defineNuxtConfig({
       xxl: 1536,
     },
   },
+  runtimeConfig: {
+    // Server-side environment variables
+    smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+    smtpPort: process.env.SMTP_PORT || '587',
+    smtpUser: process.env.SMTP_USER,
+    smtpPass: process.env.SMTP_PASS,
+    agencyEmail: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
+    // Supabase server-side config
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    // Public keys exposed to client-side
+    public: {
+      // Add any public config here if needed
+    },
+  },
   experimental: {
     payloadExtraction: false, // Disable payload extraction for better performance
   },
@@ -63,9 +80,10 @@ export default defineNuxtConfig({
     },
   },
   site: {
-    url: 'https://spotlightjs.com',
-    name: 'Spencer Sharp',
-    description: 'Software designer, founder, and amateur astronaut',
+    url: 'https://mowryagency.com',
+    name: 'Mowry Agency',
+    description:
+      'Protecting What Matters Most to Your Family - Life Insurance Solutions',
     defaultLocale: 'en',
   },
   seo: {

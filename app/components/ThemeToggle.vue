@@ -2,14 +2,16 @@
   <button
     type="button"
     :aria-label="mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'"
-    class="group rounded-full bg-white/90 px-3 py-2 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
+    class="group rounded-full bg-white/90 p-3 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20 flex items-center justify-center"
     @click="setColorTheme(otherTheme)"
   >
-    <SunIcon
-      class="h-6 w-6 fill-zinc-100 stroke-zinc-500 transition group-hover:fill-zinc-200 group-hover:stroke-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:fill-teal-50 [@media(prefers-color-scheme:dark)]:stroke-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:fill-teal-50 [@media(prefers-color-scheme:dark)]:group-hover:stroke-teal-600"
+    <Icon
+      name="heroicons:sun"
+      class="h-5 w-5 text-zinc-600 transition group-hover:text-zinc-700 dark:hidden"
     />
-    <MoonIcon
-      class="hidden h-6 w-6 fill-zinc-700 stroke-zinc-500 transition not-[@media_(prefers-color-scheme:dark)]:fill-teal-400/10 not-[@media_(prefers-color-scheme:dark)]:stroke-teal-500 dark:block [@media(prefers-color-scheme:dark)]:group-hover:stroke-zinc-400"
+    <Icon
+      name="heroicons:moon"
+      class="hidden h-5 w-5 text-zinc-400 transition group-hover:text-zinc-300 dark:block"
     />
   </button>
 </template>
