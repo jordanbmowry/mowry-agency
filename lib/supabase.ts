@@ -25,23 +25,6 @@ export interface Lead {
   agent_notes?: string;
 }
 
-export interface JobApplication {
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  position: string;
-  experience?: string;
-  state: string;
-  message?: string;
-  resume_url?: string;
-  status: 'new' | 'reviewing' | 'interview_scheduled' | 'hired' | 'rejected';
-  agree_to_terms: boolean;
-}
-
 // Create Supabase client factory function
 function createSupabaseClient() {
   const config = useRuntimeConfig();
@@ -55,7 +38,7 @@ function createSupabaseClient() {
   return createClient(config.supabaseUrl, config.supabaseAnonKey);
 }
 
-// Helper functions for database operations
+// Helper functions for database operations - LEADS ONLY
 export const supabaseOperations = {
   // Create a new lead
   async createLead(leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>) {
@@ -90,48 +73,6 @@ export const supabaseOperations = {
     const { data, error } = await supabase
       .from('leads')
       .update(updateData)
-      .eq('id', id)
-      .select();
-
-    if (error) throw error;
-    return data[0];
-  },
-
-  // Create a new job application
-  async createJobApplication(
-    applicationData: Omit<JobApplication, 'id' | 'created_at' | 'updated_at'>
-  ) {
-    const supabase = createSupabaseClient();
-    const { data, error } = await supabase
-      .from('job_applications')
-      .insert([applicationData])
-      .select();
-
-    if (error) throw error;
-    return data[0];
-  },
-
-  // Get all job applications
-  async getJobApplications() {
-    const supabase = createSupabaseClient();
-    const { data, error } = await supabase
-      .from('job_applications')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-  },
-
-  // Update job application status
-  async updateJobApplicationStatus(
-    id: string,
-    status: JobApplication['status']
-  ) {
-    const supabase = createSupabaseClient();
-    const { data, error } = await supabase
-      .from('job_applications')
-      .update({ status })
       .eq('id', id)
       .select();
 

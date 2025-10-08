@@ -68,6 +68,12 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: false, // Disable payload extraction for better performance
   },
+  nitro: {
+    prerender: {
+      routes: [], // Let crawler find routes
+      ignore: ['/admin'], // Exclude admin page from prerendering
+    },
+  },
   vite: {
     build: {
       rollupOptions: {

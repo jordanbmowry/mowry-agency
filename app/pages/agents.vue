@@ -144,7 +144,7 @@
           </p>
           <div class="mt-8 flex flex-wrap justify-center gap-4">
             <Button
-              href="/consultation"
+              href="https://calendly.com/mowry-agency/life-insurance-appointment-phone"
               variant="primary"
               class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
