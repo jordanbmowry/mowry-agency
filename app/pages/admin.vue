@@ -294,7 +294,7 @@
 </template>
 
 <script setup lang="ts">
-import { supabaseOperations } from '~/lib/supabase';
+import { supabaseOperations } from '../../lib/supabase';
 
 // Set page metadata
 useSeoMeta({
