@@ -1,6 +1,10 @@
 [build]
-  command = "npm rebuild better-sqlite3 && npm run generate"
-  publish = "dist"
+  command = "npm rebuild better-sqlite3 && npm run build"
+  publish = ".output/public"
+
+[[functions]]
+  # Enable server-side routes for API endpoints
+  directory = ".output/server"
 
 [build.environment]
   NODE_VERSION = "20"
