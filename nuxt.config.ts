@@ -90,7 +90,7 @@ export default defineNuxtConfig({
     },
   },
   site: {
-    url: 'https://mowryagency.com',
+    url: process.env.NUXT_SITE_URL || 'https://localhost:3000',
     name: 'Mowry Agency',
     description:
       'Protecting What Matters Most to Your Family - Professional Life Insurance Solutions from Licensed Agents',
@@ -98,6 +98,6 @@ export default defineNuxtConfig({
   },
   seo: {
     fallbackTitle: false,
-    redirectToCanonicalSiteUrl: true,
+    redirectToCanonicalSiteUrl: false, // Disable redirects for Netlify deployment
   },
 });
