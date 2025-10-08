@@ -334,6 +334,11 @@ import QuoteForm from '~/components/QuoteForm.vue';
 // Get latest insurance articles from Nuxt Content
 const { data: articles } = await useAsyncData('home-articles', async () => {
   try {
+    // Only query articles if we're not in a build environment
+    if (process.server && process.env.NETLIFY) {
+      return []; // Return empty array during Netlify build
+    }
+
     // Query all articles and filter for insurance articles client-side
     const result = await queryCollection('articles')
       .order('date', 'DESC')
@@ -346,6 +351,7 @@ const { data: articles } = await useAsyncData('home-articles', async () => {
     // Limit to 4 articles for the home page
     return filtered.slice(0, 4);
   } catch (err) {
+    console.warn('Failed to load articles for homepage:', err);
     return [];
   }
 });
