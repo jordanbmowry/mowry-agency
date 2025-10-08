@@ -72,7 +72,6 @@ export default defineNuxtConfig({
     preset: 'netlify',
     prerender: {
       routes: [], // Let crawler find routes
-      ignore: ['/admin'], // Exclude admin page from prerendering
     },
   },
   vite: {
