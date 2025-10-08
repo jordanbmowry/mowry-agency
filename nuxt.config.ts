@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     '@vee-validate/nuxt',
     '@vue-email/nuxt',
   ],
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '@vuepic/vue-datepicker/dist/main.css'],
   colorMode: {
     classSuffix: '',
   },

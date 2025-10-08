@@ -76,11 +76,11 @@
           <!-- Mobile Menu Button -->
           <button
             @click="showMobileMenu = !showMobileMenu"
-            class="md:hidden p-2 rounded-md text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            class="md:hidden p-3 rounded-md text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             <Icon
               :name="showMobileMenu ? 'heroicons:x-mark' : 'heroicons:bars-3'"
-              class="h-5 w-5"
+              class="h-6 w-6"
             />
           </button>
         </div>
@@ -92,6 +92,13 @@
         class="md:hidden border-t border-zinc-200 dark:border-zinc-700 py-4"
       >
         <nav class="flex flex-col space-y-3">
+          <NuxtLink
+            @click="showMobileMenu = false"
+            href="/"
+            class="text-base font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            Home
+          </NuxtLink>
           <NuxtLink
             @click="showMobileMenu = false"
             href="/about"

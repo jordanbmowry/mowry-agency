@@ -121,12 +121,17 @@
           <p class="text-red-600 text-xs min-h-[1rem]">
             {{ dateOfBirthError || '' }}
           </p>
-          <input
+          <VueDatePicker
             v-model="dateOfBirth"
-            id="dateOfBirth"
-            name="dateOfBirth"
-            type="date"
-            class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+            :enable-time-picker="false"
+            :max-date="new Date()"
+            :year-range="[1920, new Date().getFullYear()]"
+            format="MM/dd/yyyy"
+            placeholder="Select your date of birth"
+            input-class-name="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+            :dark="colorMode.value === 'dark'"
+            auto-apply
+            :close-on-auto-apply="true"
           />
           <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             Must be 18 years or older
@@ -320,8 +325,12 @@
 import { ref } from 'vue';
 import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
+// @ts-ignore
+import VueDatePicker from '@vuepic/vue-datepicker';
 import Button from '~/components/Button.vue';
 import MailIcon from '~/components/icons/MailIcon.vue';
+
+const colorMode = useColorMode();
 
 const formSubmittingInProcess = ref(false);
 const hasFormSubmitted = ref(false);
@@ -340,7 +349,36 @@ const validations = yup.object({
     .required('Email is required')
     .email('Please enter a valid email address'),
   phone: yup.string().required('Phone number is required'),
-  dateOfBirth: yup.string().required('Date of birth is required'),
+  dateOfBirth: yup
+    .date()
+    .required('Date of birth is required')
+    .max(new Date(), 'Date of birth cannot be in the future')
+    .test('age', 'Must be at least 18 years old', function (value) {
+      if (!value) return false;
+      const today = new Date();
+      const birthDate = new Date(value);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        return age - 1 >= 18;
+      }
+      return age >= 18;
+    })
+    .test(
+      'reasonable-age',
+      'Please enter a valid date of birth',
+      function (value) {
+        if (!value) return false;
+        const today = new Date();
+        const birthDate = new Date(value);
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age <= 120; // Maximum reasonable age
+      }
+    ),
   coverageType: yup.string().required('Please select a coverage type'),
   healthConditions: yup
     .string()
@@ -360,7 +398,7 @@ const { value: lastName, errorMessage: lastNameError } =
 const { value: email, errorMessage: emailError } = useField<string>('email');
 const { value: phone, errorMessage: phoneError } = useField<string>('phone');
 const { value: dateOfBirth, errorMessage: dateOfBirthError } =
-  useField<string>('dateOfBirth');
+  useField<Date | null>('dateOfBirth');
 const { value: coverageType, errorMessage: coverageTypeError } =
   useField<string>('coverageType');
 const { value: healthConditions, errorMessage: healthConditionsError } =
@@ -374,9 +412,17 @@ const onSubmit = handleSubmit(async (formData) => {
   formSubmittingInProcess.value = true;
 
   try {
+    // Convert Date object to ISO string for API
+    const submitData = {
+      ...formData,
+      dateOfBirth: formData.dateOfBirth
+        ? formData.dateOfBirth.toISOString().split('T')[0]
+        : '',
+    };
+
     await $fetch('/api/quote', {
       method: 'POST',
-      body: formData,
+      body: submitData,
     });
     hasFormSubmitted.value = true;
   } catch (error) {
