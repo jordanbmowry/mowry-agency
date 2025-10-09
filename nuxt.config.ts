@@ -67,7 +67,7 @@ export default defineNuxtConfig({
     supabaseKey: process.env.SUPABASE_KEY,
     // Public keys exposed to client-side
     public: {
-      // Add any public config here if needed
+      siteUrl: process.env.NUXT_SITE_URL || 'https://mowryagency.com',
     },
   },
   experimental: {
@@ -90,7 +90,7 @@ export default defineNuxtConfig({
     },
   },
   site: {
-    url: process.env.NUXT_SITE_URL || 'https://localhost:3000',
+    url: process.env.NUXT_SITE_URL || 'https://mowryagency.com',
     name: 'Mowry Agency',
     description:
       'Protecting What Matters Most to Your Family - Professional Life Insurance Solutions from Licensed Agents',

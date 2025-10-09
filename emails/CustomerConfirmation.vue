@@ -25,7 +25,7 @@
           style="background-color: #1e40af; padding: 20px; text-align: center"
         >
           <Img
-            src="https://your-domain.com/images/Mowry_Agency_Logo.png"
+            src="https://mowryagency.com/images/Mowry_Agency_Logo.png"
             alt="Mowry Agency"
             width="60"
             height="60"
