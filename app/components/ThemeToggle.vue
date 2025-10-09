@@ -2,7 +2,7 @@
   <button
     type="button"
     :aria-label="mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'"
-    class="group rounded-full bg-white/90 p-3 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20 flex items-center justify-center"
+    class="group rounded-full bg-white/90 p-3 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20 flex items-center justify-center cursor-pointer"
     @click="setColorTheme(otherTheme)"
   >
     <Icon

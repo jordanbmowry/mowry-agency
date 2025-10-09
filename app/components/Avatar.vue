@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const avatarClasses = computed(() =>
-  clsx(props.className, 'pointer-events-auto')
+  clsx(props.className, 'pointer-events-auto cursor-pointer')
 );
 
 const imageClasses = computed(() =>

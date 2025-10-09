@@ -26,7 +26,7 @@ const isActive = computed(() => route.path === props.href);
 
 const linkClasses = computed(() =>
   clsx(
-    'relative block px-3 py-2 transition',
+    'relative block px-3 py-2 transition cursor-pointer',
     isActive.value
       ? 'text-teal-500 dark:text-teal-400'
       : 'hover:text-teal-500 dark:hover:text-teal-400'
