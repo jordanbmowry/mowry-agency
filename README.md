@@ -1,5 +1,7 @@
 # Spotlight Nuxt - Mowry Agency Website
 
+[![Deployed Project](https://img.shields.io/badge/Live%20Site-mowryagency.com-blue?style=for-the-badge)](https://mowryagency.com)
+
 A modern digital agency website built with Nuxt 3, featuring pixel-perfect migration from the [Spotlight Template](https://spotlight.tailwindui.com/) by Tailwind UI. This project demonstrates advanced Nuxt.js capabilities with server-side rendering, responsive design, and optimal performance.
 
 ## 🚀 Live Demo
