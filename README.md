@@ -102,19 +102,25 @@ npm install
 cp .env.example .env
 ```
 
-4. Configure your `.env` file:
+4. Configure your `.env` file (example):
 
 ```env
+# Email Configuration
+# For Gmail, use smtp.gmail.com with port 587
+# You'll need to create an "App Password" in your Google Account settings
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_gmail_address@gmail.com
+SMTP_PASS=your_gmail_app_password
+
+# Agency email where leads will be sent
+AGENCY_EMAIL=your_agency_email@gmail.com
+
 # Supabase Configuration
 SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# Resend API Configuration
-RESEND_API_KEY=your_resend_api_key
-
-# Site Configuration
-NUXT_PUBLIC_SITE_URL=https://mowryagency.com
+SUPABASE_KEY=your_supabase_anon_key
+# Supabase Secret Key (for server-side operations)
+SUPABASE_SECRET_KEY=your_supabase_service_role_key
 ```
 
 5. Start the development server:
@@ -224,14 +230,17 @@ The site is configured for automatic deployment on Netlify:
 
 ### Environment Variables (Production)
 
-Set these in your Netlify dashboard:
+Set these in your Netlify dashboard (or your hosting provider):
 
 ```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_gmail_address@gmail.com
+SMTP_PASS=your_gmail_app_password
+AGENCY_EMAIL=your_agency_email@gmail.com
 SUPABASE_URL=your_production_supabase_url
-SUPABASE_ANON_KEY=your_production_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_production_service_key
-RESEND_API_KEY=your_resend_api_key
-NUXT_PUBLIC_SITE_URL=https://mowryagency.com
+SUPABASE_KEY=your_production_anon_key
+SUPABASE_SECRET_KEY=your_production_service_role_key
 ```
 
 ### DNS Configuration
