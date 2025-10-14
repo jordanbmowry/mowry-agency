@@ -65,7 +65,35 @@ export default defineEventHandler(async (event) => {
 
     if (error) {
       console.error('Database error:', error);
-      throw error;
+
+      // Handle duplicate email error specifically
+      if (
+        error.code === '23505' &&
+        error.details?.includes('unique_email_per_lead')
+      ) {
+        const config = useRuntimeConfig();
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'DUPLICATE_EMAIL',
+          data: {
+            message: `We already have a quote request for this email address. Please call us at ${config.public.agencyPhone} to discuss your insurance needs or to request an updated quote.`,
+            phone: config.public.agencyPhone,
+            email: config.public.agencyEmail,
+          },
+        });
+      }
+
+      // Handle other database errors
+      const config = useRuntimeConfig();
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'DATABASE_ERROR',
+        data: {
+          message: `We encountered an issue processing your request. Please try again or call us at ${config.public.agencyPhone} for immediate assistance.`,
+          phone: config.public.agencyPhone,
+          email: config.public.agencyEmail,
+        },
+      });
     }
 
     // Email configuration - make it optional

@@ -510,11 +510,77 @@
       </p>
     </div>
 
-    <div v-if="error" class="mt-4 p-4 rounded-md bg-red-50 dark:bg-red-900/20">
-      <p class="text-sm text-red-700 dark:text-red-400">
-        There was an error submitting your request. Please try calling us at
-        {{ agencyPhone }}.
-      </p>
+    <div
+      v-if="error"
+      class="mt-4 p-4 rounded-md"
+      :class="{
+        'bg-orange-50 dark:bg-orange-900/20': errorType === 'duplicate_email',
+        'bg-red-50 dark:bg-red-900/20': errorType !== 'duplicate_email',
+      }"
+    >
+      <div class="flex items-start space-x-3">
+        <div class="flex-shrink-0">
+          <Icon
+            :name="
+              errorType === 'duplicate_email'
+                ? 'heroicons:information-circle'
+                : 'heroicons:exclamation-triangle'
+            "
+            :class="{
+              'w-5 h-5 text-orange-600 dark:text-orange-400':
+                errorType === 'duplicate_email',
+              'w-5 h-5 text-red-600 dark:text-red-400':
+                errorType !== 'duplicate_email',
+            }"
+          />
+        </div>
+        <div class="flex-1">
+          <h3
+            class="text-sm font-medium"
+            :class="{
+              'text-orange-800 dark:text-orange-200':
+                errorType === 'duplicate_email',
+              'text-red-800 dark:text-red-200': errorType !== 'duplicate_email',
+            }"
+          >
+            {{
+              errorType === 'duplicate_email'
+                ? 'Quote Request Already Exists'
+                : 'Submission Error'
+            }}
+          </h3>
+          <p
+            class="mt-1 text-sm"
+            :class="{
+              'text-orange-700 dark:text-orange-300':
+                errorType === 'duplicate_email',
+              'text-red-700 dark:text-red-300': errorType !== 'duplicate_email',
+            }"
+          >
+            {{ errorMessage }}
+          </p>
+
+          <!-- Contact information for duplicate email -->
+          <div v-if="errorType === 'duplicate_email'" class="mt-3 space-y-2">
+            <div class="flex items-center space-x-4 text-sm">
+              <a
+                :href="`tel:+1${agencyPhone.replace(/[^\d]/g, '')}`"
+                class="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/40"
+              >
+                <Icon name="heroicons:phone" class="w-4 h-4 mr-2" />
+                Call {{ agencyPhone }}
+              </a>
+              <a
+                :href="`mailto:${agencyEmail}`"
+                class="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/40"
+              >
+                <Icon name="heroicons:envelope" class="w-4 h-4 mr-2" />
+                Email Us
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -527,6 +593,7 @@ import Button from './Button.vue';
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();
 const agencyPhone = config.public.agencyPhone as string;
+const agencyEmail = config.public.agencyEmail as string;
 
 // Form data structure
 const form = reactive({
@@ -562,6 +629,8 @@ const errors = reactive({
 const isSubmitting = ref(false);
 const submitted = ref(false);
 const error = ref(false);
+const errorMessage = ref('');
+const errorType = ref('');
 
 // Computed properties
 const maxDate = computed(() => {
@@ -821,6 +890,26 @@ const handleSubmit = async () => {
   } catch (err: any) {
     error.value = true;
     console.error('Form submission error:', err);
+
+    // Handle specific error types
+    if (err.statusCode === 409 && err.statusMessage === 'DUPLICATE_EMAIL') {
+      errorType.value = 'duplicate_email';
+      errorMessage.value =
+        err.data?.message ||
+        'We already have a quote request for this email address.';
+    } else if (
+      err.statusCode === 500 &&
+      err.statusMessage === 'DATABASE_ERROR'
+    ) {
+      errorType.value = 'database_error';
+      errorMessage.value =
+        err.data?.message ||
+        'We encountered a technical issue processing your request.';
+    } else {
+      errorType.value = 'general_error';
+      errorMessage.value =
+        'There was an error submitting your request. Please try calling us for immediate assistance.';
+    }
   } finally {
     isSubmitting.value = false;
   }
