@@ -16,21 +16,22 @@ import {
 // Define props for the email template
 defineProps<{
   leadData: {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     email: string;
     phone: string;
-    coverageType: string;
-    desiredCoverage: string;
-    timeFrame: string;
-    age: string;
-    healthConditions: string;
-    budgetRange: string;
-    currentCoverage: string;
-    additionalInfo?: string;
-    preferredContact: string;
-    tcpaConsent: boolean;
-    submittedAt: string;
+    date_of_birth: string;
+    coverage_type: string;
+    health_conditions: string;
+    current_medications: string;
+    message?: string;
+    city: string;
+    state: string;
+    tcpa_consent: boolean;
+    lead_type: string;
+    lead_source: string;
+    status: string;
+    submittedAt?: string;
   };
 }>();
 
@@ -60,7 +61,7 @@ const emailTailwindConfig = {
           <!-- Header -->
           <Section class="bg-brand-700 p-6 text-center">
             <Img
-              src="https://mowryagency.com/images/Mowry_Agency_Logo.png"
+              src="https://mowryagency.com/images/mowry_agency_logo_darkmode.png"
               alt="Mowry Agency"
               width="60"
               height="60"
@@ -84,8 +85,8 @@ const emailTailwindConfig = {
               </Heading>
 
               <Text class="text-base text-zinc-700 mb-2">
-                <strong>Name:</strong> {{ leadData.firstName }}
-                {{ leadData.lastName }}
+                <strong>Name:</strong> {{ leadData.first_name }}
+                {{ leadData.last_name }}
               </Text>
               <Text class="text-base text-zinc-700 mb-2">
                 <strong>Email:</strong> {{ leadData.email }}
@@ -94,8 +95,11 @@ const emailTailwindConfig = {
                 <strong>Phone:</strong> {{ leadData.phone }}
               </Text>
               <Text class="text-base text-zinc-700 mb-2">
-                <strong>Preferred Contact:</strong>
-                {{ leadData.preferredContact }}
+                <strong>Date of Birth:</strong> {{ leadData.date_of_birth }}
+              </Text>
+              <Text class="text-base text-zinc-700 mb-2">
+                <strong>Location:</strong> {{ leadData.city }},
+                {{ leadData.state }}
               </Text>
               <Text class="text-base text-zinc-700">
                 <strong>Submitted:</strong> {{ leadData.submittedAt }}
@@ -109,79 +113,67 @@ const emailTailwindConfig = {
               </Heading>
 
               <Text class="text-base text-zinc-700 mb-2">
-                <strong>Coverage Type:</strong> {{ leadData.coverageType }}
+                <strong>Coverage Type:</strong> {{ leadData.coverage_type }}
               </Text>
               <Text class="text-base text-zinc-700 mb-2">
-                <strong>Desired Coverage:</strong>
-                {{ leadData.desiredCoverage }}
-              </Text>
-              <Text class="text-base text-zinc-700 mb-2">
-                <strong>Time Frame:</strong> {{ leadData.timeFrame }}
-              </Text>
-              <Text class="text-base text-zinc-700 mb-2">
-                <strong>Age:</strong> {{ leadData.age }}
-              </Text>
-              <Text class="text-base text-zinc-700 mb-2">
-                <strong>Budget Range:</strong> {{ leadData.budgetRange }}
-              </Text>
-              <Text class="text-base text-zinc-700 mb-2">
-                <strong>Current Coverage:</strong>
-                {{ leadData.currentCoverage }}
+                <strong>Health Conditions:</strong>
+                {{ leadData.health_conditions }}
               </Text>
               <Text class="text-base text-zinc-700">
-                <strong>Health Conditions:</strong>
-                {{ leadData.healthConditions }}
+                <strong>Current Medications:</strong>
+                {{ leadData.current_medications }}
               </Text>
             </Section>
 
             <!-- Additional Information -->
+            <!-- Additional Information -->
             <Section
-              v-if="leadData.additionalInfo"
+              v-if="leadData.message"
               class="bg-yellow-50 p-6 rounded-lg mb-6"
             >
               <Heading class="text-xl font-bold text-zinc-900 mb-4">
-                Additional Information
+                Additional Message
               </Heading>
 
               <Text class="text-base text-zinc-700 italic">
-                "{{ leadData.additionalInfo }}"
+                "{{ leadData.message }}"
               </Text>
             </Section>
 
-            <!-- TCPA Consent -->
+            <!-- TCPA Consent Status -->
             <Section class="bg-green-50 p-6 rounded-lg mb-6">
-              <Heading class="text-lg font-bold text-zinc-900 mb-2">
-                TCPA Consent
+              <Heading class="text-xl font-bold text-zinc-900 mb-4">
+                TCPA Consent Status
               </Heading>
 
-              <Text class="text-base text-zinc-700">
-                <strong>Consent Given:</strong>
-                {{ leadData.tcpaConsent ? 'YES ✅' : 'NO ❌' }}
+              <Text class="text-base text-zinc-700 mb-4">
+                <strong>TCPA Consent Given:</strong>
+                {{ leadData.tcpa_consent ? 'YES ✅' : 'NO ❌' }}
               </Text>
 
               <Text
-                v-if="leadData.tcpaConsent"
-                class="text-sm text-green-700 mt-2"
+                v-if="leadData.tcpa_consent"
+                class="text-sm text-green-600 font-medium"
               >
-                The prospect has provided consent to be contacted for insurance
-                purposes.
+                ✅ Customer has provided explicit consent to be contacted for
+                insurance quotes and information via phone, text, or email.
               </Text>
             </Section>
 
             <!-- Action Buttons -->
-            <Section class="text-center mb-6">
+            <Section class="text-center">
               <Button
                 :href="`tel:${leadData.phone}`"
-                class="bg-brand-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-brand-700 mr-4"
+                class="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 mr-4 mb-2"
               >
-                Call {{ leadData.firstName }}
+                Call {{ leadData.first_name }}
               </Button>
 
               <Button
-                :href="`mailto:${leadData.email}?subject=Re: Your Insurance Quote Request`"
-                class="bg-zinc-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-zinc-700"
+                :href="`mailto:${leadData.email}`"
+                class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700"
               >
-                Email {{ leadData.firstName }}
+                Email {{ leadData.first_name }}
               </Button>
             </Section>
 

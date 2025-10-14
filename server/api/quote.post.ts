@@ -88,11 +88,13 @@ export default defineEventHandler(async (event) => {
     };
 
     // Send emails using Vue Email templates
-    const emailResults = await sendQuoteEmails(
-      emailConfig,
-      insertedLead,
-      config.agencyEmail
-    );
+    const emailResults = await sendQuoteEmails(emailConfig, insertedLead, {
+      email: config.agencyEmail,
+      phone: config.agencyPhone,
+      address: config.agencyAddress,
+      website: config.agencyWebsite,
+      npn: config.agencyNpn,
+    });
 
     // Return success response
     return {

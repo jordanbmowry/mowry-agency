@@ -24,25 +24,30 @@ type CustomerEmailData = {
   email: string;
   coverageType: string;
   agencyEmail: string;
+  agencyPhone: string;
+  agencyAddress: string;
+  agencyWebsite: string;
+  agencyNpn: string;
   unsubscribeLink: string;
 };
 
 type AgencyEmailData = {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
-  coverageType: string;
-  desiredCoverage: string;
-  timeFrame: string;
-  age: string;
-  healthConditions: string;
-  budgetRange: string;
-  currentCoverage: string;
-  additionalInfo?: string;
-  preferredContact: string;
-  tcpaConsent: boolean;
-  submittedAt: string;
+  date_of_birth: string;
+  coverage_type: string;
+  health_conditions: string;
+  current_medications: string;
+  message?: string;
+  city: string;
+  state: string;
+  tcpa_consent: boolean;
+  lead_type: string;
+  lead_source: string;
+  status: string;
+  submittedAt?: string;
 };
 
 // Create email transporter (pure function)
@@ -70,6 +75,10 @@ const renderCustomerConfirmationEmail = async (
           coverageType: data.coverageType,
         },
         agencyEmail: data.agencyEmail,
+        agencyPhone: data.agencyPhone,
+        agencyAddress: data.agencyAddress,
+        agencyWebsite: data.agencyWebsite,
+        agencyNpn: data.agencyNpn,
         unsubscribeLink: data.unsubscribeLink,
       },
       {
@@ -85,6 +94,10 @@ const renderCustomerConfirmationEmail = async (
           coverageType: data.coverageType,
         },
         agencyEmail: data.agencyEmail,
+        agencyPhone: data.agencyPhone,
+        agencyAddress: data.agencyAddress,
+        agencyWebsite: data.agencyWebsite,
+        agencyNpn: data.agencyNpn,
         unsubscribeLink: data.unsubscribeLink,
       },
       {
@@ -147,20 +160,31 @@ const sendSingleEmail = async (
 // Send customer confirmation email
 export const sendCustomerConfirmationEmail = async (
   config: EmailConfig,
-  leadData: any
+  leadData: any,
+  agencyInfo: {
+    email: string;
+    phone: string;
+    address: string;
+    website: string;
+    npn: string;
+  }
 ): Promise<AsyncResult<any>> => {
   return safeAsync(async () => {
     const transporter = createTransporter(config);
     const unsubscribeLink = createUnsubscribeLink(
       leadData.email,
-      'https://mowryagency.com'
+      agencyInfo.website
     );
 
     const emailData: CustomerEmailData = {
       firstName: leadData.first_name,
       email: leadData.email,
       coverageType: leadData.coverage_type,
-      agencyEmail: config.user,
+      agencyEmail: agencyInfo.email,
+      agencyPhone: agencyInfo.phone,
+      agencyAddress: agencyInfo.address,
+      agencyWebsite: agencyInfo.website,
+      agencyNpn: agencyInfo.npn,
       unsubscribeLink,
     };
 
@@ -186,21 +210,8 @@ export const sendAgencyNotificationEmail = async (
     const transporter = createTransporter(config);
 
     const emailData: AgencyEmailData = {
-      firstName: leadData.first_name,
-      lastName: leadData.last_name,
-      email: leadData.email,
-      phone: leadData.phone,
-      coverageType: leadData.coverage_type,
-      desiredCoverage: leadData.desired_coverage,
-      timeFrame: leadData.time_frame,
-      age: leadData.age,
-      healthConditions: leadData.health_conditions,
-      budgetRange: leadData.budget_range,
-      currentCoverage: leadData.current_coverage,
-      additionalInfo: leadData.additional_info,
-      preferredContact: leadData.preferred_contact,
-      tcpaConsent: leadData.tcpa_consent,
-      submittedAt: new Date(leadData.created_at).toLocaleString(),
+      ...leadData, // Spread the lead data which already has the correct structure
+      submittedAt: new Date().toISOString(),
     };
 
     const { html, text } = await renderAgencyNotificationEmail(emailData);
@@ -219,14 +230,20 @@ export const sendAgencyNotificationEmail = async (
 export const sendQuoteEmails = async (
   config: EmailConfig,
   leadData: any,
-  agencyEmail: string
+  agencyInfo: {
+    email: string;
+    phone: string;
+    address: string;
+    website: string;
+    npn: string;
+  }
 ): Promise<{
   customerResult: AsyncResult<any>;
   agencyResult: AsyncResult<any>;
 }> => {
   const [customerResult, agencyResult] = await Promise.allSettled([
-    sendCustomerConfirmationEmail(config, leadData),
-    sendAgencyNotificationEmail(config, leadData, agencyEmail),
+    sendCustomerConfirmationEmail(config, leadData, agencyInfo),
+    sendAgencyNotificationEmail(config, leadData, agencyInfo.email),
   ]);
 
   return {

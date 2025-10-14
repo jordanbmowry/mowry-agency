@@ -301,7 +301,7 @@ const emailTailwindConfig = {
               >.
             </Text>
             <Text style="color: #6b7280; font-size: 12px; margin: 10px 0 0 0">
-              Licensed Agent: Jordan Mowry | NPN: 16357772
+              Licensed Agent: Jordan Mowry | NPN: {{ agencyNpn }}
             </Text>
           </Section>
         </Section>

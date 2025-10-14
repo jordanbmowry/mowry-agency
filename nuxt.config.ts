@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue';
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  srcDir: 'app/',
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
@@ -67,6 +68,8 @@ export default defineNuxtConfig({
     agencyAddress:
       process.env.AGENCY_ADDRESS ||
       '1284 W Rangeview Cir, Bloomington, IN 47403',
+    agencyWebsite: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
+    agencyNpn: process.env.AGENCY_NPN || '16357772',
     // Supabase server-side config (updated for new project)
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_KEY,
@@ -78,6 +81,8 @@ export default defineNuxtConfig({
       agencyAddress:
         process.env.AGENCY_ADDRESS ||
         '1284 W Rangeview Cir, Bloomington, IN 47403',
+      agencyWebsite: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
+      agencyNpn: process.env.AGENCY_NPN || '16357772',
     },
   },
   experimental: {
@@ -90,20 +95,22 @@ export default defineNuxtConfig({
     },
     rollupConfig: {
       plugins: [vue()],
+      external: ['nuxt/dist/app/components/test-component-wrapper'],
     },
   },
   vite: {
     build: {
       rollupOptions: {
+        external: [
+          '/Users/jordanmowry/Desktop/spotlight-nuxt/node_modules/nuxt/dist/app/components/test-component-wrapper',
+          'nuxt/dist/app/components/test-component-wrapper',
+        ],
         output: {
           manualChunks: {
             vendor: ['vue', 'vue-router'],
           },
         },
       },
-    },
-    optimizeDeps: {
-      exclude: ['nuxt/dist/app/components/test-component-wrapper'],
     },
   },
   site: {

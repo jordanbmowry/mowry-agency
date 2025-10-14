@@ -28,7 +28,8 @@
         <p>
           Mowry Agency is licensed to sell life insurance in multiple states.
           Our licensing information is displayed in the footer of our website
-          and includes our National Producer Number (NPN): 16357772.
+          and includes our National Producer Number (NPN):
+          {{ config.public.agencyNpn }}.
         </p>
         <p>
           <strong>Important:</strong> We can only provide insurance services to
@@ -197,7 +198,7 @@
             >
           </p>
           <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-            National Producer Number (NPN): 16357772
+            National Producer Number (NPN): {{ config.public.agencyNpn }}
           </p>
         </div>
       </div>
