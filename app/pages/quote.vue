@@ -200,38 +200,6 @@
               families work toward their financial goals while protecting what
               matters most.
             </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-              <div class="text-center space-y-2">
-                <div
-                  class="text-3xl font-bold text-blue-600 dark:text-blue-400"
-                >
-                  10+
-                </div>
-                <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                  Years of Experience
-                </div>
-              </div>
-              <div class="text-center space-y-2">
-                <div
-                  class="text-3xl font-bold text-blue-600 dark:text-blue-400"
-                >
-                  500+
-                </div>
-                <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                  Families Protected
-                </div>
-              </div>
-              <div class="text-center space-y-2">
-                <div
-                  class="text-3xl font-bold text-blue-600 dark:text-blue-400"
-                >
-                  $50M+
-                </div>
-                <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                  Coverage Provided
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

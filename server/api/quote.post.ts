@@ -64,19 +64,19 @@ export default defineEventHandler(async (event) => {
       .select();
 
     if (error) {
-      console.error('Database error:', error);
-
       // Handle duplicate email error specifically
       if (
         error.code === '23505' &&
-        error.details?.includes('unique_email_per_lead')
+        (error.details?.includes('unique_email_per_lead') ||
+          error.message?.includes('duplicate key') ||
+          error.message?.includes('unique_email'))
       ) {
         const config = useRuntimeConfig();
         throw createError({
           statusCode: 409,
           statusMessage: 'DUPLICATE_EMAIL',
           data: {
-            message: `We already have a quote request for this email address. Please call us at ${config.public.agencyPhone} to discuss your insurance needs or to request an updated quote.`,
+            message: `Great news! We already have your information on file. Our team will be in touch soon. For immediate assistance or to update your quote request, please give us a call.`,
             phone: config.public.agencyPhone,
             email: config.public.agencyEmail,
           },

@@ -514,7 +514,7 @@
       v-if="error"
       class="mt-4 p-4 rounded-md"
       :class="{
-        'bg-orange-50 dark:bg-orange-900/20': errorType === 'duplicate_email',
+        'bg-green-50 dark:bg-green-900/20': errorType === 'duplicate_email',
         'bg-red-50 dark:bg-red-900/20': errorType !== 'duplicate_email',
       }"
     >
@@ -523,11 +523,11 @@
           <Icon
             :name="
               errorType === 'duplicate_email'
-                ? 'heroicons:information-circle'
+                ? 'heroicons:check-circle'
                 : 'heroicons:exclamation-triangle'
             "
             :class="{
-              'w-5 h-5 text-orange-600 dark:text-orange-400':
+              'w-5 h-5 text-green-600 dark:text-green-400':
                 errorType === 'duplicate_email',
               'w-5 h-5 text-red-600 dark:text-red-400':
                 errorType !== 'duplicate_email',
@@ -538,21 +538,21 @@
           <h3
             class="text-sm font-medium"
             :class="{
-              'text-orange-800 dark:text-orange-200':
+              'text-green-800 dark:text-green-200':
                 errorType === 'duplicate_email',
               'text-red-800 dark:text-red-200': errorType !== 'duplicate_email',
             }"
           >
             {{
               errorType === 'duplicate_email'
-                ? 'Quote Request Already Exists'
+                ? "We're Already Working on Your Quote!"
                 : 'Submission Error'
             }}
           </h3>
           <p
             class="mt-1 text-sm"
             :class="{
-              'text-orange-700 dark:text-orange-300':
+              'text-green-700 dark:text-green-300':
                 errorType === 'duplicate_email',
               'text-red-700 dark:text-red-300': errorType !== 'duplicate_email',
             }"
@@ -889,14 +889,13 @@ const handleSubmit = async () => {
     }, 5000);
   } catch (err: any) {
     error.value = true;
-    console.error('Form submission error:', err);
 
     // Handle specific error types
     if (err.statusCode === 409 && err.statusMessage === 'DUPLICATE_EMAIL') {
       errorType.value = 'duplicate_email';
       errorMessage.value =
         err.data?.message ||
-        'We already have a quote request for this email address.';
+        'Great news! We already have your information and will be in touch soon.';
     } else if (
       err.statusCode === 500 &&
       err.statusMessage === 'DATABASE_ERROR'
