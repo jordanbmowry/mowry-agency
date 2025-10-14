@@ -51,6 +51,7 @@ export default defineEventHandler(async (event) => {
       message: body.message || '',
       tcpa_consent: body.tcpaConsent,
       tcpa_consent_timestamp: new Date().toISOString(),
+      email_marketing_consent: true, // Default to true for new leads
       lead_type: 'insurance_quote',
       lead_source: 'quote_form',
       status: 'new',

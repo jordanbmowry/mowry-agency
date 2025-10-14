@@ -5,23 +5,25 @@ export default defineEventHandler(async (event) => {
   const supabase = createClient(config.supabaseUrl, config.supabaseKey);
 
   const query = getQuery(event);
-  const email = query.email as string;
   const token = query.token as string;
 
-  if (!email || !token) {
+  if (!token) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Missing email or token parameter',
+      statusMessage: 'Missing unsubscribe token',
     });
   }
 
   try {
-    // Verify the token (basic implementation - you might want to use a more secure method)
-    const expectedToken = Buffer.from(email).toString('base64');
-    if (token !== expectedToken) {
+    // Decode email from token
+    const email = Buffer.from(token, 'base64').toString('utf-8');
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Invalid unsubscribe token',
+        statusMessage: 'Invalid email in token',
       });
     }
 
