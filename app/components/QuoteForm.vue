@@ -9,9 +9,9 @@
       contact you within 24 hours with a personalized life insurance quote.
     </p>
 
-    <form @submit.prevent="handleSubmit" class="mt-6 space-y-6">
+    <form @submit.prevent="handleSubmit" v-auto-animate class="mt-6 space-y-6">
       <!-- Personal Information Section -->
-      <div class="space-y-4">
+      <div v-auto-animate class="space-y-4">
         <h3
           class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
         >
@@ -19,7 +19,7 @@
         </h3>
 
         <!-- First and Last Name -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div v-auto-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label
               for="firstName"
@@ -75,7 +75,7 @@
         </div>
 
         <!-- Email and Phone -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div v-auto-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label
               for="email"
@@ -162,7 +162,7 @@
         </div>
 
         <!-- City and State -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div v-auto-animate class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <!-- City -->
           <div>
             <label

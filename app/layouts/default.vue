@@ -9,9 +9,9 @@
   </div>
 
   <!-- Content structure -->
-  <div class="relative flex w-full flex-col">
+  <div v-auto-animate class="relative flex w-full flex-col">
     <Header />
-    <main class="flex-auto">
+    <main v-auto-animate class="flex-auto">
       <slot />
     </main>
     <Footer />

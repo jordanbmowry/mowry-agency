@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@netlify/nuxt',
     '@vee-validate/nuxt',
+    '@formkit/auto-animate/nuxt',
   ],
   css: ['~/assets/css/main.css', '@vuepic/vue-datepicker/dist/main.css'],
   colorMode: {

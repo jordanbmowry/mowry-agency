@@ -1,7 +1,7 @@
 <template>
   <!-- Hero Section -->
-  <Container class="mt-12 sm:mt-16 lg:mt-20">
-    <div class="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
+  <Container v-auto-animate class="mt-12 sm:mt-16 lg:mt-20">
+    <div v-auto-animate class="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
       <!-- Hero Content -->
       <div
         class="relative z-10 lg:col-span-7 lg:max-w-none lg:pt-6 xl:col-span-6"
@@ -18,7 +18,7 @@
           whole life, mortgage protection to retirement planning - we're here to
           secure your family's financial future.
         </p>
-        <div class="mt-8 flex flex-wrap gap-4">
+        <div v-auto-animate class="mt-8 flex flex-wrap gap-4">
           <Button
             href="tel:+19303221962"
             variant="primary"

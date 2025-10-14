@@ -46,7 +46,10 @@
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center space-x-4 lg:space-x-8">
+        <nav
+          v-auto-animate
+          class="hidden md:flex items-center space-x-4 lg:space-x-8"
+        >
           <template v-for="item in desktopNavItems" :key="item.href">
             <NuxtLink
               v-if="!item.isButton"
@@ -99,9 +102,10 @@
       <!-- Mobile Navigation Menu -->
       <div
         v-if="showMobileMenu"
+        v-auto-animate
         class="md:hidden border-t border-zinc-200 dark:border-zinc-700 py-4"
       >
-        <nav class="flex flex-col space-y-3">
+        <nav v-auto-animate class="flex flex-col space-y-3">
           <NuxtLink
             v-for="item in mobileNavItems"
             :key="item.href"
