@@ -18,11 +18,13 @@
               height="40"
               class="h-10 w-10 rounded-lg object-contain"
             />
-            <div class="hidden sm:block">
+            <div class="hidden sm:block xl:block">
               <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">
                 Mowry Agency
               </h1>
-              <p class="text-xs text-zinc-600 dark:text-zinc-400">
+              <p
+                class="text-xs text-zinc-600 dark:text-zinc-400 hidden lg:block xl:block"
+              >
                 Life Insurance Solutions
               </p>
             </div>
@@ -58,7 +60,7 @@
           <!-- Phone Number (Desktop) -->
           <a
             :href="`tel:+1${cleanPhone}`"
-            class="hidden lg:flex items-center space-x-2 text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 cursor-pointer"
+            class="hidden xl:flex items-center space-x-2 text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 cursor-pointer"
           >
             <Icon name="heroicons:phone" class="h-4 w-4" />
             <span>{{ agencyPhone }}</span>
