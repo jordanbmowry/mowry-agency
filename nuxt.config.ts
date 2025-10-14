@@ -19,6 +19,14 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css', '@vuepic/vue-datepicker/dist/main.css'],
   colorMode: {
     classSuffix: '',
+    preference: 'system', // Default to system preference
+    fallback: 'light', // Fallback to light mode
+    hid: 'nuxt-color-mode-script',
+    globalName: '__NUXT_COLOR_MODE__',
+    componentName: 'ColorScheme',
+    classPrefix: '',
+    storageKey: 'nuxt-color-mode',
+    dataValue: 'theme', // This helps with SSR consistency
   },
   content: {
     build: {

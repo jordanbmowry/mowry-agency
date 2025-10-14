@@ -7,17 +7,31 @@
         <!-- Logo -->
         <div class="flex items-center">
           <NuxtLink href="/" class="flex items-center space-x-3 cursor-pointer">
-            <NuxtImg
-              :src="
-                $colorMode.value === 'dark'
-                  ? '/images/mowry_agency_logo_darkmode.png'
-                  : '/images/agency/Mowry_Agency_Logo.png'
-              "
-              alt="Mowry Agency Logo"
-              width="40"
-              height="40"
-              class="h-10 w-10 rounded-lg object-contain"
-            />
+            <ColorScheme placeholder="..." tag="span">
+              <NuxtImg
+                v-if="!$colorMode.unknown"
+                :src="
+                  $colorMode.value === 'dark'
+                    ? '/images/mowry_agency_logo_darkmode.png'
+                    : '/images/agency/Mowry_Agency_Logo.png'
+                "
+                alt="Mowry Agency Logo"
+                width="40"
+                height="40"
+                class="h-10 w-10 rounded-lg object-contain"
+              />
+
+              <!-- Placeholder for SSR and unknown state -->
+              <template #placeholder>
+                <NuxtImg
+                  src="/images/agency/Mowry_Agency_Logo.png"
+                  alt="Mowry Agency Logo"
+                  width="40"
+                  height="40"
+                  class="h-10 w-10 rounded-lg object-contain"
+                />
+              </template>
+            </ColorScheme>
             <div class="hidden sm:block lg:hidden xl:block">
               <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">
                 Mowry Agency

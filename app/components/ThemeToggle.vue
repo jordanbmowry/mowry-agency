@@ -1,81 +1,40 @@
 <template>
   <button
     type="button"
-    :aria-label="mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'"
+    :aria-label="'Toggle theme'"
     class="group rounded-full bg-white/90 p-3 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20 flex items-center justify-center cursor-pointer"
-    @click="setColorTheme(otherTheme)"
+    @click="toggleTheme"
   >
-    <Icon
-      name="heroicons:sun"
-      class="h-5 w-5 text-zinc-600 transition group-hover:text-zinc-700 dark:hidden"
-    />
-    <Icon
-      name="heroicons:moon"
-      class="hidden h-5 w-5 text-zinc-400 transition group-hover:text-zinc-300 dark:block"
-    />
+    <ColorScheme placeholder="..." tag="span">
+      <!-- Show correct icon when we know the theme -->
+      <template v-if="!$colorMode.unknown">
+        <!-- Sun icon - show in dark mode -->
+        <Icon
+          v-if="$colorMode.value === 'dark'"
+          name="heroicons:sun"
+          class="h-5 w-5 text-zinc-400 transition group-hover:text-zinc-300"
+        />
+        <!-- Moon icon - show in light mode -->
+        <Icon
+          v-else
+          name="heroicons:moon"
+          class="h-5 w-5 text-zinc-600 transition group-hover:text-zinc-700"
+        />
+      </template>
+
+      <!-- Placeholder for SSR and unknown state -->
+      <template #placeholder>
+        <Icon name="heroicons:sun" class="h-5 w-5 text-zinc-500 opacity-70" />
+      </template>
+    </ColorScheme>
   </button>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+const { $colorMode } = useNuxtApp();
 
-const colorMode = useColorMode();
-const mounted = ref(false);
-
-const otherTheme = computed(() =>
-  colorMode.value === 'dark' ? 'light' : 'dark'
-);
-
-function setColorTheme(theme: string) {
-  colorMode.preference = theme;
-}
-
-onMounted(() => {
-  mounted.value = true;
-});
-</script>
-
-<script lang="ts">
-// Icon components
-function SunIcon(props: any) {
-  return h(
-    'svg',
-    {
-      viewBox: '0 0 24 24',
-      strokeWidth: '1.5',
-      strokeLinecap: 'round',
-      strokeLinejoin: 'round',
-      'aria-hidden': 'true',
-      ...props,
-    },
-    [
-      h('path', {
-        d: 'M8 12.25A4.25 4.25 0 0 1 12.25 8v0a4.25 4.25 0 0 1 4.25 4.25v0a4.25 4.25 0 0 1-4.25 4.25v0A4.25 4.25 0 0 1 8 12.25v0Z',
-      }),
-      h('path', {
-        d: 'M12.25 3v1.5M21.5 12.25H20M18.791 18.791l-1.06-1.06M18.791 5.709l-1.06 1.06M12.25 20v1.5M4.5 12.25H3M6.77 6.77 5.709 5.709M6.77 17.73l-1.061 1.061',
-        fill: 'none',
-      }),
-    ]
-  );
-}
-
-function MoonIcon(props: any) {
-  return h(
-    'svg',
-    {
-      viewBox: '0 0 24 24',
-      'aria-hidden': 'true',
-      ...props,
-    },
-    [
-      h('path', {
-        d: 'M17.25 16.22a6.937 6.937 0 0 1-9.47-9.47 7.451 7.451 0 1 0 9.47 9.47ZM12.75 7C17 7 17 2.75 17 2.75S17 7 21.25 7C17 7 17 11.25 17 11.25S17 7 12.75 7Z',
-        strokeWidth: '1.5',
-        strokeLinecap: 'round',
-        strokeLinejoin: 'round',
-      }),
-    ]
-  );
+function toggleTheme() {
+  // Toggle between light and dark mode only
+  $colorMode.preference = $colorMode.value === 'dark' ? 'light' : 'dark';
 }
 </script>
