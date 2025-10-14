@@ -12,6 +12,7 @@ export interface FormData {
   healthConditions: string;
   medications: string;
   message?: string;
+  tcpaConsent: boolean;
 }
 
 export interface ValidationResult {
@@ -113,6 +114,17 @@ export const validateRequiredText = (
   return { isValid: true };
 };
 
+export const validateTcpaConsent = (consent: boolean): ValidationResult => {
+  if (consent !== true) {
+    return {
+      isValid: false,
+      error: 'You must agree to be contacted to submit this form',
+    };
+  }
+
+  return { isValid: true };
+};
+
 // Higher-order function for validation composition
 export const composeValidations = (
   ...validators: ((value: any) => ValidationResult)[]
@@ -147,6 +159,7 @@ export const validateFormData = (
       formData.medications || '',
       'Current medications'
     ),
+    tcpaConsent: validateTcpaConsent(formData.tcpaConsent || false),
   };
 };
 

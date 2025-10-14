@@ -230,8 +230,8 @@
             </h3>
           </div>
           <p class="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-            Annuities and retirement solutions to secure your golden years with
-            guaranteed income.
+            Annuities offer income options and potential tax-deferred growth for
+            retirement planning.
           </p>
         </div>
 

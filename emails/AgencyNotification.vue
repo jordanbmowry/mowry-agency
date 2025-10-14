@@ -123,7 +123,7 @@
             This lead was generated from the Mowry Agency website contact form.
           </Text>
           <Text style="color: #6b7280; font-size: 12px; margin: 10px 0 0 0">
-            Mowry Agency | (930) 322-1962 | mowryagency@gmail.com
+            Mowry Agency | {{ agencyPhone }} | {{ agencyEmail }}
           </Text>
         </Section>
       </Container>
@@ -143,6 +143,8 @@ interface LeadData {
 
 interface Props {
   leadData: LeadData;
+  agencyEmail: string;
+  agencyPhone: string;
 }
 
 defineProps<Props>();

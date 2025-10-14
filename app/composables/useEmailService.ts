@@ -100,7 +100,7 @@ export const sendQuoteEmails = async (
     const emailOptions: EmailSendOptions[] = [
       {
         from: emailConfig.user,
-        to: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
+        to: process.env.AGENCY_EMAIL,
         subject: templates.agency.subject,
         html: templates.agency.html,
       },

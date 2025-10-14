@@ -160,15 +160,126 @@
             Required for accurate life insurance quotes
           </p>
         </div>
+
+        <!-- City and State -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <!-- City -->
+          <div>
+            <label
+              for="city"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              City *
+            </label>
+            <input
+              id="city"
+              v-model="form.city"
+              type="text"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.city ? 'outline-red-500 dark:outline-red-400' : '',
+              ]"
+              placeholder="Enter your city"
+              @blur="validateField('city')"
+            />
+            <p
+              v-if="errors.city"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.city }}
+            </p>
+          </div>
+
+          <!-- State -->
+          <div>
+            <label
+              for="state"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              State *
+            </label>
+            <select
+              id="state"
+              v-model="form.state"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.state ? 'outline-red-500 dark:outline-red-400' : '',
+              ]"
+              @blur="validateField('state')"
+            >
+              <option value="">Select your state</option>
+              <option value="AL">Alabama</option>
+              <option value="AR">Arkansas</option>
+              <option value="AZ">Arizona</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="FL">Florida</option>
+              <option value="GA">Georgia</option>
+              <option value="IA">Iowa</option>
+              <option value="ID">Idaho</option>
+              <option value="IL">Illinois</option>
+              <option value="IN">Indiana</option>
+              <option value="MA">Massachusetts</option>
+              <option value="MD">Maryland</option>
+              <option value="MI">Michigan</option>
+              <option value="MN">Minnesota</option>
+              <option value="MO">Missouri</option>
+              <option value="MT">Montana</option>
+              <option value="NC">North Carolina</option>
+              <option value="NE">Nebraska</option>
+              <option value="NJ">New Jersey</option>
+              <option value="NM">New Mexico</option>
+              <option value="NV">Nevada</option>
+              <option value="OH">Ohio</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="SC">South Carolina</option>
+              <option value="SD">South Dakota</option>
+              <option value="TN">Tennessee</option>
+              <option value="TX">Texas</option>
+              <option value="UT">Utah</option>
+              <option value="VA">Virginia</option>
+              <option value="WA">Washington</option>
+              <option value="WI">Wisconsin</option>
+              <option value="WY">Wyoming</option>
+            </select>
+            <p
+              v-if="errors.state"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.state }}
+            </p>
+            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              We can only provide quotes in states where we're licensed
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Health Information Section -->
       <div class="space-y-4">
-        <h3
-          class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
+        <div class="flex items-start justify-between">
+          <h3
+            class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2 flex-1"
+          >
+            Health Information
+          </h3>
+        </div>
+
+        <!-- Health Information Disclaimer -->
+        <div
+          class="p-3 bg-amber-50 border border-amber-200 rounded-md dark:bg-amber-900/20 dark:border-amber-800"
         >
-          Health Information
-        </h3>
+          <p class="text-xs text-amber-700 dark:text-amber-300">
+            <strong>Health Information Privacy:</strong> Medical information you
+            provide is securely encrypted and used only for insurance
+            underwriting purposes. This information helps us find the most
+            accurate rates for your situation and is protected under strict
+            privacy guidelines.
+          </p>
+        </div>
 
         <!-- Health Conditions -->
         <div>
@@ -198,7 +309,8 @@
             {{ errors.healthConditions }}
           </p>
           <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            This information helps us find the best rates for your situation
+            This information helps us find the best rates and is kept strictly
+            confidential
           </p>
         </div>
 
@@ -302,6 +414,68 @@
         </div>
       </div>
 
+      <!-- TCPA Consent Checkbox -->
+      <div class="mt-6">
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <input
+              id="tcpaConsent"
+              v-model="form.tcpaConsent"
+              type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-white border-zinc-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
+              required
+            />
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="tcpaConsent" class="text-zinc-700 dark:text-zinc-300">
+              <span class="text-red-500">*</span> By submitting this form, I
+              agree to be contacted by Mowry Agency or its licensed
+              representatives at the phone number and email I provided. This may
+              include calls, texts, or emails about life insurance and related
+              products, even if my number is on a Do Not Call list. I understand
+              that my consent is not a condition of purchase and that I can opt
+              out at any time.
+            </label>
+            <div class="mt-2 space-x-4 text-xs">
+              <NuxtLink
+                href="/privacy-policy"
+                class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                View our Privacy Policy
+              </NuxtLink>
+              <NuxtLink
+                href="/terms-of-service"
+                class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                Terms of Service
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Information Privacy Notice -->
+      <div
+        class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md dark:bg-blue-900/20 dark:border-blue-800"
+      >
+        <div class="flex items-start space-x-2">
+          <div class="text-blue-600 dark:text-blue-400 text-lg">🔒</div>
+          <div class="flex-1">
+            <h4
+              class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1"
+            >
+              Your Privacy is Protected
+            </h4>
+            <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+              Your information is secure and used solely for generating your
+              personalized life insurance quote. Health information,
+              medications, and personal details are encrypted and protected. We
+              do not share or sell your information to third parties.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Submit Section -->
       <div
         class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-700"
@@ -361,10 +535,13 @@ const form = reactive({
   email: '',
   phone: '',
   dateOfBirth: '',
+  city: '',
+  state: '',
   healthConditions: '',
   medications: '',
   coverageType: '',
   message: '',
+  tcpaConsent: false,
 });
 
 // Error tracking
@@ -374,6 +551,8 @@ const errors = reactive({
   email: '',
   phone: '',
   dateOfBirth: '',
+  city: '',
+  state: '',
   healthConditions: '',
   medications: '',
   coverageType: '',
@@ -400,10 +579,11 @@ const isFormValid = computed(() => {
     'coverageType',
   ];
   const hasRequiredFields = requiredFields.every(
-    (field) => form[field as keyof typeof form].trim() !== ''
+    (field) => (form[field as keyof typeof form] as string).trim() !== ''
   );
   const hasNoErrors = Object.values(errors).every((error) => error === '');
-  return hasRequiredFields && hasNoErrors;
+  const hasConsent = form.tcpaConsent === true;
+  return hasRequiredFields && hasNoErrors && hasConsent;
 });
 
 // Validation functions
@@ -478,34 +658,93 @@ const validateCoverageType = (coverageType: string): string => {
   return '';
 };
 
+const validateCity = (city: string): string => {
+  if (!city.trim()) return 'City is required';
+  if (city.trim().length < 2) return 'Please enter a valid city name';
+  if (city.trim().length > 50)
+    return 'City name must be less than 50 characters';
+  return '';
+};
+
+const validateState = (state: string): string => {
+  if (!state.trim()) return 'State is required';
+  const validStates = [
+    'AL',
+    'AR',
+    'AZ',
+    'CA',
+    'CO',
+    'CT',
+    'FL',
+    'GA',
+    'IA',
+    'ID',
+    'IL',
+    'IN',
+    'MA',
+    'MD',
+    'MI',
+    'MN',
+    'MO',
+    'MT',
+    'NC',
+    'NE',
+    'NJ',
+    'NM',
+    'NV',
+    'OH',
+    'PA',
+    'SC',
+    'SD',
+    'TN',
+    'TX',
+    'UT',
+    'VA',
+    'WA',
+    'WI',
+    'WY',
+  ];
+  if (!validStates.includes(state)) return 'Please select a valid state';
+  return '';
+};
+
 // Field validation
 const validateField = (fieldName: keyof typeof form) => {
   const value = form[fieldName];
 
   switch (fieldName) {
     case 'firstName':
-      errors.firstName = validateName(value, 'First name');
+      errors.firstName = validateName(value as string, 'First name');
       break;
     case 'lastName':
-      errors.lastName = validateName(value, 'Last name');
+      errors.lastName = validateName(value as string, 'Last name');
       break;
     case 'email':
-      errors.email = validateEmail(value);
+      errors.email = validateEmail(value as string);
       break;
     case 'phone':
-      errors.phone = validatePhone(value);
+      errors.phone = validatePhone(value as string);
       break;
     case 'dateOfBirth':
-      errors.dateOfBirth = validateDateOfBirth(value);
+      errors.dateOfBirth = validateDateOfBirth(value as string);
+      break;
+    case 'city':
+      errors.city = validateCity(value as string);
+      break;
+    case 'state':
+      errors.state = validateState(value as string);
       break;
     case 'healthConditions':
-      errors.healthConditions = validateHealthConditions(value);
+      errors.healthConditions = validateHealthConditions(value as string);
       break;
     case 'medications':
-      errors.medications = validateMedications(value);
+      errors.medications = validateMedications(value as string);
       break;
     case 'coverageType':
-      errors.coverageType = validateCoverageType(value);
+      errors.coverageType = validateCoverageType(value as string);
+      break;
+    case 'tcpaConsent':
+      // No validation needed for boolean consent
       break;
   }
 };
@@ -518,6 +757,8 @@ const validateAllFields = () => {
     'email',
     'phone',
     'dateOfBirth',
+    'city',
+    'state',
     'healthConditions',
     'medications',
     'coverageType',
@@ -547,16 +788,23 @@ const handleSubmit = async () => {
         email: form.email,
         phone: form.phone,
         dateOfBirth: form.dateOfBirth,
+        city: form.city,
+        state: form.state,
         healthConditions: form.healthConditions,
         medications: form.medications,
         coverageType: form.coverageType,
         message: form.message,
+        tcpaConsent: form.tcpaConsent,
       },
     });
 
     // Reset form and show success
     Object.keys(form).forEach((key) => {
-      form[key as keyof typeof form] = '';
+      if (key === 'tcpaConsent') {
+        (form as any)[key] = false;
+      } else {
+        (form as any)[key] = '';
+      }
     });
 
     // Clear errors

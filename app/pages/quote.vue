@@ -25,12 +25,12 @@
             </div>
             <div class="space-y-2">
               <h3 class="font-semibold text-zinc-800 dark:text-zinc-100">
-                💰 Tax-Free Wealth Building
+                💰 Tax-Advantaged Strategies
               </h3>
               <p>
                 Build legacy wealth with tax-advantaged life insurance
-                strategies that grow your money while protecting your loved
-                ones.
+                strategies designed to help your money grow while protecting
+                your loved ones.
               </p>
             </div>
             <div class="space-y-2">
@@ -101,7 +101,7 @@
                     Whole Life Insurance
                   </h3>
                   <p>
-                    Permanent coverage with guaranteed cash value growth and
+                    Permanent coverage with cash value growth potential and
                     lifetime protection
                   </p>
                 </div>
@@ -113,8 +113,9 @@
                     Indexed Universal Life (IUL)
                   </h3>
                   <p>
-                    Build tax-free wealth with market-linked growth potential
-                    and flexible premiums
+                    Build legacy wealth with tax-advantaged life insurance
+                    strategies designed to help your money grow while protecting
+                    your loved ones and flexible premiums
                   </p>
                 </div>
               </div>
@@ -149,8 +150,8 @@
                     Annuities
                   </h3>
                   <p>
-                    Guaranteed retirement income and tax-deferred growth for
-                    your golden years
+                    Annuities offer income options and potential tax-deferred
+                    growth for your retirement years
                   </p>
                 </div>
               </div>
@@ -189,15 +190,15 @@
             <h2
               class="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100"
             >
-              Building Legacy Wealth That Lasts
+              Building Lasting Legacy Strategies
             </h2>
             <p
               class="text-lg text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto"
             >
-              We don't just sell insurance - we help families build lasting
-              legacies. Our tax-free wealth building strategies have helped
-              countless families secure their financial futures while protecting
-              what matters most.
+              We don't just sell insurance - we help families develop lasting
+              legacies. Our tax-advantaged strategies are designed to help
+              families work toward their financial goals while protecting what
+              matters most.
             </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
               <div class="text-center space-y-2">
@@ -250,8 +251,8 @@ const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 useSeoMeta({
   title: 'Get Your Free Life Insurance Quote - Mowry Agency',
   description:
-    'Get a personalized life insurance quote from Mowry Agency. Specializing in term life, whole life, IUL, and annuities. Build tax-free wealth while protecting your family. Quick response within 24 hours.',
+    'Get a personalized life insurance quote from Mowry Agency. Specializing in term life, whole life, IUL, and annuities. Build legacy wealth with tax-advantaged strategies while protecting your family. Quick response within 24 hours.',
   keywords:
-    'life insurance quote, term life insurance, whole life insurance, indexed universal life, IUL, annuities, mortgage protection, final expense, tax-free wealth building',
+    'life insurance quote, term life insurance, whole life insurance, indexed universal life, IUL, annuities, mortgage protection, final expense, tax-advantaged strategies',
 });
 </script>

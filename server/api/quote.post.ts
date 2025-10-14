@@ -17,12 +17,13 @@ export default defineEventHandler(async (event) => {
       !body.dateOfBirth ||
       !body.city ||
       !body.state ||
-      !body.coverageType
+      !body.coverageType ||
+      !body.tcpaConsent
     ) {
       throw createError({
         statusCode: 400,
         statusMessage:
-          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, city, state, and coverageType are required',
+          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, city, state, coverageType, and tcpaConsent are required',
       });
     }
 
@@ -48,6 +49,8 @@ export default defineEventHandler(async (event) => {
       health_conditions: body.healthConditions || '',
       current_medications: body.medications || '',
       message: body.message || '',
+      tcpa_consent: body.tcpaConsent,
+      tcpa_consent_timestamp: new Date().toISOString(),
       lead_type: 'insurance_quote',
       lead_source: 'quote_form',
       status: 'new',
@@ -84,7 +87,8 @@ export default defineEventHandler(async (event) => {
           email: body.email,
           phone: body.phone,
           dateOfBirth: body.dateOfBirth,
-          cityState: body.cityState,
+          city: body.city,
+          state: body.state,
           coverageType: body.coverageType,
           healthConditions: body.healthConditions || 'Not provided',
           medications: body.medications || 'Not provided',
@@ -124,6 +128,12 @@ export default defineEventHandler(async (event) => {
           </html>
         `;
 
+        // Generate unsubscribe token
+        const unsubscribeToken = Buffer.from(body.email).toString('base64');
+        const config = useRuntimeConfig();
+        const siteUrl = config.public.siteUrl || 'https://mowryagency.com';
+        const unsubscribeLink = `${siteUrl}/api/unsubscribe?email=${encodeURIComponent(body.email)}&token=${unsubscribeToken}`;
+
         const customerEmailHtml = `
           <!DOCTYPE html>
           <html>
@@ -148,8 +158,23 @@ export default defineEventHandler(async (event) => {
                     <li>No obligation - we're here to help you make the best decision for your family</li>
                   </ul>
                 </div>
-                <p>If you have any immediate questions, please don't hesitate to call us at <strong>(930) 322-1962</strong>.</p>
+                <p>If you have any immediate questions, please don't hesitate to call us at <strong>${process.env.AGENCY_PHONE}</strong>.</p>
                 <p>Best regards,<br><strong>The Mowry Agency Team</strong></p>
+                
+                <!-- CAN-SPAM Compliance Footer -->
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+                  <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+                    <strong>Mowry Agency</strong><br>
+                    Licensed Agent: Jordan Mowry | NPN: 16357772<br>
+                    1284 W Rangeview Cir, Bloomington, IN 47403<br>
+                    Phone: ${process.env.AGENCY_PHONE}
+                  </p>
+                  <p style="color: #6b7280; font-size: 12px; margin: 10px 0;">
+                    This email was sent because you requested a life insurance quote from Mowry Agency.<br>
+                    If you no longer wish to receive emails from us, you may 
+                    <a href="${unsubscribeLink}" style="color: #1e40af; text-decoration: underline;">unsubscribe here</a>.
+                  </p>
+                </div>
               </div>
             </div>
           </body>

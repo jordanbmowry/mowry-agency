@@ -41,10 +41,14 @@ const transformToLeadData = (formData: any) => ({
   email: formData.email,
   phone: formData.phone,
   date_of_birth: formData.dateOfBirth,
+  city: formData.city,
+  state: formData.state,
   coverage_type: formData.coverageType,
   health_conditions: formData.healthConditions || '',
   current_medications: formData.medications || '',
   message: formData.message || '',
+  tcpa_consent: formData.tcpaConsent,
+  tcpa_consent_timestamp: new Date().toISOString(),
   lead_type: 'insurance_quote',
   lead_source: 'quote_form',
   status: 'new',
@@ -104,7 +108,7 @@ function createCustomerEmailTemplate(data: any): string {
               <li>No obligation - we're here to help you make the best decision for your family</li>
             </ul>
           </div>
-          <p>If you have any immediate questions, please don't hesitate to call us at <strong>(930) 322-1962</strong>.</p>
+          <p>If you have any immediate questions, please don't hesitate to call us at <strong>${process.env.AGENCY_PHONE}</strong>.</p>
           <p>Best regards,<br><strong>The Mowry Agency Team</strong></p>
         </div>
       </div>
@@ -180,7 +184,7 @@ export default defineEventHandler(async (event) => {
         await Promise.all([
           transporter.sendMail({
             from: process.env.SMTP_USER,
-            to: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
+            to: process.env.AGENCY_EMAIL,
             subject: `New Life Insurance Quote Request from ${formData.firstName} ${formData.lastName}`,
             html: agencyEmailHtml,
           }),

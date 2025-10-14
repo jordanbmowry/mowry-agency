@@ -8,10 +8,14 @@ interface LeadData {
   email: string;
   phone: string;
   date_of_birth: string;
+  city?: string;
+  state?: string;
   coverage_type: string;
   health_conditions: string;
   current_medications: string;
   message: string;
+  tcpa_consent: boolean;
+  tcpa_consent_timestamp: string;
   lead_type: string;
   lead_source: string;
   status: string;
@@ -26,7 +30,10 @@ interface DatabaseResult<T> {
 // Pure function to create Supabase client
 const createSupabaseClient = () => {
   const config = useRuntimeConfig();
-  return createClient(config.supabaseUrl, config.supabaseAnonKey);
+  return createClient(
+    config.supabaseUrl as string,
+    config.supabaseKey as string
+  );
 };
 
 // Pure function to transform form data to lead data
@@ -36,10 +43,14 @@ export const transformFormDataToLeadData = (formData: any): LeadData => ({
   email: formData.email,
   phone: formData.phone,
   date_of_birth: formData.dateOfBirth,
+  city: formData.city,
+  state: formData.state,
   coverage_type: formData.coverageType,
   health_conditions: formData.healthConditions || '',
   current_medications: formData.medications || '',
   message: formData.message || '',
+  tcpa_consent: formData.tcpaConsent,
+  tcpa_consent_timestamp: new Date().toISOString(),
   lead_type: 'insurance_quote',
   lead_source: 'quote_form',
   status: 'new',

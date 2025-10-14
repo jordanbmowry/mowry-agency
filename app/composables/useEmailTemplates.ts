@@ -84,7 +84,7 @@ export const createCustomerEmailTemplate = (data: EmailData): EmailTemplate => {
               <li>No obligation - we're here to help you make the best decision for your family</li>
             </ul>
           </div>
-          <p>If you have any immediate questions, please don't hesitate to call us at <strong>(930) 322-1962</strong>.</p>
+          <p>If you have any immediate questions, please don't hesitate to call us at <strong>${process.env.AGENCY_PHONE}</strong>.</p>
           <p>Best regards,<br><strong>The Mowry Agency Team</strong></p>
         </div>
       </div>

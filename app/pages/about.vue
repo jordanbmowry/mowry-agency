@@ -24,8 +24,8 @@
         <div class="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
           <p>
             At Mowry Agency, we understand that life insurance is not just a
-            policy; it's a promise to protect your loved ones and secure their
-            future. Founded on the principle that every family deserves
+            policy; it's a commitment to protect your loved ones and help secure
+            their future. Founded on the principle that every family deserves
             comprehensive financial protection, we've dedicated ourselves to
             making life insurance accessible, understandable, and affordable for
             families across America.

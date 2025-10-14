@@ -111,7 +111,7 @@
                     font-weight: 600;
                   "
                 >
-                  📞 (930) 322-1962
+                  📞 {{ agencyPhone }}
                 </Link>
               </Column>
             </Row>
@@ -125,7 +125,7 @@
                     font-weight: 600;
                   "
                 >
-                  ✉️ mowryagency@gmail.com
+                  ✉️ {{ agencyEmail }}
                 </Link>
               </Column>
             </Row>
@@ -173,12 +173,37 @@
             Mowry Agency - Protecting What Matters Most
           </Text>
           <Text style="color: #6b7280; font-size: 14px; margin: 5px 0">
-            Licensed Insurance Agency | (930) 322-1962
+            Licensed Insurance Agency | {{ agencyPhone }}
           </Text>
-          <Text style="color: #6b7280; font-size: 12px; margin: 10px 0 0 0">
-            This is an automated confirmation email. Please do not reply to this
-            message.
+          <Text style="color: #6b7280; font-size: 14px; margin: 5px 0">
+            {{ agencyAddress }}
           </Text>
+
+          <!-- CAN-SPAM Compliance Section -->
+          <Section
+            style="
+              margin-top: 20px;
+              padding-top: 15px;
+              border-top: 1px solid #e5e7eb;
+            "
+          >
+            <Text style="color: #6b7280; font-size: 12px; margin: 5px 0">
+              This email was sent because you requested information from Mowry
+              Agency.
+            </Text>
+            <Text style="color: #6b7280; font-size: 12px; margin: 5px 0">
+              If you no longer wish to receive emails from us, you may
+              <Link
+                href="{{ unsubscribeLink }}"
+                style="color: #1e40af; text-decoration: underline"
+              >
+                unsubscribe here </Link
+              >.
+            </Text>
+            <Text style="color: #6b7280; font-size: 12px; margin: 10px 0 0 0">
+              Licensed Agent: Jordan Mowry | NPN: 16357772
+            </Text>
+          </Section>
         </Section>
       </Container>
     </Body>
@@ -196,6 +221,10 @@ interface CustomerData {
 
 interface Props {
   customerData: CustomerData;
+  agencyEmail: string;
+  agencyPhone: string;
+  agencyAddress: string;
+  unsubscribeLink: string;
 }
 
 defineProps<Props>();

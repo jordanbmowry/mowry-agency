@@ -184,11 +184,26 @@
 
       <!-- Health Information Section -->
       <div class="space-y-4">
-        <h3
-          class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
+        <div class="flex items-start justify-between">
+          <h3
+            class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2 flex-1"
+          >
+            Health Information
+          </h3>
+        </div>
+
+        <!-- Health Information Disclaimer -->
+        <div
+          class="p-3 bg-amber-50 border border-amber-200 rounded-md dark:bg-amber-900/20 dark:border-amber-800"
         >
-          Health Information
-        </h3>
+          <p class="text-xs text-amber-700 dark:text-amber-300">
+            <strong>Health Information Privacy:</strong> Medical information you
+            provide is securely encrypted and used only for insurance
+            underwriting purposes. This information helps us find the most
+            accurate rates for your situation and is protected under strict
+            privacy guidelines.
+          </p>
+        </div>
 
         <!-- Health Conditions -->
         <div>
@@ -216,7 +231,7 @@
             v-if="!healthConditionsError"
             class="mt-1 text-xs text-zinc-500 dark:text-zinc-400"
           >
-            This helps us find the best rates for your situation
+            This helps us find the best rates and is kept strictly confidential
           </p>
         </div>
 
@@ -284,6 +299,28 @@
           >
             Help us better understand your needs and goals
           </p>
+        </div>
+      </div>
+
+      <!-- Health Information Privacy Notice -->
+      <div
+        class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md dark:bg-blue-900/20 dark:border-blue-800"
+      >
+        <div class="flex items-start space-x-2">
+          <div class="text-blue-600 dark:text-blue-400 text-lg">🔒</div>
+          <div class="flex-1">
+            <h4
+              class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1"
+            >
+              Your Privacy is Protected
+            </h4>
+            <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+              Your information is secure and used solely for generating your
+              personalized life insurance quote. Health information,
+              medications, and personal details are encrypted and protected. We
+              do not share or sell your information to third parties.
+            </p>
+          </div>
         </div>
       </div>
 

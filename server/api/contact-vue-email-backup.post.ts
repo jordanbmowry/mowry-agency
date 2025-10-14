@@ -8,6 +8,7 @@ interface ContactFormData {
   phone: string;
   coverageType: string;
   message: string;
+  tcpaConsent: boolean;
 }
 
 export default defineEventHandler(async (event) => {
@@ -24,11 +25,11 @@ export default defineEventHandler(async (event) => {
     const body: ContactFormData = await readBody(event);
 
     // Validate required fields
-    const { firstName, lastName, email, phone } = body;
-    if (!firstName || !lastName || !email || !phone) {
+    const { firstName, lastName, email, phone, tcpaConsent } = body;
+    if (!firstName || !lastName || !email || !phone || !tcpaConsent) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Missing required fields',
+        statusMessage: 'Missing required fields including TCPA consent',
       });
     }
 
@@ -191,7 +192,7 @@ export default defineEventHandler(async (event) => {
       <p>One of our licensed insurance professionals will reach out to you soon to discuss your family's protection needs.</p>
       
       <p><strong>Need immediate assistance?</strong><br>
-      Feel free to call us directly at <a href="tel:+19303221962">(930) 322-1962</a></p>
+      Feel free to call us directly at <a href="tel:+1${process.env.AGENCY_PHONE?.replace(/[^\d]/g, '')}">${process.env.AGENCY_PHONE}</a></p>
       
       <p>Best regards,<br>
       The Mowry Agency Team</p>
@@ -205,7 +206,7 @@ export default defineEventHandler(async (event) => {
     // Send email to agency (lead notification)
     const agencyEmailOptions = {
       from: runtimeConfig.smtpUser,
-      to: runtimeConfig.agencyEmail || 'mowryagency@gmail.com',
+      to: runtimeConfig.agencyEmail,
       subject: `New Quote Request from ${firstName} ${lastName}`,
       html: agencyEmailContent,
       text: `New quote request from ${firstName} ${lastName}. Email: ${email}, Phone: ${phone}, Coverage: ${body.coverageType || 'Not specified'}`,
