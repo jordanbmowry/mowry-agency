@@ -5,8 +5,9 @@
   >
     <!-- Enticing Scroll Arrow -->
     <div v-auto-animate class="flex justify-center -mt-8 mb-12">
-      <button
-        @click="scrollToForm"
+      <NuxtLink
+        to="#quote-form"
+        @click.prevent="scrollToForm"
         v-auto-animate
         :class="[
           'group relative flex flex-col items-center space-y-2 p-6 rounded-full hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/20 dark:hover:to-blue-800/20 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:shadow-lg',
@@ -73,7 +74,7 @@
             isScrolling ? 'opacity-100 from-blue-400/20 to-blue-600/20' : '',
           ]"
         ></div>
-      </button>
+      </NuxtLink>
     </div>
 
     <div v-auto-animate class="space-y-20">
@@ -300,12 +301,19 @@ const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 const isScrolling = ref(false);
 
 // Enhanced smooth scroll to quote form with feedback
-const scrollToForm = async () => {
+const scrollToForm = async (event: Event) => {
+  // Prevent default NuxtLink behavior to handle custom scroll
+  event.preventDefault();
+
   // Set scrolling state for visual feedback
   isScrolling.value = true;
 
   const element = document.getElementById('quote-form');
   if (element) {
+    // Update URL hash using navigateTo for better Nuxt integration
+    await navigateTo('#quote-form', { replace: true });
+
+    // Then scroll to element with smooth behavior
     element.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
