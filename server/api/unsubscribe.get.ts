@@ -33,8 +33,10 @@ export default defineEventHandler(async (event) => {
       'unknown';
     const userAgent = getHeader(event, 'user-agent') || '';
 
+    console.log('Processing unsubscribe for email:', email);
+
     // Add to unsubscribes table
-    const { error: unsubscribeError } = await supabase
+    const { data: unsubscribeData, error: unsubscribeError } = await supabase
       .from('unsubscribes')
       .upsert({
         email,
@@ -44,11 +46,17 @@ export default defineEventHandler(async (event) => {
       });
 
     if (unsubscribeError) {
-      console.error('Error adding to unsubscribes:', unsubscribeError);
+      console.error('Error adding to unsubscribes table:', unsubscribeError);
+      console.error(
+        'Unsubscribe error details:',
+        JSON.stringify(unsubscribeError, null, 2)
+      );
+    } else {
+      console.log('Successfully added to unsubscribes table:', unsubscribeData);
     }
 
     // Update leads table
-    const { error: leadsError } = await supabase
+    const { data: leadsData, error: leadsError } = await supabase
       .from('leads')
       .update({
         email_marketing_consent: false,
@@ -57,7 +65,13 @@ export default defineEventHandler(async (event) => {
       .eq('email', email);
 
     if (leadsError) {
-      console.error('Error updating leads:', leadsError);
+      console.error('Error updating leads table:', leadsError);
+      console.error(
+        'Leads error details:',
+        JSON.stringify(leadsError, null, 2)
+      );
+    } else {
+      console.log('Successfully updated leads table:', leadsData);
     }
 
     // Return success page
