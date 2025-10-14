@@ -390,6 +390,12 @@ import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
 import Button from './Button.vue';
 import MailIcon from './icons/MailIcon.vue';
+import {
+  calculateAge,
+  isValidAge,
+  getTodayInputFormat,
+  isValidDateString,
+} from '~/utils/dateUtils';
 
 const isSubmitting = ref(false);
 const submitted = ref(false);
@@ -421,40 +427,24 @@ const validations = yup.object({
   dateOfBirth: yup
     .string()
     .required('Date of birth is required')
+    .test('valid-date', 'Please enter a valid date', function (value) {
+      if (!value) return false;
+      return isValidDateString(value);
+    })
     .test('age', 'You must be at least 18 years old', function (value) {
       if (!value) return false;
-      const birthDate = new Date(value);
-      const today = new Date();
 
-      // Check for future dates first
-      if (birthDate > today) {
+      if (!isValidAge(value, 18)) {
+        return false;
+      }
+
+      const age = calculateAge(value);
+      if (age > 100) {
         return this.createError({
-          message: 'Date of birth cannot be in the future',
+          message: 'Please enter a valid date of birth',
         });
       }
 
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        const adjustedAge = age - 1;
-        if (adjustedAge < 18) return false;
-        if (adjustedAge > 100) {
-          return this.createError({
-            message: 'Please enter a valid date of birth',
-          });
-        }
-      } else {
-        if (age < 18) return false;
-        if (age > 100) {
-          return this.createError({
-            message: 'Please enter a valid date of birth',
-          });
-        }
-      }
       return true;
     }),
   coverageType: yup.string().required('Please select a coverage type'),
@@ -496,8 +486,7 @@ const { value: message, errorMessage: messageError } = useField('message');
 
 // Computed properties
 const maxDate = computed(() => {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
+  return getTodayInputFormat();
 });
 
 // Form submission - following portfolio-nuxt pattern

@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
+import { createTimestamp } from '~/utils/dateUtils';
 
 interface ContactFormData {
   firstName: string;
@@ -233,7 +234,7 @@ export default defineEventHandler(async (event) => {
       email,
       phone,
       coverageType: body.coverageType,
-      timestamp: new Date().toISOString(),
+      timestamp: createTimestamp(),
     });
 
     // Return success response

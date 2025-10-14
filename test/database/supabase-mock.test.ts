@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+// Import date utilities - using relative path for test files
+const createTimestamp = () => new Date().toISOString();
+
 // Mock the entire supabase module first
 const mockSupabaseOperations = {
   createLead: vi.fn(),
@@ -55,8 +58,8 @@ describe('Database Integration Tests', () => {
         lead_type: 'insurance_quote',
         lead_source: 'quote_form',
         status: 'new',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: createTimestamp(),
+        updated_at: createTimestamp(),
       };
 
       mockSupabaseOperations.createLead.mockResolvedValue(mockLead);
@@ -147,7 +150,7 @@ describe('Database Integration Tests', () => {
       const updatedLead = {
         id: 'lead-123',
         status: 'contacted',
-        updated_at: new Date().toISOString(),
+        updated_at: createTimestamp(),
       };
 
       mockSupabaseOperations.updateLeadStatus.mockResolvedValue(updatedLead);

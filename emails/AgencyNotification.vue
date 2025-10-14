@@ -12,28 +12,29 @@ import {
   Hr,
   Tailwind,
 } from '@vue-email/components';
+import { formatSubmittedDate } from '~/utils/dateUtils';
 
-// Define props for the email template
-defineProps<{
-  leadData: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    date_of_birth: string;
-    coverage_type: string;
-    health_conditions: string;
-    current_medications: string;
-    message?: string;
-    city: string;
-    state: string;
-    tcpa_consent: boolean;
-    lead_type: string;
-    lead_source: string;
-    status: string;
-    submittedAt?: string;
-  };
-}>();
+interface LeadData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  date_of_birth: string;
+  coverage_type: string;
+  health_conditions: string;
+  current_medications: string;
+  message?: string;
+  city?: string;
+  state?: string;
+  tcpa_consent: boolean;
+  submittedAt?: string;
+}
+
+interface Props {
+  leadData: LeadData;
+}
+
+defineProps<Props>();
 
 // Simplified Tailwind config for emails
 const emailTailwindConfig = {
@@ -63,9 +64,10 @@ const emailTailwindConfig = {
             <Img
               src="https://mowryagency.com/images/mowry_agency_logo_darkmode.png"
               alt="Mowry Agency"
-              width="60"
-              height="60"
+              width="80"
+              height="80"
               class="mb-4 mx-auto"
+              style="filter: brightness(0) invert(1)"
             />
             <Heading class="text-white text-2xl font-bold m-0">
               🚨 New Quote Request
@@ -102,7 +104,8 @@ const emailTailwindConfig = {
                 {{ leadData.state }}
               </Text>
               <Text class="text-base text-zinc-700">
-                <strong>Submitted:</strong> {{ leadData.submittedAt }}
+                <strong>Submitted:</strong>
+                {{ formatSubmittedDate(leadData.submittedAt || '') }}
               </Text>
             </Section>
 

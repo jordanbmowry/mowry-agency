@@ -1,8 +1,6 @@
+import { formatDate as formatDateUtil } from '~/utils/dateUtils';
+
 export function formatDate(dateString: string) {
-  return new Date(`${dateString}T00:00:00Z`).toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
+  // Use the new date-fns implementation while maintaining the same API
+  return formatDateUtil(dateString, 'MMMM d, yyyy', 'UTC');
 }

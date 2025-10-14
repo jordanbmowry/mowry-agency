@@ -63,9 +63,10 @@ const emailTailwindConfig = {
             <Img
               src="https://mowryagency.com/images/mowry_agency_logo_darkmode.png"
               alt="Mowry Agency"
-              width="60"
-              height="60"
+              width="80"
+              height="80"
               class="mb-4 mx-auto"
+              style="filter: brightness(0) invert(1)"
             />
             <Heading class="text-white text-2xl font-bold m-0">
               Thank You — Your Life Insurance Quote Request Has Been Received

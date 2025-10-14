@@ -1,4 +1,5 @@
 // Pure utility functions for form validation and processing
+import { calculateAge, isValidAge, createTimestamp } from '~/utils/dateUtils';
 
 // Email validation
 export const validateEmail = (email: string): boolean => {
@@ -19,12 +20,7 @@ export const validateName = (name: string): boolean => {
 
 // Age validation (18+)
 export const validateAge = (dateOfBirth: string): boolean => {
-  const today = new Date();
-  const birthDate = new Date(dateOfBirth);
-  const age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
-
-  return age > 18 || (age === 18 && monthDiff >= 0);
+  return isValidAge(dateOfBirth, 18);
 };
 
 // Token encoding/decoding
@@ -43,7 +39,7 @@ export const extractClientInfo = (event: any) => ({
     getHeaders(event)['x-real-ip'] ||
     'unknown',
   userAgent: getHeader(event, 'user-agent') || '',
-  timestamp: new Date().toISOString(),
+  timestamp: createTimestamp(),
 });
 
 // Form data sanitization

@@ -1,5 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import nodemailer from 'nodemailer';
+
+// Simple timestamp function for tests
+const createTimestamp = () => new Date().toISOString();
 
 // Mock nodemailer
 vi.mock('nodemailer', () => ({
@@ -38,7 +41,7 @@ describe('Quote API Backend Tests', () => {
     // Set up database mock
     mockCreateLead.mockResolvedValue({
       id: 'test-lead-id-123',
-      created_at: new Date().toISOString(),
+      created_at: createTimestamp(),
     });
 
     // Mock environment variables

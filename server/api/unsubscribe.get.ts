@@ -1,4 +1,5 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
+import { createTimestamp } from '~/utils/dateUtils';
 
 // Pure function to decode unsubscribe token
 const decodeUnsubscribeToken = (token: string): string => {
@@ -13,22 +14,25 @@ const validateEmail = (email: string): boolean => {
 
 // Pure function to extract client information
 const getClientInfo = (event: any) => ({
-  ip: getHeaders(event)['x-forwarded-for'] || 
-      getHeaders(event)['x-real-ip'] || 
-      'unknown',
+  ip:
+    getHeaders(event)['x-forwarded-for'] ||
+    getHeaders(event)['x-real-ip'] ||
+    'unknown',
   userAgent: getHeader(event, 'user-agent') || '',
 });
 
 // Database operations
-const createUnsubscribeRecord = async (supabase: any, email: string, clientInfo: any) => {
-  return await supabase
-    .from('unsubscribes')
-    .upsert({
-      email,
-      ip_address: clientInfo.ip,
-      user_agent: clientInfo.userAgent,
-      reason: 'User initiated unsubscribe',
-    });
+const createUnsubscribeRecord = async (
+  supabase: any,
+  email: string,
+  clientInfo: any
+) => {
+  return await supabase.from('unsubscribes').upsert({
+    email,
+    ip_address: clientInfo.ip,
+    user_agent: clientInfo.userAgent,
+    reason: 'User initiated unsubscribe',
+  });
 };
 
 const updateLeadMarketingConsent = async (supabase: any, email: string) => {
@@ -36,7 +40,7 @@ const updateLeadMarketingConsent = async (supabase: any, email: string) => {
     .from('leads')
     .update({
       email_marketing_consent: false,
-      unsubscribed_at: new Date().toISOString(),
+      unsubscribed_at: createTimestamp(),
     })
     .eq('email', email)
     .select();
@@ -135,7 +139,10 @@ export default defineEventHandler(async (event) => {
 
     // Log any errors but don't fail the request
     if (unsubscribeResult.status === 'rejected') {
-      console.error('Failed to create unsubscribe record:', unsubscribeResult.reason);
+      console.error(
+        'Failed to create unsubscribe record:',
+        unsubscribeResult.reason
+      );
     }
 
     if (leadsResult.status === 'rejected') {
@@ -143,12 +150,12 @@ export default defineEventHandler(async (event) => {
     }
 
     return createSuccessPage(email);
-
   } catch (error) {
     console.error('Unsubscribe error:', error);
     throw createError({
       statusCode: 500,
-      statusMessage: 'An error occurred while processing your unsubscribe request',
+      statusMessage:
+        'An error occurred while processing your unsubscribe request',
     });
   }
 });

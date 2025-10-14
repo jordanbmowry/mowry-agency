@@ -1,12 +1,13 @@
-import { Feed } from 'feed'
+import { Feed } from 'feed';
+import { createTimestamp, formatRSSDate } from '~/utils/dateUtils';
 
 export default defineEventHandler(async (event) => {
-  const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
   const author = {
     name: 'Spencer Sharp',
     email: 'spencer@planetaria.tech',
-  }
+  };
 
   const feed = new Feed({
     title: author.name,
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
     feedLinks: {
       rss2: `${siteUrl}/feed.xml`,
     },
-  })
+  });
 
   // Get all articles - for now using a simpler approach
   // In a full implementation, you'd want to parse the content directory
@@ -28,14 +29,14 @@ export default defineEventHandler(async (event) => {
     {
       title: 'Sample Article',
       _path: '/articles/sample',
-      date: new Date().toISOString(),
-      description: 'A sample article for the RSS feed'
-    }
-  ]
+      date: createTimestamp(),
+      description: 'A sample article for the RSS feed',
+    },
+  ];
 
   for (const article of articles) {
-    const publicUrl = `${siteUrl}/articles/${article._path?.replace('/articles/', '') || 'sample'}`
-    
+    const publicUrl = `${siteUrl}/articles/${article._path?.replace('/articles/', '') || 'sample'}`;
+
     feed.addItem({
       title: article.title || 'Untitled',
       id: publicUrl,
@@ -43,12 +44,12 @@ export default defineEventHandler(async (event) => {
       content: article.description || '',
       author: [author],
       contributor: [author],
-      date: new Date(article.date || Date.now()),
-    })
+      date: new Date(formatRSSDate(article.date || createTimestamp())),
+    });
   }
 
-  setHeader(event, 'content-type', 'application/xml')
-  setHeader(event, 'cache-control', 's-maxage=31556952')
-  
-  return feed.rss2()
-})
+  setHeader(event, 'content-type', 'application/xml');
+  setHeader(event, 'cache-control', 's-maxage=31556952');
+
+  return feed.rss2();
+});

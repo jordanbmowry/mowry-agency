@@ -589,6 +589,13 @@
 import { ref, reactive, computed } from 'vue';
 import MailIcon from './icons/MailIcon.vue';
 import Button from './Button.vue';
+import {
+  calculateAge,
+  isValidAge,
+  getTodayInputFormat,
+  getMaxBirthDate,
+  isValidDateString,
+} from '~/utils/dateUtils';
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();
@@ -634,8 +641,7 @@ const errorType = ref('');
 
 // Computed properties
 const maxDate = computed(() => {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
+  return getTodayInputFormat();
 });
 
 const isFormValid = computed(() => {
@@ -682,25 +688,20 @@ const validateName = (name: string, fieldName: string): string => {
 const validateDateOfBirth = (dateOfBirth: string): string => {
   if (!dateOfBirth.trim()) return 'Date of birth is required';
 
-  const birthDate = new Date(dateOfBirth);
-  const today = new Date();
+  // Validate date format
+  if (!isValidDateString(dateOfBirth)) {
+    return 'Please enter a valid date';
+  }
 
-  // Check for future dates first
-  if (birthDate > today) return 'Date of birth cannot be in the future';
+  // Check if person is at least 18 years old
+  if (!isValidAge(dateOfBirth, 18)) {
+    return 'You must be at least 18 years old';
+  }
 
-  const age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
-
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    const adjustedAge = age - 1;
-    if (adjustedAge < 18) return 'You must be at least 18 years old';
-    if (adjustedAge > 100) return 'Please enter a valid date of birth';
-  } else {
-    if (age < 18) return 'You must be at least 18 years old';
-    if (age > 100) return 'Please enter a valid date of birth';
+  // Check if age is reasonable (not over 100)
+  const age = calculateAge(dateOfBirth);
+  if (age > 100) {
+    return 'Please enter a valid date of birth';
   }
 
   return '';

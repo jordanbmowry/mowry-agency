@@ -1,4 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Simple timestamp function for tests
+const createTimestamp = () => new Date().toLocaleString();
 import nodemailer from 'nodemailer';
 
 // Mock nodemailer
@@ -49,7 +52,7 @@ describe('Email Functionality Tests', () => {
         <p><strong>Medications:</strong> ${quoteData.medications || 'Not provided'}</p>
         ${quoteData.message ? `<p><strong>Additional Message:</strong> ${quoteData.message}</p>` : ''}
         <p><strong>Lead Source:</strong> Life Insurance Quote Form</p>
-        <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>Submitted:</strong> ${createTimestamp()}</p>
       `;
 
       await mockTransporter.sendMail({
@@ -102,7 +105,7 @@ describe('Email Functionality Tests', () => {
         <p><strong>Medications:</strong> ${(minimalQuoteData as any).medications || 'Not provided'}</p>
         ${(minimalQuoteData as any).message ? `<p><strong>Additional Message:</strong> ${(minimalQuoteData as any).message}</p>` : ''}
         <p><strong>Lead Source:</strong> Life Insurance Quote Form</p>
-        <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>Submitted:</strong> ${createTimestamp()}</p>
       `;
 
       await mockTransporter.sendMail({

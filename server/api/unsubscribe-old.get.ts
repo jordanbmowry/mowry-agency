@@ -1,4 +1,5 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
+import { createTimestamp } from '~/utils/dateUtils';
 
 export default defineEventHandler(async (event) => {
   // Use Nuxt Supabase module's server service role client (bypasses RLS)
@@ -13,7 +14,7 @@ export default defineEventHandler(async (event) => {
     hasToken: !!token,
     queryKeys: Object.keys(query),
     userAgent: getHeader(event, 'user-agent'),
-    timestamp: new Date().toISOString(),
+    timestamp: createTimestamp(),
   });
 
   if (!token) {
@@ -79,7 +80,7 @@ export default defineEventHandler(async (event) => {
       .from('leads')
       .update({
         email_marketing_consent: false,
-        unsubscribed_at: new Date().toISOString(),
+        unsubscribed_at: createTimestamp(),
       })
       .eq('email', email)
       .select(); // Add select to return updated data for verification

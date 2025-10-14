@@ -5,6 +5,7 @@ import {
   type AsyncResult,
   safeAsync,
 } from './form-utils';
+import { createTimestamp } from '~/utils/dateUtils';
 
 // Import Vue Email templates
 import CustomerConfirmation from '../../emails/CustomerConfirmation.vue';
@@ -211,7 +212,7 @@ export const sendAgencyNotificationEmail = async (
 
     const emailData: AgencyEmailData = {
       ...leadData, // Spread the lead data which already has the correct structure
-      submittedAt: new Date().toISOString(),
+      submittedAt: createTimestamp(),
     };
 
     const { html, text } = await renderAgencyNotificationEmail(emailData);
