@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import vue from '@vitejs/plugin-vue';
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -12,7 +14,6 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@netlify/nuxt',
     '@vee-validate/nuxt',
-    '@vue-email/nuxt',
   ],
   css: ['~/assets/css/main.css', '@vuepic/vue-datepicker/dist/main.css'],
   colorMode: {
@@ -81,10 +82,14 @@ export default defineNuxtConfig({
   },
   experimental: {
     payloadExtraction: false, // Disable payload extraction for better performance
+    componentIslands: false, // Disable component islands to avoid test component issues
   },
   nitro: {
     prerender: {
       routes: [], // Let crawler find routes
+    },
+    rollupConfig: {
+      plugins: [vue()],
     },
   },
   vite: {
@@ -96,6 +101,9 @@ export default defineNuxtConfig({
           },
         },
       },
+    },
+    optimizeDeps: {
+      exclude: ['nuxt/dist/app/components/test-component-wrapper'],
     },
   },
   site: {
