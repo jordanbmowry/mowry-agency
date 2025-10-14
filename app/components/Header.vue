@@ -57,11 +57,11 @@
         <div class="flex items-center space-x-6">
           <!-- Phone Number (Desktop) -->
           <a
-            href="tel:+19303221962"
+            :href="`tel:+1${cleanPhone}`"
             class="hidden lg:flex items-center space-x-2 text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 cursor-pointer"
           >
             <Icon name="heroicons:phone" class="h-4 w-4" />
-            <span>(930) 322-1962</span>
+            <span>{{ agencyPhone }}</span>
           </a>
 
           <!-- Theme Toggle -->
@@ -101,11 +101,11 @@
             />
           </NuxtLink>
           <a
-            href="tel:+19303221962"
+            :href="`tel:+1${cleanPhone}`"
             class="flex items-center space-x-2 text-base font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <Icon name="heroicons:phone" class="h-4 w-4" />
-            <span>(930) 322-1962</span>
+            <span>{{ agencyPhone }}</span>
           </a>
         </nav>
       </div>
@@ -121,6 +121,11 @@ const showMobileMenu = ref(false);
 
 // Get current route
 const route = useRoute();
+
+// Get runtime config for agency contact info
+const config = useRuntimeConfig();
+const agencyPhone = config.public.agencyPhone as string;
+const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 
 // Navigation items
 const navigationItems = [

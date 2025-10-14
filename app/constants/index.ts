@@ -150,11 +150,10 @@ export const API_ENDPOINTS = Object.freeze({
 
 // Email configuration
 export const EMAIL_CONFIG = Object.freeze({
-  SERVICE: 'gmail',
   AGENCY_SUBJECT: (firstName: string, lastName: string) =>
     `New Life Insurance Quote Request from ${firstName} ${lastName}`,
   CUSTOMER_SUBJECT: 'Life Insurance Quote Request Confirmation - Mowry Agency',
-  CONTACT_PHONE: '(930) 322-1962',
+  CONTACT_PHONE: process.env.AGENCY_PHONE || '(930) 322-1962',
 } as const);
 
 // Database configuration

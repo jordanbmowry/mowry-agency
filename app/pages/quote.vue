@@ -165,10 +165,10 @@
               <p class="mt-1 text-sm text-blue-700 dark:text-blue-400">
                 Call us at
                 <a
-                  href="tel:9303221962"
+                  :href="`tel:${cleanPhone}`"
                   class="font-semibold underline decoration-blue-500 underline-offset-2"
                 >
-                  (930) 322-1962
+                  {{ agencyPhone }}
                 </a>
                 for immediate assistance or questions about protecting your
                 family's financial future.
@@ -199,6 +199,38 @@
               countless families secure their financial futures while protecting
               what matters most.
             </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+              <div class="text-center space-y-2">
+                <div
+                  class="text-3xl font-bold text-blue-600 dark:text-blue-400"
+                >
+                  10+
+                </div>
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                  Years of Experience
+                </div>
+              </div>
+              <div class="text-center space-y-2">
+                <div
+                  class="text-3xl font-bold text-blue-600 dark:text-blue-400"
+                >
+                  500+
+                </div>
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                  Families Protected
+                </div>
+              </div>
+              <div class="text-center space-y-2">
+                <div
+                  class="text-3xl font-bold text-blue-600 dark:text-blue-400"
+                >
+                  $50M+
+                </div>
+                <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                  Coverage Provided
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -210,38 +242,16 @@
 import SimpleLayout from '../components/SimpleLayout.vue';
 import QuoteForm from '../components/QuoteForm.vue';
 
+// Get runtime config for agency contact info
+const config = useRuntimeConfig();
+const agencyPhone = config.public.agencyPhone as string;
+const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
+
 useSeoMeta({
   title: 'Get Your Free Life Insurance Quote - Mowry Agency',
   description:
     'Get a personalized life insurance quote from Mowry Agency. Specializing in term life, whole life, IUL, and annuities. Build tax-free wealth while protecting your family. Quick response within 24 hours.',
   keywords:
     'life insurance quote, term life insurance, whole life insurance, indexed universal life, IUL, annuities, mortgage protection, final expense, tax-free wealth building',
-  ogTitle: 'Get Your Free Life Insurance Quote - Mowry Agency',
-  ogDescription:
-    'Get a personalized life insurance quote. Specializing in term life, whole life, IUL, and annuities. Quick response within 24 hours.',
-  ogType: 'website',
-  ogUrl: 'https://mowryagency.com/quote',
-  ogImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
-  twitterTitle: 'Get Your Free Life Insurance Quote - Mowry Agency',
-  twitterDescription:
-    'Get a personalized life insurance quote. Specializing in term life, whole life, IUL, and annuities.',
-  twitterCard: 'summary_large_image',
-  twitterImage: 'https://mowryagency.com/images/mowry-agency-og-image.jpg',
 });
-
-// Add structured data for service page
-useSchemaOrg([
-  {
-    '@type': 'Service',
-    name: 'Life Insurance Quote',
-    description: 'Free personalized life insurance quotes from licensed agents',
-    provider: {
-      '@type': 'Organization',
-      name: 'Mowry Agency',
-      url: 'https://mowryagency.com',
-    },
-    areaServed: 'United States',
-    serviceType: 'Life Insurance',
-  },
-]);
 </script>

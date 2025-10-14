@@ -42,9 +42,8 @@ describe('Quote API Backend Tests', () => {
     });
 
     // Mock environment variables
-    process.env.SMTP_USER = 'test@example.com';
-    process.env.SMTP_PASS = 'test-password';
-    process.env.AGENCY_EMAIL = 'agency@test.com';
+    process.env.GMAIL_USER = 'test@example.com';
+    process.env.GMAIL_APP_PASSWORD = 'test-password';
   });
 
   afterEach(() => {
@@ -228,7 +227,7 @@ describe('Quote API Backend Tests', () => {
 
       // Check agency email (first call)
       const agencyEmail = sendMailSpy.mock.calls[0][0];
-      expect(agencyEmail.to).toBe('agency@test.com');
+      expect(agencyEmail.to).toBe('jordan.b.mowry@gmail.com');
       expect(agencyEmail.subject).toContain(
         'New Life Insurance Quote Request from Email Test'
       );

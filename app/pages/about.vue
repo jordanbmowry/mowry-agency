@@ -59,26 +59,26 @@
         <ul role="list" class="space-y-4">
           <li class="flex">
             <a
-              href="tel:+19303221962"
+              :href="`tel:+1${cleanPhone}`"
               class="group flex text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
             >
               <Icon
                 name="heroicons:phone"
                 class="h-6 w-6 flex-none text-zinc-500 transition group-hover:text-teal-500"
               />
-              <span class="ml-4">Call (930) 322-1962</span>
+              <span class="ml-4">Call {{ agencyPhone }}</span>
             </a>
           </li>
           <li class="flex">
             <a
-              href="mailto:mowryagency@gmail.com"
+              :href="`mailto:${agencyEmail}`"
               class="group flex text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
             >
               <Icon
                 name="heroicons:envelope"
                 class="h-6 w-6 flex-none text-zinc-500 transition group-hover:text-teal-500"
               />
-              <span class="ml-4">mowryagency@gmail.com</span>
+              <span class="ml-4">{{ agencyEmail }}</span>
             </a>
           </li>
           <li
@@ -313,6 +313,12 @@
 import Container from '~/components/Container.vue';
 import AboutSocialLink from '~/components/AboutSocialLink.vue';
 import Button from '~/components/Button.vue';
+
+// Get runtime config for agency contact info
+const config = useRuntimeConfig();
+const agencyEmail = config.public.agencyEmail as string;
+const agencyPhone = config.public.agencyPhone as string;
+const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 
 // Set page metadata
 useSeoMeta({

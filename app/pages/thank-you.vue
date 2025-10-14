@@ -94,11 +94,11 @@
               immediately.
             </p>
             <Button
-              href="tel:+19303221962"
+              :href="`tel:+1${cleanPhone}`"
               variant="primary"
               class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
-              Call (930) 322-1962
+              Call {{ agencyPhone }}
             </Button>
           </div>
         </div>
@@ -107,10 +107,15 @@
   </SimpleLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SimpleLayout from '~/components/SimpleLayout.vue';
 import Container from '~/components/Container.vue';
 import Button from '~/components/Button.vue';
+
+// Get runtime config for agency contact info
+const config = useRuntimeConfig();
+const agencyPhone = config.public.agencyPhone as string;
+const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 
 // Set page meta
 useSeoMeta({

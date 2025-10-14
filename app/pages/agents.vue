@@ -38,7 +38,7 @@
               </p>
               <div class="mt-6 flex gap-6">
                 <SocialLink
-                  href="mailto:mowryagency@gmail.com"
+                  :href="`mailto:${agencyEmail}`"
                   :ariaLabel="'Email John'"
                   :icon="MailIcon"
                 />
@@ -74,7 +74,7 @@
               </p>
               <div class="mt-6 flex gap-6">
                 <SocialLink
-                  href="mailto:mowryagency@gmail.com"
+                  :href="`mailto:${agencyEmail}`"
                   :ariaLabel="'Email Sarah'"
                   :icon="MailIcon"
                 />
@@ -171,6 +171,10 @@ import Button from '~/components/Button.vue';
 import SocialLink from '~/components/SocialLink.vue';
 import MailIcon from '~/components/icons/MailIcon.vue';
 import LinkedInIcon from '~/components/icons/LinkedInIcon.vue';
+
+// Get runtime config for agency contact info
+const config = useRuntimeConfig();
+const agencyEmail = config.public.agencyEmail as string;
 
 // Set page metadata
 useSeoMeta({

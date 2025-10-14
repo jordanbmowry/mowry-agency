@@ -9,11 +9,7 @@
       contact you within 24 hours with a personalized life insurance quote.
     </p>
 
-    <form
-      v-if="!hasFormSubmitted"
-      @submit.prevent="onSubmit"
-      class="mt-6 space-y-6"
-    >
+    <form @submit.prevent="handleSubmit" class="mt-6 space-y-6">
       <!-- Personal Information Section -->
       <div class="space-y-4">
         <h3
@@ -31,18 +27,24 @@
             >
               First Name *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">
-              {{ firstNameError || '' }}
-            </p>
             <input
-              v-model="firstName"
               id="firstName"
-              name="firstName"
+              v-model="form.firstName"
               type="text"
-              autocomplete="given-name"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.firstName ? 'outline-red-500 dark:outline-red-400' : '',
+              ]"
               placeholder="John"
+              @blur="validateField('firstName')"
             />
+            <p
+              v-if="errors.firstName"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.firstName }}
+            </p>
           </div>
           <div>
             <label
@@ -51,18 +53,24 @@
             >
               Last Name *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">
-              {{ lastNameError || '' }}
-            </p>
             <input
-              v-model="lastName"
               id="lastName"
-              name="lastName"
+              v-model="form.lastName"
               type="text"
-              autocomplete="family-name"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.lastName ? 'outline-red-500 dark:outline-red-400' : '',
+              ]"
               placeholder="Doe"
+              @blur="validateField('lastName')"
             />
+            <p
+              v-if="errors.lastName"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.lastName }}
+            </p>
           </div>
         </div>
 
@@ -75,18 +83,24 @@
             >
               Email Address *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">
-              {{ emailError || '' }}
-            </p>
             <input
-              v-model="email"
               id="email"
-              name="email"
+              v-model="form.email"
               type="email"
-              autocomplete="email"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-              placeholder="john.doe@example.com"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.email ? 'outline-red-500 dark:outline-red-400' : '',
+              ]"
+              placeholder="john@example.com"
+              @blur="validateField('email')"
             />
+            <p
+              v-if="errors.email"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.email }}
+            </p>
           </div>
           <div>
             <label
@@ -95,18 +109,24 @@
             >
               Phone Number *
             </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">
-              {{ phoneError || '' }}
-            </p>
             <input
-              v-model="phone"
               id="phone"
-              name="phone"
+              v-model="form.phone"
               type="tel"
-              autocomplete="tel"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.phone ? 'outline-red-500 dark:outline-red-400' : '',
+              ]"
               placeholder="(555) 123-4567"
+              @blur="validateField('phone')"
             />
+            <p
+              v-if="errors.phone"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.phone }}
+            </p>
           </div>
         </div>
 
@@ -118,113 +138,26 @@
           >
             Date of Birth *
           </label>
-          <p class="text-red-600 text-xs min-h-[1rem]">
-            {{ dateOfBirthError || '' }}
-          </p>
-          <VueDatePicker
-            v-model="dateOfBirth"
-            :enable-time-picker="false"
-            :max-date="new Date()"
-            :year-range="[1920, new Date().getFullYear()]"
-            format="MM/dd/yyyy"
-            placeholder="Select your date of birth"
-            input-class-name="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-            :dark="colorMode.value === 'dark'"
-            auto-apply
-            :close-on-auto-apply="true"
+          <input
+            id="dateOfBirth"
+            v-model="form.dateOfBirth"
+            type="date"
+            required
+            :max="maxDate"
+            :class="[
+              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+              errors.dateOfBirth ? 'outline-red-500 dark:outline-red-400' : '',
+            ]"
+            @blur="validateField('dateOfBirth')"
           />
-          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Must be 18 years or older
-          </p>
-        </div>
-
-        <!-- City and State -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- City -->
-          <div>
-            <label
-              for="city"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              City *
-            </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">
-              {{ cityError || '' }}
-            </p>
-            <input
-              v-model="city"
-              id="city"
-              name="city"
-              type="text"
-              autocomplete="address-level2"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-              placeholder="Enter your city"
-            />
-          </div>
-          <!-- State -->
-          <div>
-            <label
-              for="state"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              State *
-            </label>
-            <p class="text-red-600 text-xs min-h-[1rem]">
-              {{ stateError || '' }}
-            </p>
-            <select
-              v-model="state"
-              id="state"
-              name="state"
-              autocomplete="address-level1"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-            >
-              <option value="">Select a state</option>
-              <option
-                v-for="stateOption in states"
-                :key="stateOption.code"
-                :value="stateOption.code"
-              >
-                {{ stateOption.displayName }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Insurance Information Section -->
-      <div class="space-y-4">
-        <h3
-          class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
-        >
-          Insurance Information
-        </h3>
-
-        <!-- Coverage Type -->
-        <div>
-          <label
-            for="coverageType"
-            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          <p
+            v-if="errors.dateOfBirth"
+            class="mt-1 text-xs text-red-600 dark:text-red-400"
           >
-            Type of Coverage *
-          </label>
-          <p class="text-red-600 text-xs min-h-[1rem]">
-            {{ coverageTypeError || '' }}
+            {{ errors.dateOfBirth }}
           </p>
-          <select
-            v-model="coverageType"
-            id="coverageType"
-            name="coverageType"
-            class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-          >
-            <option value="">Select coverage type</option>
-            <option value="term-life">Term Life Insurance</option>
-            <option value="whole-life">Whole Life Insurance</option>
-            <option value="iul">Indexed Universal Life (IUL)</option>
-            <option value="not-sure">Not Sure / Need Guidance</option>
-          </select>
-          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Don't worry if you're not sure - we'll help you choose
+          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            Required for accurate life insurance quotes
           </p>
         </div>
       </div>
@@ -243,253 +176,405 @@
             for="healthConditions"
             class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Current Health Conditions *
+            Current Health Conditions
           </label>
-          <p class="text-red-600 text-xs min-h-[1rem]">
-            {{ healthConditionsError || '' }}
-          </p>
           <textarea
-            v-model="healthConditions"
             id="healthConditions"
-            name="healthConditions"
+            v-model="form.healthConditions"
             rows="3"
-            class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-            placeholder="Please describe any current health conditions, chronic illnesses, or ongoing medical treatments. If you're in good health, simply write 'None' or 'Good health'."
+            :class="[
+              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+              errors.healthConditions
+                ? 'outline-red-500 dark:outline-red-400'
+                : '',
+            ]"
+            placeholder="Please list any current health conditions, diagnosed illnesses, or ongoing medical concerns. If none, please write 'None'."
+            @blur="validateField('healthConditions')"
           />
-          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            This helps us find the best rates for your situation
+          <p
+            v-if="errors.healthConditions"
+            class="mt-1 text-xs text-red-600 dark:text-red-400"
+          >
+            {{ errors.healthConditions }}
+          </p>
+          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            This information helps us find the best rates for your situation
           </p>
         </div>
 
-        <!-- Current Medications -->
+        <!-- Medications -->
         <div>
           <label
             for="medications"
             class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Current Medications *
+            Current Medications
           </label>
-          <p class="text-red-600 text-xs min-h-[1rem]">
-            {{ medicationsError || '' }}
-          </p>
           <textarea
-            v-model="medications"
             id="medications"
-            name="medications"
+            v-model="form.medications"
             rows="3"
-            class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+            :class="[
+              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+              errors.medications ? 'outline-red-500 dark:outline-red-400' : '',
+            ]"
             placeholder="Please list all current medications including dosages if known. If none, please write 'None'."
+            @blur="validateField('medications')"
           />
-          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <p
+            v-if="errors.medications"
+            class="mt-1 text-xs text-red-600 dark:text-red-400"
+          >
+            {{ errors.medications }}
+          </p>
+          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             Include prescription medications, over-the-counter drugs, and
             supplements
           </p>
         </div>
       </div>
 
-      <!-- Additional Information Section -->
+      <!-- Coverage Information Section -->
       <div class="space-y-4">
         <h3
           class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
         >
-          Additional Information
+          Coverage Information
         </h3>
 
-        <!-- Additional Message -->
+        <!-- Coverage Type -->
+        <div>
+          <label
+            for="coverageType"
+            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Type of Coverage Interested In *
+          </label>
+          <select
+            id="coverageType"
+            v-model="form.coverageType"
+            required
+            :class="[
+              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+              errors.coverageType ? 'outline-red-500 dark:outline-red-400' : '',
+            ]"
+            @blur="validateField('coverageType')"
+          >
+            <option value="">Select coverage type...</option>
+            <option value="term-life">Term Life Insurance</option>
+            <option value="whole-life">Whole Life Insurance</option>
+            <option value="iul">Indexed Universal Life (IUL)</option>
+            <option value="mortgage-protection">Mortgage Protection</option>
+            <option value="final-expense">Final Expense Insurance</option>
+            <option value="annuities">Annuities</option>
+            <option value="not-sure">Not Sure - Need Guidance</option>
+          </select>
+          <p
+            v-if="errors.coverageType"
+            class="mt-1 text-xs text-red-600 dark:text-red-400"
+          >
+            {{ errors.coverageType }}
+          </p>
+          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            We'll help you find the best coverage type for your needs
+          </p>
+        </div>
+
+        <!-- Message -->
         <div>
           <label
             for="message"
             class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Additional Information (Optional)
+            Additional Information or Questions
           </label>
-          <p class="text-red-600 text-xs min-h-[1rem]">
-            {{ messageError || '' }}
-          </p>
           <textarea
-            v-model="message"
             id="message"
-            name="message"
-            rows="3"
+            v-model="form.message"
+            rows="4"
             class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-            placeholder="Tell us about your family situation, coverage goals, budget considerations, or any questions you have about life insurance."
+            placeholder="Tell us about your family's protection needs, coverage amount you're considering, your goals, timeline, or any questions about life insurance..."
           />
           <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Help us better understand your needs and goals
+            Optional - Any additional details that might help us serve you
+            better
           </p>
         </div>
       </div>
 
-      <!-- Submit Button -->
-      <div class="pt-4">
+      <!-- Submit Section -->
+      <div
+        class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-700"
+      >
         <Button
-          v-if="!formSubmittingInProcess"
-          :disabled="formSubmittingInProcess"
           type="submit"
-          variant="primary"
-          class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-blue-700"
+          :disabled="isSubmitting || !isFormValid"
+          class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Get My Free Quote
+          {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
         </Button>
-        <div v-else class="flex justify-center">
-          <div
-            class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
-          ></div>
+
+        <div class="text-right">
+          <p class="text-xs text-zinc-500 dark:text-zinc-400">
+            * Required fields
+          </p>
+          <p class="text-xs text-zinc-500 dark:text-zinc-400">
+            Your information is secure and confidential
+          </p>
         </div>
       </div>
     </form>
 
-    <!-- Success Message -->
-    <div v-else class="mt-6">
-      <div class="rounded-md bg-green-50 p-4 dark:bg-green-900/20">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg
-              class="h-5 w-5 text-green-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-          <div class="ml-3">
-            <h3 class="text-sm font-medium text-green-800 dark:text-green-200">
-              Quote Request Submitted Successfully!
-            </h3>
-            <div class="mt-2 text-sm text-green-700 dark:text-green-300">
-              <p>
-                Thank you for your interest in life insurance! We'll review your
-                information and contact you within 24 hours with personalized
-                coverage options and competitive rates.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Success/Error Messages -->
+    <div
+      v-if="submitted"
+      class="mt-4 p-4 rounded-md bg-green-50 dark:bg-green-900/20"
+    >
+      <p class="text-sm text-green-700 dark:text-green-400">
+        ✓ Thank you! We'll contact you within 24 hours with your personalized
+        quote.
+      </p>
+    </div>
+
+    <div v-if="error" class="mt-4 p-4 rounded-md bg-red-50 dark:bg-red-900/20">
+      <p class="text-sm text-red-700 dark:text-red-400">
+        There was an error submitting your request. Please try calling us at
+        {{ agencyPhone }}.
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useField, useForm } from 'vee-validate';
-import * as yup from 'yup';
-// @ts-ignore
-import VueDatePicker from '@vuepic/vue-datepicker';
-import Button from '~/components/Button.vue';
-import MailIcon from '~/components/icons/MailIcon.vue';
-import { useStatesData } from '~/composables/useCitiesData';
+import { ref, reactive, computed } from 'vue';
+import MailIcon from './icons/MailIcon.vue';
+import Button from './Button.vue';
 
-const colorMode = useColorMode();
+// Get runtime config for agency contact info
+const config = useRuntimeConfig();
+const agencyPhone = config.public.agencyPhone as string;
 
-const formSubmittingInProcess = ref(false);
-const hasFormSubmitted = ref(false);
-
-const validations = yup.object({
-  firstName: yup
-    .string()
-    .required('First name is required')
-    .min(2, 'First name must be at least 2 characters'),
-  lastName: yup
-    .string()
-    .required('Last name is required')
-    .min(2, 'Last name must be at least 2 characters'),
-  email: yup
-    .string()
-    .required('Email is required')
-    .email('Please enter a valid email address'),
-  phone: yup.string().required('Phone number is required'),
-  dateOfBirth: yup
-    .date()
-    .required('Date of birth is required')
-    .max(new Date(), 'Date of birth cannot be in the future')
-    .test('age', 'Must be at least 18 years old', function (value) {
-      if (!value) return false;
-      const today = new Date();
-      const birthDate = new Date(value);
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        return age - 1 >= 18;
-      }
-      return age >= 18;
-    })
-    .test(
-      'reasonable-age',
-      'Please enter a valid date of birth',
-      function (value) {
-        if (!value) return false;
-        const today = new Date();
-        const birthDate = new Date(value);
-        const age = today.getFullYear() - birthDate.getFullYear();
-        return age <= 120; // Maximum reasonable age
-      }
-    ),
-  city: yup.string().required('City is required'),
-  state: yup.string().required('Please select a state'),
-  coverageType: yup.string().required('Please select a coverage type'),
-  healthConditions: yup
-    .string()
-    .required('Please provide health conditions information'),
-  medications: yup.string().required('Please provide medications information'),
-  message: yup.string(),
+// Form data structure
+const form = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  dateOfBirth: '',
+  healthConditions: '',
+  medications: '',
+  coverageType: '',
+  message: '',
 });
 
-const { handleSubmit } = useForm({
-  validationSchema: validations,
+// Error tracking
+const errors = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  dateOfBirth: '',
+  healthConditions: '',
+  medications: '',
+  coverageType: '',
 });
 
-const { value: firstName, errorMessage: firstNameError } =
-  useField<string>('firstName');
-const { value: lastName, errorMessage: lastNameError } =
-  useField<string>('lastName');
-const { value: email, errorMessage: emailError } = useField<string>('email');
-const { value: phone, errorMessage: phoneError } = useField<string>('phone');
-const { value: dateOfBirth, errorMessage: dateOfBirthError } =
-  useField<Date | null>('dateOfBirth');
-const { value: city, errorMessage: cityError } = useField<string>('city');
-const { value: state, errorMessage: stateError } = useField<string>('state');
-const { value: coverageType, errorMessage: coverageTypeError } =
-  useField<string>('coverageType');
-const { value: healthConditions, errorMessage: healthConditionsError } =
-  useField<string>('healthConditions');
-const { value: medications, errorMessage: medicationsError } =
-  useField<string>('medications');
-const { value: message, errorMessage: messageError } =
-  useField<string>('message');
+// Form state
+const isSubmitting = ref(false);
+const submitted = ref(false);
+const error = ref(false);
 
-// States data for dropdown
-const { states } = useStatesData();
+// Computed properties
+const maxDate = computed(() => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+});
 
-const onSubmit = handleSubmit(async (formData) => {
-  formSubmittingInProcess.value = true;
+const isFormValid = computed(() => {
+  const requiredFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'dateOfBirth',
+    'coverageType',
+  ];
+  const hasRequiredFields = requiredFields.every(
+    (field) => form[field as keyof typeof form].trim() !== ''
+  );
+  const hasNoErrors = Object.values(errors).every((error) => error === '');
+  return hasRequiredFields && hasNoErrors;
+});
+
+// Validation functions
+const validateEmail = (email: string): string => {
+  if (!email.trim()) return 'Email is required';
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return 'Please enter a valid email address';
+  return '';
+};
+
+const validatePhone = (phone: string): string => {
+  if (!phone.trim()) return 'Phone number is required';
+  const phoneRegex = /^[\+]?[1-9]?[\s\-\.\(\)]?[\d\s\-\.\(\)]{9,15}$/;
+  if (!phoneRegex.test(phone)) return 'Please enter a valid phone number';
+  return '';
+};
+
+const validateName = (name: string, fieldName: string): string => {
+  if (!name.trim()) return `${fieldName} is required`;
+  if (name.trim().length < 2)
+    return `${fieldName} must be at least 2 characters`;
+  if (name.trim().length > 50)
+    return `${fieldName} must be less than 50 characters`;
+  return '';
+};
+
+const validateDateOfBirth = (dateOfBirth: string): string => {
+  if (!dateOfBirth.trim()) return 'Date of birth is required';
+
+  const birthDate = new Date(dateOfBirth);
+  const today = new Date();
+
+  // Check for future dates first
+  if (birthDate > today) return 'Date of birth cannot be in the future';
+
+  const age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    const adjustedAge = age - 1;
+    if (adjustedAge < 18) return 'You must be at least 18 years old';
+    if (adjustedAge > 100) return 'Please enter a valid date of birth';
+  } else {
+    if (age < 18) return 'You must be at least 18 years old';
+    if (age > 100) return 'Please enter a valid date of birth';
+  }
+
+  return '';
+};
+
+const validateHealthConditions = (healthConditions: string): string => {
+  if (!healthConditions.trim())
+    return 'Please provide health conditions information (write "None" if applicable)';
+  if (healthConditions.trim().length < 4)
+    return 'Please provide more detailed information or write "None"';
+  return '';
+};
+
+const validateMedications = (medications: string): string => {
+  if (!medications.trim())
+    return 'Please provide medications information (write "None" if applicable)';
+  if (medications.trim().length < 4)
+    return 'Please provide more detailed information or write "None"';
+  return '';
+};
+
+const validateCoverageType = (coverageType: string): string => {
+  if (!coverageType.trim()) return 'Please select a coverage type';
+  return '';
+};
+
+// Field validation
+const validateField = (fieldName: keyof typeof form) => {
+  const value = form[fieldName];
+
+  switch (fieldName) {
+    case 'firstName':
+      errors.firstName = validateName(value, 'First name');
+      break;
+    case 'lastName':
+      errors.lastName = validateName(value, 'Last name');
+      break;
+    case 'email':
+      errors.email = validateEmail(value);
+      break;
+    case 'phone':
+      errors.phone = validatePhone(value);
+      break;
+    case 'dateOfBirth':
+      errors.dateOfBirth = validateDateOfBirth(value);
+      break;
+    case 'healthConditions':
+      errors.healthConditions = validateHealthConditions(value);
+      break;
+    case 'medications':
+      errors.medications = validateMedications(value);
+      break;
+    case 'coverageType':
+      errors.coverageType = validateCoverageType(value);
+      break;
+  }
+};
+
+// Validate all fields
+const validateAllFields = () => {
+  const fieldsToValidate: (keyof typeof form)[] = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'dateOfBirth',
+    'healthConditions',
+    'medications',
+    'coverageType',
+  ];
+
+  fieldsToValidate.forEach((field) => validateField(field));
+
+  return Object.values(errors).every((error) => error === '');
+};
+
+// Form submission
+const handleSubmit = async () => {
+  if (!validateAllFields()) {
+    return;
+  }
+
+  isSubmitting.value = true;
+  error.value = false;
 
   try {
-    // Convert Date object to ISO string for API
-    const submitData = {
-      ...formData,
-      dateOfBirth: formData.dateOfBirth
-        ? formData.dateOfBirth.toISOString().split('T')[0]
-        : '',
-    };
-
-    await $fetch('/api/quote', {
+    // Send form data to our Nuxt API
+    const response = await $fetch('/api/quote', {
       method: 'POST',
-      body: submitData,
+      body: {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        phone: form.phone,
+        dateOfBirth: form.dateOfBirth,
+        healthConditions: form.healthConditions,
+        medications: form.medications,
+        coverageType: form.coverageType,
+        message: form.message,
+      },
     });
-    hasFormSubmitted.value = true;
-  } catch (error) {
-    console.error('Form submission error:', error);
+
+    // Reset form and show success
+    Object.keys(form).forEach((key) => {
+      form[key as keyof typeof form] = '';
+    });
+
+    // Clear errors
+    Object.keys(errors).forEach((key) => {
+      errors[key as keyof typeof errors] = '';
+    });
+
+    submitted.value = true;
+
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      submitted.value = false;
+    }, 5000);
+  } catch (err: any) {
+    error.value = true;
+    console.error('Form submission error:', err);
   } finally {
-    formSubmittingInProcess.value = false;
+    isSubmitting.value = false;
   }
-});
+};
 </script>

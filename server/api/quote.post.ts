@@ -159,7 +159,7 @@ export default defineEventHandler(async (event) => {
         // Send email to agency
         await transporter.sendMail({
           from: process.env.SMTP_USER,
-          to: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
+          to: process.env.AGENCY_EMAIL,
           subject: `New Life Insurance Quote Request from ${body.firstName} ${body.lastName}`,
           html: agencyEmailHtml,
         });

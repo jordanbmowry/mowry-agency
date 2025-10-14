@@ -62,12 +62,15 @@ export default defineNuxtConfig({
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
     agencyEmail: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
+    agencyPhone: process.env.AGENCY_PHONE || '(930) 322-1962',
     // Supabase server-side config (updated for new project)
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_KEY,
     // Public keys exposed to client-side
     public: {
       siteUrl: process.env.NUXT_SITE_URL || 'https://mowryagency.com',
+      agencyEmail: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
+      agencyPhone: process.env.AGENCY_PHONE || '(930) 322-1962',
     },
   },
   experimental: {
