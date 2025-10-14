@@ -1,13 +1,23 @@
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabaseServiceRole } from '#supabase/server';
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  const supabase = createClient(config.supabaseUrl, config.supabaseKey);
+  // Use Nuxt Supabase module's server service role client (bypasses RLS)
+  const supabase = serverSupabaseServiceRole(event);
 
   const query = getQuery(event);
   const token = query.token as string;
 
+  console.log('=== UNSUBSCRIBE API DEBUG START ===');
+  console.log('Using serverSupabaseServiceRole for database operations');
+  console.log('Received unsubscribe request:', {
+    hasToken: !!token,
+    queryKeys: Object.keys(query),
+    userAgent: getHeader(event, 'user-agent'),
+    timestamp: new Date().toISOString(),
+  });
+
   if (!token) {
+    console.error('Missing unsubscribe token');
     throw createError({
       statusCode: 400,
       statusMessage: 'Missing unsubscribe token',
@@ -46,13 +56,22 @@ export default defineEventHandler(async (event) => {
       });
 
     if (unsubscribeError) {
+      console.error('=== UNSUBSCRIBES TABLE ERROR ===');
       console.error('Error adding to unsubscribes table:', unsubscribeError);
       console.error(
-        'Unsubscribe error details:',
+        'Error details:',
         JSON.stringify(unsubscribeError, null, 2)
       );
+      console.error('Attempted data:', {
+        email,
+        ip_address: clientIP,
+        user_agent: userAgent,
+      });
     } else {
-      console.log('Successfully added to unsubscribes table:', unsubscribeData);
+      console.log(
+        '✅ Successfully added to unsubscribes table:',
+        unsubscribeData
+      );
     }
 
     // Update leads table
@@ -62,17 +81,28 @@ export default defineEventHandler(async (event) => {
         email_marketing_consent: false,
         unsubscribed_at: new Date().toISOString(),
       })
-      .eq('email', email);
+      .eq('email', email)
+      .select(); // Add select to return updated data for verification
 
     if (leadsError) {
+      console.error('=== LEADS TABLE ERROR ===');
       console.error('Error updating leads table:', leadsError);
-      console.error(
-        'Leads error details:',
-        JSON.stringify(leadsError, null, 2)
-      );
+      console.error('Error details:', JSON.stringify(leadsError, null, 2));
+      console.error('Attempted update for email:', email);
     } else {
-      console.log('Successfully updated leads table:', leadsData);
+      console.log(
+        '✅ Successfully updated leads table. Rows affected:',
+        leadsData?.length || 0
+      );
+      console.log('Updated lead data:', leadsData);
     }
+
+    // Final verification
+    console.log('=== UNSUBSCRIBE PROCESS COMPLETE ===');
+    console.log('Email processed:', email);
+    console.log('Unsubscribes table success:', !unsubscribeError);
+    console.log('Leads table success:', !leadsError);
+    console.log('=== END DEBUG ===');
 
     // Return success page
     return `
