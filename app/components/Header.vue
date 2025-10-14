@@ -18,12 +18,12 @@
               height="40"
               class="h-10 w-10 rounded-lg object-contain"
             />
-            <div class="hidden sm:block xl:block">
+            <div class="hidden sm:block lg:hidden xl:block">
               <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">
                 Mowry Agency
               </h1>
               <p
-                class="text-xs text-zinc-600 dark:text-zinc-400 hidden lg:block xl:block"
+                class="text-xs text-zinc-600 dark:text-zinc-400 hidden xl:block"
               >
                 Life Insurance Solutions
               </p>
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center space-x-8">
+        <nav class="hidden md:flex items-center space-x-4 lg:space-x-8">
           <template v-for="item in desktopNavItems" :key="item.href">
             <NuxtLink
               v-if="!item.isButton"
