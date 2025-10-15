@@ -1,27 +1,31 @@
 <template>
-  <Container class="mt-16 sm:mt-32">
+  <Container ref="aboutParent" class="mt-16 sm:mt-32">
     <div
+      ref="aboutGridParent"
       class="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12"
     >
-      <div class="lg:pl-20">
-        <div class="max-w-xs px-2.5 lg:max-w-none">
+      <div ref="imageParent" class="lg:pl-20">
+        <div class="max-w-xs px-2.5 lg:max-w-none group">
           <NuxtImg
             src="/images/agency/ignite_image.jpg"
             alt="Mowry Agency - Igniting Financial Security"
-            class="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover dark:bg-zinc-800"
+            class="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover dark:bg-zinc-800 transition-all duration-500 group-hover:rotate-6 group-hover:scale-105 shadow-lg group-hover:shadow-xl"
             loading="lazy"
             sizes="xs:320px sm:640px md:768px lg:384px xl:384px"
           />
         </div>
       </div>
-      <div class="lg:order-first lg:row-span-2">
+      <div ref="contentParent" class="lg:order-first lg:row-span-2">
         <h1
           class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100"
         >
           We're Mowry Agency. We believe every family deserves financial peace
           of mind.
         </h1>
-        <div class="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+        <div
+          ref="textParent"
+          class="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400"
+        >
           <p>
             At Mowry Agency, we understand that life insurance is not just a
             policy; it's a commitment to protect your loved ones and help secure
@@ -310,9 +314,17 @@
 </template>
 
 <script setup lang="ts">
+import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import Container from '~/components/Container.vue';
 import AboutSocialLink from '~/components/AboutSocialLink.vue';
 import Button from '~/components/Button.vue';
+
+// Auto-animate refs
+const [aboutParent] = useAutoAnimate();
+const [aboutGridParent] = useAutoAnimate();
+const [imageParent] = useAutoAnimate();
+const [contentParent] = useAutoAnimate();
+const [textParent] = useAutoAnimate();
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();

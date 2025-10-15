@@ -1,7 +1,10 @@
 <template>
   <!-- Hero Section -->
-  <Container v-auto-animate class="mt-12 sm:mt-16 lg:mt-20">
-    <div v-auto-animate class="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20">
+  <Container ref="heroParent" class="mt-12 sm:mt-16 lg:mt-20">
+    <div
+      ref="heroGridParent"
+      class="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:gap-y-20"
+    >
       <!-- Hero Content -->
       <div
         class="relative z-10 lg:col-span-7 lg:max-w-none lg:pt-6 xl:col-span-6"
@@ -18,7 +21,7 @@
           whole life, mortgage protection to retirement planning - we're here to
           secure your family's financial future.
         </p>
-        <div v-auto-animate class="mt-8 flex flex-wrap gap-4">
+        <div ref="heroButtonsParent" class="mt-8 flex flex-wrap gap-4">
           <Button
             href="tel:+19303221962"
             variant="primary"
@@ -109,14 +112,17 @@
         </p>
       </div>
 
-      <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        ref="servicesGridParent"
+        class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+      >
         <!-- Service Cards -->
         <div
-          class="group relative rounded-2xl border border-zinc-100 p-6 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors"
+          class="group relative rounded-2xl border border-zinc-100 p-6 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
         >
           <div class="flex items-center gap-4">
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20"
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 transition-all duration-300 group-hover:scale-110"
             >
               <svg
                 class="h-6 w-6 text-blue-600 dark:text-blue-400"
@@ -143,11 +149,11 @@
         </div>
 
         <div
-          class="group relative rounded-2xl border border-zinc-100 p-6 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors"
+          class="group relative rounded-2xl border border-zinc-100 p-6 dark:border-zinc-800 hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
         >
           <div class="flex items-center gap-4">
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20"
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20 transition-all duration-300 group-hover:scale-110"
             >
               <svg
                 class="h-6 w-6 text-red-600 dark:text-red-400"
@@ -326,10 +332,17 @@
 </template>
 
 <script setup lang="ts">
+import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import Container from '~/components/Container.vue';
 import Button from '~/components/Button.vue';
 import Article from '~/components/Article.vue';
 import QuoteForm from '~/components/QuoteForm.vue';
+
+// Auto-animate refs
+const [heroParent] = useAutoAnimate();
+const [heroGridParent] = useAutoAnimate();
+const [heroButtonsParent] = useAutoAnimate();
+const [servicesGridParent] = useAutoAnimate();
 
 // Get latest insurance articles from Nuxt Content
 const { data: articles } = await useAsyncData('home-articles', async () => {

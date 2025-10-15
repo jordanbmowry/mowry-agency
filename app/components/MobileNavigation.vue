@@ -1,11 +1,14 @@
 <template>
   <Popover v-slot="{ open, close }">
     <PopoverButton
-      class="group flex items-center justify-center rounded-full bg-white/90 px-6 py-3 text-sm font-medium text-zinc-800 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20"
+      class="group flex items-center justify-center rounded-full bg-white/90 px-6 py-3 text-sm font-medium text-zinc-800 shadow-lg ring-1 shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-xl dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20"
     >
-      Menu
+      <span class="transition-all duration-200">Menu</span>
       <ChevronDownIcon
-        class="ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400"
+        :class="[
+          'ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400 transition-all duration-300',
+          open ? 'rotate-180' : 'rotate-0',
+        ]"
       />
     </PopoverButton>
 
@@ -34,15 +37,17 @@
     >
       <PopoverPanel
         v-if="open"
-        class="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 dark:bg-zinc-900 dark:ring-zinc-800"
+        class="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 dark:bg-zinc-900 dark:ring-zinc-800 shadow-2xl"
       >
         <div class="flex flex-row-reverse items-center justify-between">
           <PopoverButton
             aria-label="Close menu"
-            class="-m-1 p-2"
+            class="-m-1 p-2 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg"
             @click="close"
           >
-            <CloseIcon class="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
+            <CloseIcon
+              class="h-6 w-6 text-zinc-500 dark:text-zinc-400 transition-colors duration-200 hover:text-zinc-700 dark:hover:text-zinc-200"
+            />
           </PopoverButton>
           <h2 class="text-sm font-medium text-zinc-600 dark:text-zinc-400">
             Navigation
@@ -50,6 +55,7 @@
         </div>
         <nav class="mt-6">
           <ul
+            ref="navListParent"
             class="-my-2 divide-y divide-zinc-100 text-base text-zinc-800 dark:divide-zinc-100/5 dark:text-zinc-300"
           >
             <MobileNavItem href="/">Home</MobileNavItem>
@@ -65,8 +71,12 @@
 </template>
 
 <script setup lang="ts">
+import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
 import MobileNavItem from './MobileNavItem.vue';
+
+// Auto-animate ref
+const [navListParent] = useAutoAnimate();
 </script>
 
 <script lang="ts">

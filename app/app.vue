@@ -1,7 +1,12 @@
 <template>
   <div class="flex w-full">
     <NuxtLayout>
-      <NuxtPage />
+      <NuxtPage
+        :transition="{
+          name: 'page',
+          mode: 'out-in',
+        }"
+      />
     </NuxtLayout>
   </div>
 </template>
@@ -83,3 +88,47 @@ useHead({
   ],
 });
 </script>
+
+<style>
+/* Page transition animations */
+.page-enter-active {
+  transition: all 0.4s ease-out;
+}
+
+.page-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: opacity 0.2s ease;
+  }
+
+  .page-enter-from,
+  .page-leave-to {
+    transform: none;
+  }
+}
+</style>

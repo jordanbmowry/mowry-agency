@@ -5,19 +5,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import clsx from 'clsx'
+import { computed } from 'vue';
+import clsx from 'clsx';
 
 interface CardProps {
-  as?: string
-  class?: string
+  as?: string;
+  class?: string;
 }
 
 const props = withDefaults(defineProps<CardProps>(), {
   as: 'div',
-})
+});
 
 const cardClasses = computed(() => {
-  return clsx(props.class, 'group relative flex flex-col items-start')
-})
+  return clsx(
+    props.class,
+    'group relative flex flex-col items-start transition-all duration-300 hover:-translate-y-1 hover:shadow-lg'
+  );
+});
 </script>

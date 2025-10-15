@@ -9,9 +9,13 @@
       contact you within 24 hours with a personalized life insurance quote.
     </p>
 
-    <form @submit.prevent="handleSubmit" v-auto-animate class="mt-6 space-y-6">
+    <form
+      @submit.prevent="handleSubmit"
+      ref="formParent"
+      class="mt-6 space-y-6"
+    >
       <!-- Personal Information Section -->
-      <div v-auto-animate class="space-y-4">
+      <div ref="personalInfoParent" class="space-y-4">
         <h3
           class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
         >
@@ -19,7 +23,10 @@
         </h3>
 
         <!-- First and Last Name -->
-        <div v-auto-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div
+          ref="nameFieldsParent"
+          class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        >
           <div>
             <label
               for="firstName"
@@ -478,14 +485,29 @@
 
       <!-- Submit Section -->
       <div
+        v-auto-animate
         class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-700"
       >
         <Button
           type="submit"
           :disabled="isSubmitting || !isFormValid"
-          class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="
+            [
+              'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
+              isSubmitting
+                ? 'scale-95 animate-pulse'
+                : 'hover:scale-105 hover:shadow-lg',
+            ].join(' ')
+          "
         >
-          {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
+          <span v-auto-animate class="flex items-center gap-2">
+            <Icon
+              v-if="isSubmitting"
+              name="heroicons:arrow-path"
+              class="h-4 w-4 animate-spin"
+            />
+            {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
+          </span>
         </Button>
 
         <div class="text-right">
@@ -502,20 +524,30 @@
     <!-- Success/Error Messages -->
     <div
       v-if="submitted"
-      class="mt-4 p-4 rounded-md bg-green-50 dark:bg-green-900/20"
+      v-auto-animate
+      class="mt-4 p-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 shadow-lg animate-in slide-in-from-top duration-500"
     >
-      <p class="text-sm text-green-700 dark:text-green-400">
-        ✓ Thank you! We'll contact you within 24 hours with your personalized
-        quote.
-      </p>
+      <div class="flex items-center gap-2">
+        <Icon
+          name="heroicons:check-circle"
+          class="h-5 w-5 text-green-600 dark:text-green-400 animate-in zoom-in duration-300 delay-200"
+        />
+        <p class="text-sm text-green-700 dark:text-green-400">
+          Thank you! We'll contact you within 24 hours with your personalized
+          quote.
+        </p>
+      </div>
     </div>
 
     <div
       v-if="error"
-      class="mt-4 p-4 rounded-md"
+      v-auto-animate
+      class="mt-4 p-4 rounded-md animate-in slide-in-from-top duration-500"
       :class="{
-        'bg-green-50 dark:bg-green-900/20': errorType === 'duplicate_email',
-        'bg-red-50 dark:bg-red-900/20': errorType !== 'duplicate_email',
+        'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700':
+          errorType === 'duplicate_email',
+        'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700':
+          errorType !== 'duplicate_email',
       }"
     >
       <div class="flex items-start space-x-3">
@@ -587,6 +619,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
+import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import MailIcon from './icons/MailIcon.vue';
 import Button from './Button.vue';
 import {
@@ -596,6 +629,11 @@ import {
   getMaxBirthDate,
   isValidDateString,
 } from '~/utils/dateUtils';
+
+// Auto-animate refs
+const [formParent] = useAutoAnimate();
+const [personalInfoParent] = useAutoAnimate();
+const [nameFieldsParent] = useAutoAnimate();
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();

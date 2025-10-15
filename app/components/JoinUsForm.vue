@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent="submitApplication" class="space-y-6">
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div>
+  <form @submit.prevent="submitApplication" v-auto-animate class="space-y-6">
+    <div v-auto-animate class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div v-auto-animate>
         <label
           for="firstName"
           class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
@@ -13,11 +13,11 @@
           type="text"
           id="firstName"
           required
-          class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 sm:text-sm"
+          class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 sm:text-sm transition-all duration-200 focus:scale-105"
         />
       </div>
 
-      <div>
+      <div v-auto-animate>
         <label
           for="lastName"
           class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
@@ -29,13 +29,13 @@
           type="text"
           id="lastName"
           required
-          class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 sm:text-sm"
+          class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 sm:text-sm transition-all duration-200 focus:scale-105"
         />
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div>
+    <div v-auto-animate class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div v-auto-animate>
         <label
           for="email"
           class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
@@ -47,7 +47,7 @@
           type="email"
           id="email"
           required
-          class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 sm:text-sm"
+          class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 sm:text-sm transition-all duration-200 focus:scale-105"
         />
       </div>
 

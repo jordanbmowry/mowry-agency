@@ -57,7 +57,7 @@ const componentProps = computed(() => {
 
 const buttonClasses = computed(() => {
   return clsx(
-    'inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none cursor-pointer',
+    'inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition-all duration-300 active:transition-none cursor-pointer hover:scale-105 hover:shadow-lg active:scale-95',
     variantStyles[props.variant],
     props.class
   );
