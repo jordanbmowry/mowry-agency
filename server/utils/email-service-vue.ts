@@ -24,6 +24,9 @@ type CustomerEmailData = {
   firstName: string;
   email: string;
   coverageType: string;
+  tcpaText?: string;
+  emailMarketingConsent?: boolean;
+  tcpaConsentTimestamp?: string;
   agencyEmail: string;
   agencyPhone: string;
   agencyAddress: string;
@@ -45,6 +48,11 @@ type AgencyEmailData = {
   city: string;
   state: string;
   tcpa_consent: boolean;
+  tcpa_text?: string;
+  email_marketing_consent?: boolean;
+  ip_address?: string;
+  user_agent?: string;
+  form_version?: string;
   lead_type: string;
   lead_source: string;
   status: string;
@@ -74,6 +82,9 @@ const renderCustomerConfirmationEmail = async (
           firstName: data.firstName,
           email: data.email,
           coverageType: data.coverageType,
+          tcpaText: data.tcpaText,
+          emailMarketingConsent: data.emailMarketingConsent,
+          tcpaConsentTimestamp: data.tcpaConsentTimestamp,
         },
         agencyEmail: data.agencyEmail,
         agencyPhone: data.agencyPhone,
@@ -93,6 +104,9 @@ const renderCustomerConfirmationEmail = async (
           firstName: data.firstName,
           email: data.email,
           coverageType: data.coverageType,
+          tcpaText: data.tcpaText,
+          emailMarketingConsent: data.emailMarketingConsent,
+          tcpaConsentTimestamp: data.tcpaConsentTimestamp,
         },
         agencyEmail: data.agencyEmail,
         agencyPhone: data.agencyPhone,
@@ -181,6 +195,9 @@ export const sendCustomerConfirmationEmail = async (
       firstName: leadData.first_name,
       email: leadData.email,
       coverageType: leadData.coverage_type,
+      tcpaText: leadData.tcpa_text,
+      emailMarketingConsent: leadData.email_marketing_consent,
+      tcpaConsentTimestamp: leadData.tcpa_consent_timestamp,
       agencyEmail: agencyInfo.email,
       agencyPhone: agencyInfo.phone,
       agencyAddress: agencyInfo.address,

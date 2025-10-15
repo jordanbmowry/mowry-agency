@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mountSuspended } from '@nuxt/test-utils/runtime';
 import QuoteForm from '../../app/components/QuoteForm.vue';
 
 // Mock the $fetch function
@@ -21,11 +21,11 @@ const MailIconStub = {
 describe('QuoteForm', () => {
   let wrapper: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     vi.stubGlobal('$fetch', mockFetch);
 
-    wrapper = mount(QuoteForm, {
+    wrapper = await mountSuspended(QuoteForm, {
       global: {
         stubs: {
           Button: ButtonStub,

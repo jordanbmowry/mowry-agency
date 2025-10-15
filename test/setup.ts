@@ -2,9 +2,37 @@ import { vi, beforeEach } from 'vitest';
 import { config } from '@vue/test-utils';
 import { ref } from 'vue';
 
+// Set test environment variables
+process.env.SUPABASE_URL = 'https://test.supabase.co';
+process.env.SUPABASE_ANON_KEY = 'test-anon-key';
+process.env.RESEND_API_KEY = 'test-resend-key';
+
 // Mock $fetch globally first
 const mockFetch = vi.fn().mockResolvedValue({ success: true });
 vi.stubGlobal('$fetch', mockFetch);
+
+// Mock Supabase client
+const mockSupabaseClient = {
+  from: vi.fn(() => ({
+    insert: vi.fn(() => ({
+      select: vi.fn(() =>
+        Promise.resolve({ data: { id: 'test-id' }, error: null })
+      ),
+    })),
+    select: vi.fn(() => Promise.resolve({ data: [], error: null })),
+  })),
+  auth: {
+    getUser: vi.fn(() =>
+      Promise.resolve({ data: { user: null }, error: null })
+    ),
+  },
+};
+
+// Mock Supabase composables
+vi.mock('@nuxtjs/supabase', () => ({
+  useSupabaseClient: () => mockSupabaseClient,
+  useSupabaseUser: () => ref(null),
+}));
 
 // Mock Nuxt composables with simpler, more stable approach
 vi.mock('#app', () => ({

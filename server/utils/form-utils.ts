@@ -32,7 +32,7 @@ export const decodeEmailToken = (token: string): string => {
   return Buffer.from(token, 'base64').toString('utf-8');
 };
 
-// Client information extraction
+// Client information extraction for TCPA compliance
 export const extractClientInfo = (event: any) => ({
   ip:
     getHeaders(event)['x-forwarded-for'] ||
@@ -41,6 +41,18 @@ export const extractClientInfo = (event: any) => ({
   userAgent: getHeader(event, 'user-agent') || '',
   timestamp: createTimestamp(),
 });
+
+// TCPA compliance text - this should match exactly what's shown to users
+export const getTcpaConsentText = (version: string = 'v1.0'): string => {
+  const tcpaTexts: Record<string, string> = {
+    'v1.0':
+      'By clicking Submit, you agree to be contacted by Mowry Agency and its agents at the number provided, including calls, texts, or emails. Consent is not a condition of purchase. Message and data rates may apply. You may opt out at any time.',
+    'v1.1':
+      'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.',
+  };
+
+  return tcpaTexts[version] || tcpaTexts['v1.0'];
+};
 
 // Form data sanitization
 export const sanitizeFormData = (data: Record<string, any>) => {
@@ -89,8 +101,8 @@ export const safeAsync = async <T>(
   }
 };
 
-// Data transformation utilities
-export const transformLeadData = (formData: any) => ({
+// Data transformation utilities with enhanced TCPA compliance
+export const transformLeadData = (formData: any, clientInfo?: any) => ({
   first_name: formData.firstName,
   last_name: formData.lastName,
   email: formData.email.toLowerCase(),
@@ -103,6 +115,12 @@ export const transformLeadData = (formData: any) => ({
   city: formData.city,
   state: formData.state,
   tcpa_consent: formData.tcpaConsent,
+  tcpa_text: formData.tcpaText || getTcpaConsentText(formData.formVersion),
+  email_marketing_consent: formData.emailMarketingConsent || false,
+  ip_address: clientInfo?.ip,
+  user_agent: clientInfo?.userAgent,
+  form_version: formData.formVersion || 'v1.0',
+  compliance_review_status: 'pending',
   lead_type: 'insurance_quote',
   lead_source: 'quote_form',
   status: 'new',

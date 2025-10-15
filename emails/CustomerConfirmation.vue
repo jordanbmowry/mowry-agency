@@ -24,6 +24,9 @@ defineProps<{
     firstName: string;
     email: string;
     coverageType: string;
+    tcpaText?: string;
+    emailMarketingConsent?: boolean;
+    tcpaConsentTimestamp?: string;
   };
   agencyEmail: string;
   agencyPhone: string;
@@ -132,6 +135,47 @@ const emailTailwindConfig = {
               >
                 Call Us Now
               </Button>
+            </Section>
+
+            <!-- TCPA Consent Summary -->
+            <Section
+              class="bg-blue-50 border border-blue-200 p-6 rounded-lg mb-6"
+            >
+              <Heading class="text-lg font-bold text-blue-900 mb-4">
+                📋 Consent Confirmation
+              </Heading>
+
+              <Text class="text-sm text-blue-800 leading-relaxed mb-4">
+                <strong>Communication Consent:</strong> You have consented to
+                receive communications from {{ BUSINESS_INFO.businessName }} and
+                our licensed agents.
+              </Text>
+
+              <div
+                v-if="customerData.tcpaText"
+                class="bg-white border border-blue-300 p-4 rounded mb-4"
+              >
+                <Text class="text-xs text-blue-700 font-semibold mb-2">
+                  Exact consent you agreed to:
+                </Text>
+                <Text class="text-xs text-blue-700 leading-relaxed italic">
+                  "{{ customerData.tcpaText }}"
+                </Text>
+              </div>
+
+              <Text class="text-sm text-blue-800 leading-relaxed mb-2">
+                <strong>Marketing Emails:</strong>
+                {{
+                  customerData.emailMarketingConsent
+                    ? 'You have opted to receive marketing communications.'
+                    : 'You have not opted in for marketing communications (quote-related only).'
+                }}
+              </Text>
+
+              <Text class="text-xs text-blue-600 leading-relaxed">
+                You may opt out of communications at any time using the
+                unsubscribe link below or by contacting us directly.
+              </Text>
             </Section>
 
             <!-- Licensing & Disclosure Information -->

@@ -421,8 +421,9 @@
         </div>
       </div>
 
-      <!-- TCPA Consent Checkbox -->
-      <div class="mt-6">
+      <!-- TCPA Consent Section -->
+      <div class="mt-6 space-y-4">
+        <!-- Primary TCPA Consent -->
         <div class="flex items-start">
           <div class="flex items-center h-5">
             <input
@@ -435,29 +436,54 @@
           </div>
           <div class="ml-3 text-sm">
             <label for="tcpaConsent" class="text-zinc-700 dark:text-zinc-300">
-              <span class="text-red-500">*</span> By submitting this form, I
-              agree to be contacted by Mowry Agency or its licensed
-              representatives at the phone number and email I provided. This may
-              include calls, texts, or emails about life insurance and related
-              products, even if my number is on a Do Not Call list. I understand
-              that my consent is not a condition of purchase and that I can opt
-              out at any time.
+              <span class="text-red-500">*</span> {{ tcpaConsentText }}
             </label>
-            <div class="mt-2 space-x-4 text-xs">
-              <NuxtLink
-                href="/privacy-policy"
-                class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                View our Privacy Policy
-              </NuxtLink>
-              <NuxtLink
-                href="/terms-of-service"
-                class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                Terms of Service
-              </NuxtLink>
-            </div>
           </div>
+        </div>
+
+        <!-- Optional Email Marketing Consent -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <input
+              id="emailMarketing"
+              v-model="form.emailMarketingConsent"
+              type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-white border-zinc-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
+            />
+          </div>
+          <div class="ml-3 text-sm">
+            <label
+              for="emailMarketing"
+              class="text-zinc-700 dark:text-zinc-300"
+            >
+              I would also like to receive periodic marketing emails about new
+              products and special offers.
+            </label>
+          </div>
+        </div>
+
+        <!-- Licensing Disclosure -->
+        <div
+          class="text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-md"
+        >
+          <p class="font-medium mb-1">Licensing Information:</p>
+          <p>{{ licensingDisclosure }}</p>
+        </div>
+
+        <!-- Links -->
+        <div class="mt-2 space-x-4 text-xs">
+          <NuxtLink
+            href="/privacy-policy"
+            class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            View our Privacy Policy
+          </NuxtLink>
+          <NuxtLink
+            href="/terms-of-service"
+            class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            Terms of Service
+          </NuxtLink>
         </div>
       </div>
 
@@ -640,7 +666,15 @@ const config = useRuntimeConfig();
 const agencyPhone = config.public.agencyPhone as string;
 const agencyEmail = config.public.agencyEmail as string;
 
-// Form data structure
+// TCPA compliance text - must match server-side version
+const tcpaConsentText =
+  'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.';
+
+// Agency licensing disclosure
+const licensingDisclosure =
+  'Mowry Agency is owned by Mowry Digital Enterprise LLC. Licensed to sell life insurance products.';
+
+// Form data structure with enhanced TCPA compliance
 const form = reactive({
   firstName: '',
   lastName: '',
@@ -654,6 +688,8 @@ const form = reactive({
   coverageType: '',
   message: '',
   tcpaConsent: false,
+  emailMarketingConsent: false,
+  formVersion: 'v1.1', // Track form version for compliance
 });
 
 // Error tracking
@@ -887,7 +923,7 @@ const handleSubmit = async () => {
   error.value = false;
 
   try {
-    // Send form data to our Nuxt API
+    // Send form data to our Nuxt API with enhanced TCPA compliance data
     const response = await $fetch('/api/quote', {
       method: 'POST',
       body: {
@@ -903,13 +939,19 @@ const handleSubmit = async () => {
         coverageType: form.coverageType,
         message: form.message,
         tcpaConsent: form.tcpaConsent,
+        tcpaText: tcpaConsentText,
+        emailMarketingConsent: form.emailMarketingConsent,
+        formVersion: form.formVersion,
       },
     });
 
     // Reset form and show success
     Object.keys(form).forEach((key) => {
-      if (key === 'tcpaConsent') {
+      if (key === 'tcpaConsent' || key === 'emailMarketingConsent') {
         (form as any)[key] = false;
+      } else if (key === 'formVersion') {
+        // Keep form version as is
+        return;
       } else {
         (form as any)[key] = '';
       }

@@ -3,6 +3,7 @@ import {
   validateEmail,
   transformLeadData,
   isDuplicateEmailError,
+  extractClientInfo,
 } from '../utils/form-utils';
 import { sendQuoteEmails } from '../utils/email-service-vue';
 
@@ -41,8 +42,11 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Transform and sanitize data for database
-    const leadData = transformLeadData(body);
+    // Extract client information for TCPA compliance audit trail
+    const clientInfo = extractClientInfo(event);
+
+    // Transform and sanitize data for database with compliance info
+    const leadData = transformLeadData(body, clientInfo);
 
     // Get Supabase client with service role for bypassing RLS
     const supabase = serverSupabaseServiceRole(event);
