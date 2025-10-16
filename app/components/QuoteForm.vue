@@ -14,17 +14,15 @@
         </h2>
         <p class="text-zinc-600 dark:text-zinc-400">
           Hi <span class="font-semibold">{{ submittedUserName }}</span
-          >, we've received your quote request and will contact you within 24
-          hours with a personalized life insurance quote.
+          >, we've received your quote request and will contact you within 24 hours with a
+          personalized life insurance quote.
         </p>
       </div>
 
       <div
         class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-3"
       >
-        <h3 class="font-semibold text-blue-900 dark:text-blue-100">
-          What happens next?
-        </h3>
+        <h3 class="font-semibold text-blue-900 dark:text-blue-100">What happens next?</h3>
         <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-2">
           <li class="flex items-start gap-2">
             <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
@@ -32,17 +30,11 @@
           </li>
           <li class="flex items-start gap-2">
             <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
-            <span
-              >We'll contact you with personalized quotes from top
-              carriers</span
-            >
+            <span>We'll contact you with personalized quotes from top carriers</span>
           </li>
           <li class="flex items-start gap-2">
             <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
-            <span
-              >Compare options and choose the best coverage for your
-              family</span
-            >
+            <span>Compare options and choose the best coverage for your family</span>
           </li>
         </ul>
       </div>
@@ -51,8 +43,7 @@
         class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4"
       >
         <p class="text-sm text-amber-900 dark:text-amber-100">
-          <strong>Need to add or change anything?</strong> Please contact us
-          directly:
+          <strong>Need to add or change anything?</strong> Please contact us directly:
         </p>
         <div class="mt-3 flex flex-col sm:flex-row gap-2">
           <a
@@ -88,9 +79,8 @@
           <span class="ml-3">Get Your Free Life Insurance Quote</span>
         </h2>
         <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Ready to protect your family's future? Fill out the form below and
-          we'll contact you within 24 hours with a personalized life insurance
-          quote.
+          Ready to protect your family's future? Fill out the form below and we'll contact
+          you within 24 hours with a personalized life insurance quote.
         </p>
       </div>
 
@@ -104,17 +94,9 @@
         />
       </div>
 
-      <form
-        @submit.prevent="handleSubmit"
-        ref="formParent"
-        class="mt-6 space-y-6"
-      >
+      <form @submit.prevent="handleSubmit" ref="formParent" class="mt-6 space-y-6">
         <!-- Step 1: Personal Information Section -->
-        <div
-          v-if="currentStep === 1"
-          ref="personalInfoParent"
-          class="space-y-4"
-        >
+        <div v-if="currentStep === 1" ref="personalInfoParent" class="space-y-4">
           <h3
             class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
           >
@@ -122,10 +104,7 @@
           </h3>
 
           <!-- First and Last Name -->
-          <div
-            ref="nameFieldsParent"
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-          >
+          <div ref="nameFieldsParent" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label
                 for="firstName"
@@ -140,9 +119,7 @@
                 required
                 :class="[
                   'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.firstName
-                    ? 'outline-red-500 dark:outline-red-400'
-                    : '',
+                  errors.firstName ? 'outline-red-500 dark:outline-red-400' : '',
                 ]"
                 placeholder="John"
                 @blur="validateField('firstName')"
@@ -203,10 +180,7 @@
                 placeholder="john@example.com"
                 @blur="validateField('email')"
               />
-              <p
-                v-if="errors.email"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
+              <p v-if="errors.email" class="mt-1 text-xs text-red-600 dark:text-red-400">
                 {{ errors.email }}
               </p>
             </div>
@@ -229,10 +203,7 @@
                 placeholder="(555) 123-4567"
                 @blur="validateField('phone')"
               />
-              <p
-                v-if="errors.phone"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
+              <p v-if="errors.phone" class="mt-1 text-xs text-red-600 dark:text-red-400">
                 {{ errors.phone }}
               </p>
             </div>
@@ -254,9 +225,7 @@
               :max="maxDate"
               :class="[
                 'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.dateOfBirth
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
+                errors.dateOfBirth ? 'outline-red-500 dark:outline-red-400' : '',
               ]"
               @blur="validateField('dateOfBirth')"
             />
@@ -293,10 +262,7 @@
                 placeholder="Enter your city"
                 @blur="validateField('city')"
               />
-              <p
-                v-if="errors.city"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
+              <p v-if="errors.city" class="mt-1 text-xs text-red-600 dark:text-red-400">
                 {{ errors.city }}
               </p>
             </div>
@@ -355,10 +321,7 @@
                 <option value="WI">Wisconsin</option>
                 <option value="WY">Wyoming</option>
               </select>
-              <p
-                v-if="errors.state"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
+              <p v-if="errors.state" class="mt-1 text-xs text-red-600 dark:text-red-400">
                 {{ errors.state }}
               </p>
               <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
@@ -383,11 +346,10 @@
             class="p-3 bg-amber-50 border border-amber-200 rounded-md dark:bg-amber-900/20 dark:border-amber-800"
           >
             <p class="text-xs text-amber-700 dark:text-amber-300">
-              <strong>Health Information Privacy:</strong> Medical information
-              you provide is securely encrypted and used only for insurance
-              underwriting purposes. This information helps us find the most
-              accurate rates for your situation and is protected under strict
-              privacy guidelines.
+              <strong>Health Information Privacy:</strong> Medical information you provide
+              is securely encrypted and used only for insurance underwriting purposes.
+              This information helps us find the most accurate rates for your situation
+              and is protected under strict privacy guidelines.
             </p>
           </div>
 
@@ -405,9 +367,7 @@
               rows="3"
               :class="[
                 'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.healthConditions
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
+                errors.healthConditions ? 'outline-red-500 dark:outline-red-400' : '',
               ]"
               placeholder="Please list any current health conditions, diagnosed illnesses, or ongoing medical concerns. If none, please write 'None'."
               @blur="validateField('healthConditions')"
@@ -438,9 +398,7 @@
               rows="3"
               :class="[
                 'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.medications
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
+                errors.medications ? 'outline-red-500 dark:outline-red-400' : '',
               ]"
               placeholder="Please list all current medications including dosages if known. If none, please write 'None'."
               @blur="validateField('medications')"
@@ -452,8 +410,7 @@
               {{ errors.medications }}
             </p>
             <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Include prescription medications, over-the-counter drugs, and
-              supplements
+              Include prescription medications, over-the-counter drugs, and supplements
             </p>
           </div>
         </div>
@@ -480,9 +437,7 @@
               required
               :class="[
                 'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.coverageType
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
+                errors.coverageType ? 'outline-red-500 dark:outline-red-400' : '',
               ]"
               @blur="validateField('coverageType')"
             >
@@ -522,8 +477,7 @@
               placeholder="Tell us about your family's protection needs, coverage amount you're considering, your goals, timeline, or any questions about life insurance..."
             />
             <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Optional - Any additional details that might help us serve you
-              better
+              Optional - Any additional details that might help us serve you better
             </p>
           </div>
         </div>
@@ -559,12 +513,9 @@
               />
             </div>
             <div class="ml-3 text-sm">
-              <label
-                for="emailMarketing"
-                class="text-zinc-700 dark:text-zinc-300"
-              >
-                I would also like to receive periodic marketing emails about new
-                products and special offers.
+              <label for="emailMarketing" class="text-zinc-700 dark:text-zinc-300">
+                I would also like to receive periodic marketing emails about new products
+                and special offers.
               </label>
             </div>
           </div>
@@ -601,18 +552,14 @@
           <div class="flex items-start space-x-2">
             <div class="text-blue-600 dark:text-blue-400 text-lg">🔒</div>
             <div class="flex-1">
-              <h4
-                class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1"
-              >
+              <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
                 Your Privacy is Protected
               </h4>
-              <p
-                class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed"
-              >
+              <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
                 Your information is secure and used solely for generating your
-                personalized life insurance quote. Health information,
-                medications, and personal details are encrypted and protected.
-                We do not share or sell your information to third parties.
+                personalized life insurance quote. Health information, medications, and
+                personal details are encrypted and protected. We do not share or sell your
+                information to third parties.
               </p>
             </div>
           </div>
@@ -628,7 +575,7 @@
             v-if="currentStep > 1"
             type="button"
             @click="previousStep"
-            class="bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100"
+            class="bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white transition-colors"
           >
             <span v-auto-animate class="flex items-center gap-2">
               <Icon name="heroicons:arrow-left" class="h-4 w-4" />
@@ -644,7 +591,7 @@
             :disabled="isSubmitting || !isCurrentStepValid"
             :class="
               [
-                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
+                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
                 isSubmitting
                   ? 'scale-95 animate-pulse'
                   : 'hover:scale-105 hover:shadow-lg',
@@ -664,7 +611,7 @@
             :disabled="isSubmitting || !isCurrentStepValid"
             :class="
               [
-                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
+                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
                 isSubmitting
                   ? 'scale-95 animate-pulse'
                   : 'hover:scale-105 hover:shadow-lg',
@@ -677,14 +624,12 @@
                 name="heroicons:arrow-path"
                 class="h-4 w-4 animate-spin"
               />
-              {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
+              {{ isSubmitting ? "Sending..." : "Get My Quote" }}
             </span>
           </Button>
 
           <div v-if="currentStep === 1" class="text-right">
-            <p class="text-xs text-zinc-500 dark:text-zinc-400">
-              * Required fields
-            </p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">* Required fields</p>
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
               Your information is secure and confidential
             </p>
@@ -704,8 +649,7 @@
             class="h-5 w-5 text-green-600 dark:text-green-400 animate-in zoom-in duration-300 delay-200"
           />
           <p class="text-sm text-green-700 dark:text-green-400">
-            Thank you! We'll contact you within 24 hours with your personalized
-            quote.
+            Thank you! We'll contact you within 24 hours with your personalized quote.
           </p>
         </div>
       </div>
@@ -732,8 +676,7 @@
               :class="{
                 'w-5 h-5 text-green-600 dark:text-green-400':
                   errorType === 'duplicate_email',
-                'w-5 h-5 text-red-600 dark:text-red-400':
-                  errorType !== 'duplicate_email',
+                'w-5 h-5 text-red-600 dark:text-red-400': errorType !== 'duplicate_email',
               }"
             />
           </div>
@@ -741,25 +684,21 @@
             <h3
               class="text-sm font-medium"
               :class="{
-                'text-green-800 dark:text-green-200':
-                  errorType === 'duplicate_email',
-                'text-red-800 dark:text-red-200':
-                  errorType !== 'duplicate_email',
+                'text-green-800 dark:text-green-200': errorType === 'duplicate_email',
+                'text-red-800 dark:text-red-200': errorType !== 'duplicate_email',
               }"
             >
               {{
-                errorType === 'duplicate_email'
+                errorType === "duplicate_email"
                   ? "We're Already Working on Your Quote!"
-                  : 'Submission Error'
+                  : "Submission Error"
               }}
             </h3>
             <p
               class="mt-1 text-sm"
               :class="{
-                'text-green-700 dark:text-green-300':
-                  errorType === 'duplicate_email',
-                'text-red-700 dark:text-red-300':
-                  errorType !== 'duplicate_email',
+                'text-green-700 dark:text-green-300': errorType === 'duplicate_email',
+                'text-red-700 dark:text-red-300': errorType !== 'duplicate_email',
               }"
             >
               {{ errorMessage }}
@@ -792,19 +731,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useAutoAnimate } from '@formkit/auto-animate/vue';
-import { useLocalStorage } from '@vueuse/core';
-import MailIcon from './icons/MailIcon.vue';
-import Button from './Button.vue';
-import MultiStepProgressBar from './MultiStepProgressBar.vue';
+import { ref, reactive, computed, onMounted } from "vue";
+import { useAutoAnimate } from "@formkit/auto-animate/vue";
+import { useLocalStorage } from "@vueuse/core";
+import MailIcon from "./icons/MailIcon.vue";
+import Button from "./Button.vue";
+import MultiStepProgressBar from "./MultiStepProgressBar.vue";
 import {
   calculateAge,
   isValidAge,
   getTodayInputFormat,
   getMaxBirthDate,
   isValidDateString,
-} from '~/utils/dateUtils';
+} from "~/utils/dateUtils";
 
 // Auto-animate refs
 const [formParent] = useAutoAnimate();
@@ -816,8 +755,8 @@ const currentStep = ref(1);
 const isMounted = ref(false);
 
 // Local storage for form submission tracking
-const quoteFormSubmitted = useLocalStorage('quoteFormSubmitted', false);
-const submittedUserName = useLocalStorage('submittedUserName', '');
+const quoteFormSubmitted = useLocalStorage("quoteFormSubmitted", false);
+const submittedUserName = useLocalStorage("submittedUserName", "");
 
 // Hook to track when component is mounted (for hydration)
 onMounted(() => {
@@ -831,50 +770,50 @@ const agencyEmail = config.public.agencyEmail as string;
 
 // TCPA compliance text - must match server-side version
 const tcpaConsentText =
-  'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.';
+  "By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.";
 
 // Agency licensing disclosure
 const licensingDisclosure =
-  'Mowry Agency is owned by Mowry Digital Enterprise LLC. Licensed to sell life insurance products.';
+  "Mowry Agency is owned by Mowry Digital Enterprise LLC. Licensed to sell life insurance products.";
 
 // Form data structure with enhanced TCPA compliance
 const form = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  dateOfBirth: '',
-  city: '',
-  state: '',
-  healthConditions: '',
-  medications: '',
-  coverageType: '',
-  message: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  dateOfBirth: "",
+  city: "",
+  state: "",
+  healthConditions: "",
+  medications: "",
+  coverageType: "",
+  message: "",
   tcpaConsent: false,
   emailMarketingConsent: false,
-  formVersion: 'v1.1', // Track form version for compliance
+  formVersion: "v1.1", // Track form version for compliance
 });
 
 // Error tracking
 const errors = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  dateOfBirth: '',
-  city: '',
-  state: '',
-  healthConditions: '',
-  medications: '',
-  coverageType: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  dateOfBirth: "",
+  city: "",
+  state: "",
+  healthConditions: "",
+  medications: "",
+  coverageType: "",
 });
 
 // Form state
 const isSubmitting = ref(false);
 const submitted = ref(false);
 const error = ref(false);
-const errorMessage = ref('');
-const errorType = ref('');
+const errorMessage = ref("");
+const errorType = ref("");
 
 // Computed properties
 const maxDate = computed(() => {
@@ -884,52 +823,52 @@ const maxDate = computed(() => {
 // Step 1: Personal Information validation
 const isStep1Valid = computed(() => {
   const requiredFields = [
-    'firstName',
-    'lastName',
-    'email',
-    'phone',
-    'dateOfBirth',
-    'city',
-    'state',
+    "firstName",
+    "lastName",
+    "email",
+    "phone",
+    "dateOfBirth",
+    "city",
+    "state",
   ];
   const hasRequiredFields = requiredFields.every(
-    (field) => (form[field as keyof typeof form] as string).trim() !== ''
+    (field) => (form[field as keyof typeof form] as string).trim() !== ""
   );
   const hasNoErrors = Object.entries(errors)
     .filter(([key]) =>
       [
-        'firstName',
-        'lastName',
-        'email',
-        'phone',
-        'dateOfBirth',
-        'city',
-        'state',
+        "firstName",
+        "lastName",
+        "email",
+        "phone",
+        "dateOfBirth",
+        "city",
+        "state",
       ].includes(key)
     )
-    .every(([, error]) => error === '');
+    .every(([, error]) => error === "");
   return hasRequiredFields && hasNoErrors;
 });
 
 // Step 2: Health Information validation
 const isStep2Valid = computed(() => {
-  const requiredFields = ['healthConditions', 'medications'];
+  const requiredFields = ["healthConditions", "medications"];
   const hasRequiredFields = requiredFields.every(
-    (field) => (form[field as keyof typeof form] as string).trim() !== ''
+    (field) => (form[field as keyof typeof form] as string).trim() !== ""
   );
   const hasNoErrors = Object.entries(errors)
-    .filter(([key]) => ['healthConditions', 'medications'].includes(key))
-    .every(([, error]) => error === '');
+    .filter(([key]) => ["healthConditions", "medications"].includes(key))
+    .every(([, error]) => error === "");
   return hasRequiredFields && hasNoErrors;
 });
 
 // Step 3: Coverage Information validation
 const isStep3Valid = computed(() => {
   const hasRequiredFields =
-    (form.coverageType as string).trim() !== '' && form.tcpaConsent === true;
+    (form.coverageType as string).trim() !== "" && form.tcpaConsent === true;
   const hasNoErrors = Object.entries(errors)
-    .filter(([key]) => ['coverageType'].includes(key))
-    .every(([, error]) => error === '');
+    .filter(([key]) => ["coverageType"].includes(key))
+    .every(([, error]) => error === "");
   return hasRequiredFields && hasNoErrors;
 });
 
@@ -947,48 +886,46 @@ const isFormValid = computed(() => {
 
 // Validation functions
 const validateEmail = (email: string): string => {
-  if (!email.trim()) return 'Email is required';
+  if (!email.trim()) return "Email is required";
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return 'Please enter a valid email address';
-  return '';
+  if (!emailRegex.test(email)) return "Please enter a valid email address";
+  return "";
 };
 
 const validatePhone = (phone: string): string => {
-  if (!phone.trim()) return 'Phone number is required';
+  if (!phone.trim()) return "Phone number is required";
   const phoneRegex = /^[\+]?[1-9]?[\s\-\.\(\)]?[\d\s\-\.\(\)]{9,15}$/;
-  if (!phoneRegex.test(phone)) return 'Please enter a valid phone number';
-  return '';
+  if (!phoneRegex.test(phone)) return "Please enter a valid phone number";
+  return "";
 };
 
 const validateName = (name: string, fieldName: string): string => {
   if (!name.trim()) return `${fieldName} is required`;
-  if (name.trim().length < 2)
-    return `${fieldName} must be at least 2 characters`;
-  if (name.trim().length > 50)
-    return `${fieldName} must be less than 50 characters`;
-  return '';
+  if (name.trim().length < 2) return `${fieldName} must be at least 2 characters`;
+  if (name.trim().length > 50) return `${fieldName} must be less than 50 characters`;
+  return "";
 };
 
 const validateDateOfBirth = (dateOfBirth: string): string => {
-  if (!dateOfBirth.trim()) return 'Date of birth is required';
+  if (!dateOfBirth.trim()) return "Date of birth is required";
 
   // Validate date format
   if (!isValidDateString(dateOfBirth)) {
-    return 'Please enter a valid date';
+    return "Please enter a valid date";
   }
 
   // Check if person is at least 18 years old
   if (!isValidAge(dateOfBirth, 18)) {
-    return 'You must be at least 18 years old';
+    return "You must be at least 18 years old";
   }
 
   // Check if age is reasonable (not over 100)
   const age = calculateAge(dateOfBirth);
   if (age > 100) {
-    return 'Please enter a valid date of birth';
+    return "Please enter a valid date of birth";
   }
 
-  return '';
+  return "";
 };
 
 const validateHealthConditions = (healthConditions: string): string => {
@@ -996,7 +933,7 @@ const validateHealthConditions = (healthConditions: string): string => {
     return 'Please provide health conditions information (write "None" if applicable)';
   if (healthConditions.trim().length < 4)
     return 'Please provide more detailed information or write "None"';
-  return '';
+  return "";
 };
 
 const validateMedications = (medications: string): string => {
@@ -1004,62 +941,61 @@ const validateMedications = (medications: string): string => {
     return 'Please provide medications information (write "None" if applicable)';
   if (medications.trim().length < 4)
     return 'Please provide more detailed information or write "None"';
-  return '';
+  return "";
 };
 
 const validateCoverageType = (coverageType: string): string => {
-  if (!coverageType.trim()) return 'Please select a coverage type';
-  return '';
+  if (!coverageType.trim()) return "Please select a coverage type";
+  return "";
 };
 
 const validateCity = (city: string): string => {
-  if (!city.trim()) return 'City is required';
-  if (city.trim().length < 2) return 'Please enter a valid city name';
-  if (city.trim().length > 50)
-    return 'City name must be less than 50 characters';
-  return '';
+  if (!city.trim()) return "City is required";
+  if (city.trim().length < 2) return "Please enter a valid city name";
+  if (city.trim().length > 50) return "City name must be less than 50 characters";
+  return "";
 };
 
 const validateState = (state: string): string => {
-  if (!state.trim()) return 'State is required';
+  if (!state.trim()) return "State is required";
   const validStates = [
-    'AL',
-    'AR',
-    'AZ',
-    'CA',
-    'CO',
-    'CT',
-    'FL',
-    'GA',
-    'IA',
-    'ID',
-    'IL',
-    'IN',
-    'MA',
-    'MD',
-    'MI',
-    'MN',
-    'MO',
-    'MT',
-    'NC',
-    'NE',
-    'NJ',
-    'NM',
-    'NV',
-    'OH',
-    'PA',
-    'SC',
-    'SD',
-    'TN',
-    'TX',
-    'UT',
-    'VA',
-    'WA',
-    'WI',
-    'WY',
+    "AL",
+    "AR",
+    "AZ",
+    "CA",
+    "CO",
+    "CT",
+    "FL",
+    "GA",
+    "IA",
+    "ID",
+    "IL",
+    "IN",
+    "MA",
+    "MD",
+    "MI",
+    "MN",
+    "MO",
+    "MT",
+    "NC",
+    "NE",
+    "NJ",
+    "NM",
+    "NV",
+    "OH",
+    "PA",
+    "SC",
+    "SD",
+    "TN",
+    "TX",
+    "UT",
+    "VA",
+    "WA",
+    "WI",
+    "WY",
   ];
-  if (!validStates.includes(state)) return 'Please select a valid state';
-  return '';
+  if (!validStates.includes(state)) return "Please select a valid state";
+  return "";
 };
 
 // Field validation
@@ -1067,37 +1003,37 @@ const validateField = (fieldName: keyof typeof form) => {
   const value = form[fieldName];
 
   switch (fieldName) {
-    case 'firstName':
-      errors.firstName = validateName(value as string, 'First name');
+    case "firstName":
+      errors.firstName = validateName(value as string, "First name");
       break;
-    case 'lastName':
-      errors.lastName = validateName(value as string, 'Last name');
+    case "lastName":
+      errors.lastName = validateName(value as string, "Last name");
       break;
-    case 'email':
+    case "email":
       errors.email = validateEmail(value as string);
       break;
-    case 'phone':
+    case "phone":
       errors.phone = validatePhone(value as string);
       break;
-    case 'dateOfBirth':
+    case "dateOfBirth":
       errors.dateOfBirth = validateDateOfBirth(value as string);
       break;
-    case 'city':
+    case "city":
       errors.city = validateCity(value as string);
       break;
-    case 'state':
+    case "state":
       errors.state = validateState(value as string);
       break;
-    case 'healthConditions':
+    case "healthConditions":
       errors.healthConditions = validateHealthConditions(value as string);
       break;
-    case 'medications':
+    case "medications":
       errors.medications = validateMedications(value as string);
       break;
-    case 'coverageType':
+    case "coverageType":
       errors.coverageType = validateCoverageType(value as string);
       break;
-    case 'tcpaConsent':
+    case "tcpaConsent":
       // No validation needed for boolean consent
       break;
   }
@@ -1106,21 +1042,21 @@ const validateField = (fieldName: keyof typeof form) => {
 // Validate all fields
 const validateAllFields = () => {
   const fieldsToValidate: (keyof typeof form)[] = [
-    'firstName',
-    'lastName',
-    'email',
-    'phone',
-    'dateOfBirth',
-    'city',
-    'state',
-    'healthConditions',
-    'medications',
-    'coverageType',
+    "firstName",
+    "lastName",
+    "email",
+    "phone",
+    "dateOfBirth",
+    "city",
+    "state",
+    "healthConditions",
+    "medications",
+    "coverageType",
   ];
 
   fieldsToValidate.forEach((field) => validateField(field));
 
-  return Object.values(errors).every((error) => error === '');
+  return Object.values(errors).every((error) => error === "");
 };
 
 // Step Navigation
@@ -1131,36 +1067,36 @@ const nextStep = () => {
       // Validate all fields in current step
       if (currentStep.value === 1) {
         [
-          'firstName',
-          'lastName',
-          'email',
-          'phone',
-          'dateOfBirth',
-          'city',
-          'state',
+          "firstName",
+          "lastName",
+          "email",
+          "phone",
+          "dateOfBirth",
+          "city",
+          "state",
         ].forEach((field) => {
           validateField(field as keyof typeof form);
         });
       } else if (currentStep.value === 2) {
-        ['healthConditions', 'medications'].forEach((field) => {
+        ["healthConditions", "medications"].forEach((field) => {
           validateField(field as keyof typeof form);
         });
       } else if (currentStep.value === 3) {
-        ['coverageType'].forEach((field) => {
+        ["coverageType"].forEach((field) => {
           validateField(field as keyof typeof form);
         });
       }
       return;
     }
     currentStep.value++;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 };
 
 const previousStep = () => {
   if (currentStep.value > 1) {
     currentStep.value--;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 };
 
@@ -1175,8 +1111,8 @@ const handleSubmit = async () => {
 
   try {
     // Send form data to our Nuxt API with enhanced TCPA compliance data
-    const response = await $fetch('/api/quote', {
-      method: 'POST',
+    const response = await $fetch("/api/quote", {
+      method: "POST",
       body: {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -1198,19 +1134,19 @@ const handleSubmit = async () => {
 
     // Reset form and show success
     Object.keys(form).forEach((key) => {
-      if (key === 'tcpaConsent' || key === 'emailMarketingConsent') {
+      if (key === "tcpaConsent" || key === "emailMarketingConsent") {
         (form as any)[key] = false;
-      } else if (key === 'formVersion') {
+      } else if (key === "formVersion") {
         // Keep form version as is
         return;
       } else {
-        (form as any)[key] = '';
+        (form as any)[key] = "";
       }
     });
 
     // Clear errors
     Object.keys(errors).forEach((key) => {
-      errors[key as keyof typeof errors] = '';
+      errors[key as keyof typeof errors] = "";
     });
 
     // Store submission in localStorage and advance progress
@@ -1228,23 +1164,19 @@ const handleSubmit = async () => {
     error.value = true;
 
     // Handle specific error types
-    if (err.statusCode === 409 && err.statusMessage === 'DUPLICATE_EMAIL') {
-      errorType.value = 'duplicate_email';
+    if (err.statusCode === 409 && err.statusMessage === "DUPLICATE_EMAIL") {
+      errorType.value = "duplicate_email";
       errorMessage.value =
         err.data?.message ||
-        'Great news! We already have your information and will be in touch soon.';
-    } else if (
-      err.statusCode === 500 &&
-      err.statusMessage === 'DATABASE_ERROR'
-    ) {
-      errorType.value = 'database_error';
+        "Great news! We already have your information and will be in touch soon.";
+    } else if (err.statusCode === 500 && err.statusMessage === "DATABASE_ERROR") {
+      errorType.value = "database_error";
       errorMessage.value =
-        err.data?.message ||
-        'We encountered a technical issue processing your request.';
+        err.data?.message || "We encountered a technical issue processing your request.";
     } else {
-      errorType.value = 'general_error';
+      errorType.value = "general_error";
       errorMessage.value =
-        'There was an error submitting your request. Please try calling us for immediate assistance.';
+        "There was an error submitting your request. Please try calling us for immediate assistance.";
     }
   } finally {
     isSubmitting.value = false;

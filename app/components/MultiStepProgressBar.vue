@@ -42,12 +42,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue';
 
 interface Step {
   id: string;
   name: string;
-  status: "complete" | "current" | "upcoming";
+  status: 'complete' | 'current' | 'upcoming';
 }
 
 const props = defineProps<{
@@ -60,34 +60,34 @@ const props = defineProps<{
 const steps = computed(() => {
   return [
     {
-      id: "Step 1",
-      name: "Personal Information",
+      id: 'Step 1',
+      name: 'Personal Information',
       status:
         props.currentStep > 1 || (props.currentStep === 1 && props.isStep1Valid)
-          ? "complete"
+          ? 'complete'
           : props.currentStep === 1
-          ? "current"
-          : "upcoming",
+            ? 'current'
+            : 'upcoming',
     },
     {
-      id: "Step 2",
-      name: "Health Information",
+      id: 'Step 2',
+      name: 'Health Information',
       status:
         props.currentStep > 2 || (props.currentStep === 2 && props.isStep2Valid)
-          ? "complete"
+          ? 'complete'
           : props.currentStep === 2
-          ? "current"
-          : "upcoming",
+            ? 'current'
+            : 'upcoming',
     },
     {
-      id: "Step 3",
-      name: "Coverage Information",
+      id: 'Step 3',
+      name: 'Coverage Information',
       status:
         props.currentStep > 3 || (props.currentStep === 3 && props.isStep3Valid)
-          ? "complete"
+          ? 'complete'
           : props.currentStep === 3
-          ? "current"
-          : "upcoming",
+            ? 'current'
+            : 'upcoming',
     },
   ] as Step[];
 });
