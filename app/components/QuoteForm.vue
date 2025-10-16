@@ -1,640 +1,788 @@
 <template>
   <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
-    <h2 class="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-      <MailIcon class="h-6 w-6 flex-none" />
-      <span class="ml-3">Get Your Free Life Insurance Quote</span>
-    </h2>
-    <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-      Ready to protect your family's future? Fill out the form below and we'll
-      contact you within 24 hours with a personalized life insurance quote.
-    </p>
-
-    <form
-      @submit.prevent="handleSubmit"
-      ref="formParent"
-      class="mt-6 space-y-6"
-    >
-      <!-- Personal Information Section -->
-      <div ref="personalInfoParent" class="space-y-4">
-        <h3
-          class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
-        >
-          Personal Information
-        </h3>
-
-        <!-- First and Last Name -->
-        <div
-          ref="nameFieldsParent"
-          class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-        >
-          <div>
-            <label
-              for="firstName"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              First Name *
-            </label>
-            <input
-              id="firstName"
-              v-model="form.firstName"
-              type="text"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.firstName ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              placeholder="John"
-              @blur="validateField('firstName')"
-            />
-            <p
-              v-if="errors.firstName"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.firstName }}
-            </p>
-          </div>
-          <div>
-            <label
-              for="lastName"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Last Name *
-            </label>
-            <input
-              id="lastName"
-              v-model="form.lastName"
-              type="text"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.lastName ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              placeholder="Doe"
-              @blur="validateField('lastName')"
-            />
-            <p
-              v-if="errors.lastName"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.lastName }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Email and Phone -->
-        <div v-auto-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label
-              for="email"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Email Address *
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.email ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              placeholder="john@example.com"
-              @blur="validateField('email')"
-            />
-            <p
-              v-if="errors.email"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.email }}
-            </p>
-          </div>
-          <div>
-            <label
-              for="phone"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Phone Number *
-            </label>
-            <input
-              id="phone"
-              v-model="form.phone"
-              type="tel"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.phone ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              placeholder="(555) 123-4567"
-              @blur="validateField('phone')"
-            />
-            <p
-              v-if="errors.phone"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.phone }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Date of Birth -->
-        <div>
-          <label
-            for="dateOfBirth"
-            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Date of Birth *
-          </label>
-          <input
-            id="dateOfBirth"
-            v-model="form.dateOfBirth"
-            type="date"
-            required
-            :max="maxDate"
-            :class="[
-              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-              errors.dateOfBirth ? 'outline-red-500 dark:outline-red-400' : '',
-            ]"
-            @blur="validateField('dateOfBirth')"
+    <!-- Thank You Message - Shown if form was already submitted -->
+    <div v-if="isMounted && quoteFormSubmitted" class="space-y-6">
+      <div class="text-center space-y-4">
+        <div class="flex justify-center mb-4">
+          <Icon
+            name="heroicons:check-circle"
+            class="h-16 w-16 text-green-600 dark:text-green-400"
           />
-          <p
-            v-if="errors.dateOfBirth"
-            class="mt-1 text-xs text-red-600 dark:text-red-400"
-          >
-            {{ errors.dateOfBirth }}
-          </p>
-          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Required for accurate life insurance quotes
-          </p>
         </div>
-
-        <!-- City and State -->
-        <div v-auto-animate class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <!-- City -->
-          <div>
-            <label
-              for="city"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              City *
-            </label>
-            <input
-              id="city"
-              v-model="form.city"
-              type="text"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.city ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              placeholder="Enter your city"
-              @blur="validateField('city')"
-            />
-            <p
-              v-if="errors.city"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.city }}
-            </p>
-          </div>
-
-          <!-- State -->
-          <div>
-            <label
-              for="state"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              State *
-            </label>
-            <select
-              id="state"
-              v-model="form.state"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.state ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              @blur="validateField('state')"
-            >
-              <option value="">Select your state</option>
-              <option value="AL">Alabama</option>
-              <option value="AR">Arkansas</option>
-              <option value="AZ">Arizona</option>
-              <option value="CA">California</option>
-              <option value="CO">Colorado</option>
-              <option value="CT">Connecticut</option>
-              <option value="FL">Florida</option>
-              <option value="GA">Georgia</option>
-              <option value="IA">Iowa</option>
-              <option value="ID">Idaho</option>
-              <option value="IL">Illinois</option>
-              <option value="IN">Indiana</option>
-              <option value="MA">Massachusetts</option>
-              <option value="MD">Maryland</option>
-              <option value="MI">Michigan</option>
-              <option value="MN">Minnesota</option>
-              <option value="MO">Missouri</option>
-              <option value="MT">Montana</option>
-              <option value="NC">North Carolina</option>
-              <option value="NE">Nebraska</option>
-              <option value="NJ">New Jersey</option>
-              <option value="NM">New Mexico</option>
-              <option value="NV">Nevada</option>
-              <option value="OH">Ohio</option>
-              <option value="PA">Pennsylvania</option>
-              <option value="SC">South Carolina</option>
-              <option value="SD">South Dakota</option>
-              <option value="TN">Tennessee</option>
-              <option value="TX">Texas</option>
-              <option value="UT">Utah</option>
-              <option value="VA">Virginia</option>
-              <option value="WA">Washington</option>
-              <option value="WI">Wisconsin</option>
-              <option value="WY">Wyoming</option>
-            </select>
-            <p
-              v-if="errors.state"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.state }}
-            </p>
-            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              We can only provide quotes in states where we're licensed
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Health Information Section -->
-      <div class="space-y-4">
-        <div class="flex items-start justify-between">
-          <h3
-            class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2 flex-1"
-          >
-            Health Information
-          </h3>
-        </div>
-
-        <!-- Health Information Disclaimer -->
-        <div
-          class="p-3 bg-amber-50 border border-amber-200 rounded-md dark:bg-amber-900/20 dark:border-amber-800"
-        >
-          <p class="text-xs text-amber-700 dark:text-amber-300">
-            <strong>Health Information Privacy:</strong> Medical information you
-            provide is securely encrypted and used only for insurance
-            underwriting purposes. This information helps us find the most
-            accurate rates for your situation and is protected under strict
-            privacy guidelines.
-          </p>
-        </div>
-
-        <!-- Health Conditions -->
-        <div>
-          <label
-            for="healthConditions"
-            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Current Health Conditions
-          </label>
-          <textarea
-            id="healthConditions"
-            v-model="form.healthConditions"
-            rows="3"
-            :class="[
-              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-              errors.healthConditions
-                ? 'outline-red-500 dark:outline-red-400'
-                : '',
-            ]"
-            placeholder="Please list any current health conditions, diagnosed illnesses, or ongoing medical concerns. If none, please write 'None'."
-            @blur="validateField('healthConditions')"
-          />
-          <p
-            v-if="errors.healthConditions"
-            class="mt-1 text-xs text-red-600 dark:text-red-400"
-          >
-            {{ errors.healthConditions }}
-          </p>
-          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            This information helps us find the best rates and is kept strictly
-            confidential
-          </p>
-        </div>
-
-        <!-- Medications -->
-        <div>
-          <label
-            for="medications"
-            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Current Medications
-          </label>
-          <textarea
-            id="medications"
-            v-model="form.medications"
-            rows="3"
-            :class="[
-              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-              errors.medications ? 'outline-red-500 dark:outline-red-400' : '',
-            ]"
-            placeholder="Please list all current medications including dosages if known. If none, please write 'None'."
-            @blur="validateField('medications')"
-          />
-          <p
-            v-if="errors.medications"
-            class="mt-1 text-xs text-red-600 dark:text-red-400"
-          >
-            {{ errors.medications }}
-          </p>
-          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Include prescription medications, over-the-counter drugs, and
-            supplements
-          </p>
-        </div>
-      </div>
-
-      <!-- Coverage Information Section -->
-      <div class="space-y-4">
-        <h3
-          class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
-        >
-          Coverage Information
-        </h3>
-
-        <!-- Coverage Type -->
-        <div>
-          <label
-            for="coverageType"
-            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Type of Coverage Interested In *
-          </label>
-          <select
-            id="coverageType"
-            v-model="form.coverageType"
-            required
-            :class="[
-              'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-              errors.coverageType ? 'outline-red-500 dark:outline-red-400' : '',
-            ]"
-            @blur="validateField('coverageType')"
-          >
-            <option value="">Select coverage type...</option>
-            <option value="term-life">Term Life Insurance</option>
-            <option value="whole-life">Whole Life Insurance</option>
-            <option value="iul">Indexed Universal Life (IUL)</option>
-            <option value="mortgage-protection">Mortgage Protection</option>
-            <option value="final-expense">Final Expense Insurance</option>
-            <option value="annuities">Annuities</option>
-            <option value="not-sure">Not Sure - Need Guidance</option>
-          </select>
-          <p
-            v-if="errors.coverageType"
-            class="mt-1 text-xs text-red-600 dark:text-red-400"
-          >
-            {{ errors.coverageType }}
-          </p>
-          <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            We'll help you find the best coverage type for your needs
-          </p>
-        </div>
-
-        <!-- Message -->
-        <div>
-          <label
-            for="message"
-            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Additional Information or Questions
-          </label>
-          <textarea
-            id="message"
-            v-model="form.message"
-            rows="4"
-            class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-            placeholder="Tell us about your family's protection needs, coverage amount you're considering, your goals, timeline, or any questions about life insurance..."
-          />
-          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Optional - Any additional details that might help us serve you
-            better
-          </p>
-        </div>
-      </div>
-
-      <!-- TCPA Consent Section -->
-      <div class="mt-6 space-y-4">
-        <!-- Primary TCPA Consent -->
-        <div class="flex items-start">
-          <div class="flex items-center h-5">
-            <input
-              id="tcpaConsent"
-              v-model="form.tcpaConsent"
-              type="checkbox"
-              class="w-4 h-4 text-blue-600 bg-white border-zinc-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
-              required
-            />
-          </div>
-          <div class="ml-3 text-sm">
-            <label for="tcpaConsent" class="text-zinc-700 dark:text-zinc-300">
-              <span class="text-red-500">*</span> {{ tcpaConsentText }}
-            </label>
-          </div>
-        </div>
-
-        <!-- Optional Email Marketing Consent -->
-        <div class="flex items-start">
-          <div class="flex items-center h-5">
-            <input
-              id="emailMarketing"
-              v-model="form.emailMarketingConsent"
-              type="checkbox"
-              class="w-4 h-4 text-blue-600 bg-white border-zinc-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
-            />
-          </div>
-          <div class="ml-3 text-sm">
-            <label
-              for="emailMarketing"
-              class="text-zinc-700 dark:text-zinc-300"
-            >
-              I would also like to receive periodic marketing emails about new
-              products and special offers.
-            </label>
-          </div>
-        </div>
-
-        <!-- Licensing Disclosure -->
-        <div
-          class="text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-md"
-        >
-          <p class="font-medium mb-1">Licensing Information:</p>
-          <p>{{ licensingDisclosure }}</p>
-        </div>
-
-        <!-- Links -->
-        <div class="mt-2 space-x-4 text-xs">
-          <NuxtLink
-            href="/privacy-policy"
-            class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            View our Privacy Policy
-          </NuxtLink>
-          <NuxtLink
-            href="/terms-of-service"
-            class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            Terms of Service
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Health Information Privacy Notice -->
-      <div
-        class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md dark:bg-blue-900/20 dark:border-blue-800"
-      >
-        <div class="flex items-start space-x-2">
-          <div class="text-blue-600 dark:text-blue-400 text-lg">🔒</div>
-          <div class="flex-1">
-            <h4
-              class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1"
-            >
-              Your Privacy is Protected
-            </h4>
-            <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-              Your information is secure and used solely for generating your
-              personalized life insurance quote. Health information,
-              medications, and personal details are encrypted and protected. We
-              do not share or sell your information to third parties.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Submit Section -->
-      <div
-        v-auto-animate
-        class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-700"
-      >
-        <Button
-          type="submit"
-          :disabled="isSubmitting || !isFormValid"
-          :class="
-            [
-              'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
-              isSubmitting
-                ? 'scale-95 animate-pulse'
-                : 'hover:scale-105 hover:shadow-lg',
-            ].join(' ')
-          "
-        >
-          <span v-auto-animate class="flex items-center gap-2">
-            <Icon
-              v-if="isSubmitting"
-              name="heroicons:arrow-path"
-              class="h-4 w-4 animate-spin"
-            />
-            {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
-          </span>
-        </Button>
-
-        <div class="text-right">
-          <p class="text-xs text-zinc-500 dark:text-zinc-400">
-            * Required fields
-          </p>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400">
-            Your information is secure and confidential
-          </p>
-        </div>
-      </div>
-    </form>
-
-    <!-- Success/Error Messages -->
-    <div
-      v-if="submitted"
-      v-auto-animate
-      class="mt-4 p-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 shadow-lg animate-in slide-in-from-top duration-500"
-    >
-      <div class="flex items-center gap-2">
-        <Icon
-          name="heroicons:check-circle"
-          class="h-5 w-5 text-green-600 dark:text-green-400 animate-in zoom-in duration-300 delay-200"
-        />
-        <p class="text-sm text-green-700 dark:text-green-400">
-          Thank you! We'll contact you within 24 hours with your personalized
-          quote.
+        <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          Thank You for Your Quote Request!
+        </h2>
+        <p class="text-zinc-600 dark:text-zinc-400">
+          Hi <span class="font-semibold">{{ submittedUserName }}</span
+          >, we've received your quote request and will contact you within 24
+          hours with a personalized life insurance quote.
         </p>
+      </div>
+
+      <div
+        class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-3"
+      >
+        <h3 class="font-semibold text-blue-900 dark:text-blue-100">
+          What happens next?
+        </h3>
+        <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-2">
+          <li class="flex items-start gap-2">
+            <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <span>Our agents will review your information</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <span
+              >We'll contact you with personalized quotes from top
+              carriers</span
+            >
+          </li>
+          <li class="flex items-start gap-2">
+            <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <span
+              >Compare options and choose the best coverage for your
+              family</span
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div
+        class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4"
+      >
+        <p class="text-sm text-amber-900 dark:text-amber-100">
+          <strong>Need to add or change anything?</strong> Please contact us
+          directly:
+        </p>
+        <div class="mt-3 flex flex-col sm:flex-row gap-2">
+          <a
+            :href="`tel:+1${agencyPhone.replace(/[^\\d]/g, '')}`"
+            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors"
+          >
+            <Icon name="heroicons:phone" class="h-4 w-4 mr-2" />
+            Call Us
+          </a>
+          <a
+            :href="`sms:+1${agencyPhone.replace(/[^\\d]/g, '')}`"
+            class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors"
+          >
+            <Icon name="heroicons:chat-bubble-left" class="h-4 w-4 mr-2" />
+            Text Us
+          </a>
+          <a
+            :href="`mailto:${agencyEmail}`"
+            class="inline-flex items-center justify-center px-4 py-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded-md text-sm font-medium transition-colors"
+          >
+            <Icon name="heroicons:envelope" class="h-4 w-4 mr-2" />
+            Email Us
+          </a>
+        </div>
       </div>
     </div>
 
-    <div
-      v-if="error"
-      v-auto-animate
-      class="mt-4 p-4 rounded-md animate-in slide-in-from-top duration-500"
-      :class="{
-        'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700':
-          errorType === 'duplicate_email',
-        'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700':
-          errorType !== 'duplicate_email',
-      }"
-    >
-      <div class="flex items-start space-x-3">
-        <div class="flex-shrink-0">
-          <Icon
-            :name="
-              errorType === 'duplicate_email'
-                ? 'heroicons:check-circle'
-                : 'heroicons:exclamation-triangle'
-            "
-            :class="{
-              'w-5 h-5 text-green-600 dark:text-green-400':
-                errorType === 'duplicate_email',
-              'w-5 h-5 text-red-600 dark:text-red-400':
-                errorType !== 'duplicate_email',
-            }"
-          />
-        </div>
-        <div class="flex-1">
-          <h3
-            class="text-sm font-medium"
-            :class="{
-              'text-green-800 dark:text-green-200':
-                errorType === 'duplicate_email',
-              'text-red-800 dark:text-red-200': errorType !== 'duplicate_email',
-            }"
-          >
-            {{
-              errorType === 'duplicate_email'
-                ? "We're Already Working on Your Quote!"
-                : 'Submission Error'
-            }}
-          </h3>
-          <p
-            class="mt-1 text-sm"
-            :class="{
-              'text-green-700 dark:text-green-300':
-                errorType === 'duplicate_email',
-              'text-red-700 dark:text-red-300': errorType !== 'duplicate_email',
-            }"
-          >
-            {{ errorMessage }}
-          </p>
+    <!-- Form - Shown if not yet submitted -->
+    <div v-else class="space-y-6">
+      <div>
+        <h2 class="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <MailIcon class="h-6 w-6 flex-none" />
+          <span class="ml-3">Get Your Free Life Insurance Quote</span>
+        </h2>
+        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+          Ready to protect your family's future? Fill out the form below and
+          we'll contact you within 24 hours with a personalized life insurance
+          quote.
+        </p>
+      </div>
 
-          <!-- Contact information for duplicate email -->
-          <div v-if="errorType === 'duplicate_email'" class="mt-3 space-y-2">
-            <div class="flex items-center space-x-4 text-sm">
-              <a
-                :href="`tel:+1${agencyPhone.replace(/[^\d]/g, '')}`"
-                class="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/40"
+      <!-- Progress Bar -->
+      <div class="mt-6 mb-8">
+        <MultiStepProgressBar
+          :current-step="currentStep"
+          :is-step1-valid="isStep1Valid"
+          :is-step2-valid="isStep2Valid"
+          :is-step3-valid="isStep3Valid"
+        />
+      </div>
+
+      <form
+        @submit.prevent="handleSubmit"
+        ref="formParent"
+        class="mt-6 space-y-6"
+      >
+        <!-- Step 1: Personal Information Section -->
+        <div
+          v-if="currentStep === 1"
+          ref="personalInfoParent"
+          class="space-y-4"
+        >
+          <h3
+            class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
+          >
+            Personal Information
+          </h3>
+
+          <!-- First and Last Name -->
+          <div
+            ref="nameFieldsParent"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
+            <div>
+              <label
+                for="firstName"
+                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
               >
-                <Icon name="heroicons:phone" class="w-4 h-4 mr-2" />
-                Call {{ agencyPhone }}
-              </a>
-              <a
-                :href="`mailto:${agencyEmail}`"
-                class="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/40"
+                First Name *
+              </label>
+              <input
+                id="firstName"
+                v-model="form.firstName"
+                type="text"
+                required
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.firstName
+                    ? 'outline-red-500 dark:outline-red-400'
+                    : '',
+                ]"
+                placeholder="John"
+                @blur="validateField('firstName')"
+              />
+              <p
+                v-if="errors.firstName"
+                class="mt-1 text-xs text-red-600 dark:text-red-400"
               >
-                <Icon name="heroicons:envelope" class="w-4 h-4 mr-2" />
-                Email Us
-              </a>
+                {{ errors.firstName }}
+              </p>
+            </div>
+            <div>
+              <label
+                for="lastName"
+                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                Last Name *
+              </label>
+              <input
+                id="lastName"
+                v-model="form.lastName"
+                type="text"
+                required
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.lastName ? 'outline-red-500 dark:outline-red-400' : '',
+                ]"
+                placeholder="Doe"
+                @blur="validateField('lastName')"
+              />
+              <p
+                v-if="errors.lastName"
+                class="mt-1 text-xs text-red-600 dark:text-red-400"
+              >
+                {{ errors.lastName }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Email and Phone -->
+          <div v-auto-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                Email Address *
+              </label>
+              <input
+                id="email"
+                v-model="form.email"
+                type="email"
+                required
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.email ? 'outline-red-500 dark:outline-red-400' : '',
+                ]"
+                placeholder="john@example.com"
+                @blur="validateField('email')"
+              />
+              <p
+                v-if="errors.email"
+                class="mt-1 text-xs text-red-600 dark:text-red-400"
+              >
+                {{ errors.email }}
+              </p>
+            </div>
+            <div>
+              <label
+                for="phone"
+                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                Phone Number *
+              </label>
+              <input
+                id="phone"
+                v-model="form.phone"
+                type="tel"
+                required
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.phone ? 'outline-red-500 dark:outline-red-400' : '',
+                ]"
+                placeholder="(555) 123-4567"
+                @blur="validateField('phone')"
+              />
+              <p
+                v-if="errors.phone"
+                class="mt-1 text-xs text-red-600 dark:text-red-400"
+              >
+                {{ errors.phone }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Date of Birth -->
+          <div>
+            <label
+              for="dateOfBirth"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Date of Birth *
+            </label>
+            <input
+              id="dateOfBirth"
+              v-model="form.dateOfBirth"
+              type="date"
+              required
+              :max="maxDate"
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.dateOfBirth
+                  ? 'outline-red-500 dark:outline-red-400'
+                  : '',
+              ]"
+              @blur="validateField('dateOfBirth')"
+            />
+            <p
+              v-if="errors.dateOfBirth"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.dateOfBirth }}
+            </p>
+            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Required for accurate life insurance quotes
+            </p>
+          </div>
+
+          <!-- City and State -->
+          <div v-auto-animate class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <!-- City -->
+            <div>
+              <label
+                for="city"
+                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                City *
+              </label>
+              <input
+                id="city"
+                v-model="form.city"
+                type="text"
+                required
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.city ? 'outline-red-500 dark:outline-red-400' : '',
+                ]"
+                placeholder="Enter your city"
+                @blur="validateField('city')"
+              />
+              <p
+                v-if="errors.city"
+                class="mt-1 text-xs text-red-600 dark:text-red-400"
+              >
+                {{ errors.city }}
+              </p>
+            </div>
+
+            <!-- State -->
+            <div>
+              <label
+                for="state"
+                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                State *
+              </label>
+              <select
+                id="state"
+                v-model="form.state"
+                required
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.state ? 'outline-red-500 dark:outline-red-400' : '',
+                ]"
+                @blur="validateField('state')"
+              >
+                <option value="">Select your state</option>
+                <option value="AL">Alabama</option>
+                <option value="AR">Arkansas</option>
+                <option value="AZ">Arizona</option>
+                <option value="CA">California</option>
+                <option value="CO">Colorado</option>
+                <option value="CT">Connecticut</option>
+                <option value="FL">Florida</option>
+                <option value="GA">Georgia</option>
+                <option value="IA">Iowa</option>
+                <option value="ID">Idaho</option>
+                <option value="IL">Illinois</option>
+                <option value="IN">Indiana</option>
+                <option value="MA">Massachusetts</option>
+                <option value="MD">Maryland</option>
+                <option value="MI">Michigan</option>
+                <option value="MN">Minnesota</option>
+                <option value="MO">Missouri</option>
+                <option value="MT">Montana</option>
+                <option value="NC">North Carolina</option>
+                <option value="NE">Nebraska</option>
+                <option value="NJ">New Jersey</option>
+                <option value="NM">New Mexico</option>
+                <option value="NV">Nevada</option>
+                <option value="OH">Ohio</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="SC">South Carolina</option>
+                <option value="SD">South Dakota</option>
+                <option value="TN">Tennessee</option>
+                <option value="TX">Texas</option>
+                <option value="UT">Utah</option>
+                <option value="VA">Virginia</option>
+                <option value="WA">Washington</option>
+                <option value="WI">Wisconsin</option>
+                <option value="WY">Wyoming</option>
+              </select>
+              <p
+                v-if="errors.state"
+                class="mt-1 text-xs text-red-600 dark:text-red-400"
+              >
+                {{ errors.state }}
+              </p>
+              <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                We can only provide quotes in states where we're licensed
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Health Information Section -->
+        <div v-if="currentStep === 2" class="space-y-4">
+          <div class="flex items-start justify-between">
+            <h3
+              class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2 flex-1"
+            >
+              Health Information
+            </h3>
+          </div>
+
+          <!-- Health Information Disclaimer -->
+          <div
+            class="p-3 bg-amber-50 border border-amber-200 rounded-md dark:bg-amber-900/20 dark:border-amber-800"
+          >
+            <p class="text-xs text-amber-700 dark:text-amber-300">
+              <strong>Health Information Privacy:</strong> Medical information
+              you provide is securely encrypted and used only for insurance
+              underwriting purposes. This information helps us find the most
+              accurate rates for your situation and is protected under strict
+              privacy guidelines.
+            </p>
+          </div>
+
+          <!-- Health Conditions -->
+          <div>
+            <label
+              for="healthConditions"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Current Health Conditions
+            </label>
+            <textarea
+              id="healthConditions"
+              v-model="form.healthConditions"
+              rows="3"
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.healthConditions
+                  ? 'outline-red-500 dark:outline-red-400'
+                  : '',
+              ]"
+              placeholder="Please list any current health conditions, diagnosed illnesses, or ongoing medical concerns. If none, please write 'None'."
+              @blur="validateField('healthConditions')"
+            />
+            <p
+              v-if="errors.healthConditions"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.healthConditions }}
+            </p>
+            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              This information helps us find the best rates and is kept strictly
+              confidential
+            </p>
+          </div>
+
+          <!-- Medications -->
+          <div>
+            <label
+              for="medications"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Current Medications
+            </label>
+            <textarea
+              id="medications"
+              v-model="form.medications"
+              rows="3"
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.medications
+                  ? 'outline-red-500 dark:outline-red-400'
+                  : '',
+              ]"
+              placeholder="Please list all current medications including dosages if known. If none, please write 'None'."
+              @blur="validateField('medications')"
+            />
+            <p
+              v-if="errors.medications"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.medications }}
+            </p>
+            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Include prescription medications, over-the-counter drugs, and
+              supplements
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3: Coverage Information Section -->
+        <div v-if="currentStep === 3" class="space-y-4">
+          <h3
+            class="text-sm font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
+          >
+            Coverage Information
+          </h3>
+
+          <!-- Coverage Type -->
+          <div>
+            <label
+              for="coverageType"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Type of Coverage Interested In *
+            </label>
+            <select
+              id="coverageType"
+              v-model="form.coverageType"
+              required
+              :class="[
+                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                errors.coverageType
+                  ? 'outline-red-500 dark:outline-red-400'
+                  : '',
+              ]"
+              @blur="validateField('coverageType')"
+            >
+              <option value="">Select coverage type...</option>
+              <option value="term-life">Term Life Insurance</option>
+              <option value="whole-life">Whole Life Insurance</option>
+              <option value="iul">Indexed Universal Life (IUL)</option>
+              <option value="mortgage-protection">Mortgage Protection</option>
+              <option value="final-expense">Final Expense Insurance</option>
+              <option value="annuities">Annuities</option>
+              <option value="not-sure">Not Sure - Need Guidance</option>
+            </select>
+            <p
+              v-if="errors.coverageType"
+              class="mt-1 text-xs text-red-600 dark:text-red-400"
+            >
+              {{ errors.coverageType }}
+            </p>
+            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              We'll help you find the best coverage type for your needs
+            </p>
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label
+              for="message"
+              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              Additional Information or Questions
+            </label>
+            <textarea
+              id="message"
+              v-model="form.message"
+              rows="4"
+              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
+              placeholder="Tell us about your family's protection needs, coverage amount you're considering, your goals, timeline, or any questions about life insurance..."
+            />
+            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Optional - Any additional details that might help us serve you
+              better
+            </p>
+          </div>
+        </div>
+
+        <!-- TCPA Consent Section - Only shown on final step -->
+        <div v-if="currentStep === 3" class="mt-6 space-y-4">
+          <!-- Primary TCPA Consent -->
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input
+                id="tcpaConsent"
+                v-model="form.tcpaConsent"
+                type="checkbox"
+                class="w-4 h-4 text-blue-600 bg-white border-zinc-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
+                required
+              />
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="tcpaConsent" class="text-zinc-700 dark:text-zinc-300">
+                <span class="text-red-500">*</span> {{ tcpaConsentText }}
+              </label>
+            </div>
+          </div>
+
+          <!-- Optional Email Marketing Consent -->
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input
+                id="emailMarketing"
+                v-model="form.emailMarketingConsent"
+                type="checkbox"
+                class="w-4 h-4 text-blue-600 bg-white border-zinc-300 rounded focus:ring-blue-500 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600"
+              />
+            </div>
+            <div class="ml-3 text-sm">
+              <label
+                for="emailMarketing"
+                class="text-zinc-700 dark:text-zinc-300"
+              >
+                I would also like to receive periodic marketing emails about new
+                products and special offers.
+              </label>
+            </div>
+          </div>
+
+          <!-- Licensing Disclosure -->
+          <div
+            class="text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-md"
+          >
+            <p class="font-medium mb-1">Licensing Information:</p>
+            <p>{{ licensingDisclosure }}</p>
+          </div>
+
+          <!-- Links -->
+          <div class="mt-2 space-x-4 text-xs">
+            <NuxtLink
+              href="/privacy-policy"
+              class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              View our Privacy Policy
+            </NuxtLink>
+            <NuxtLink
+              href="/terms-of-service"
+              class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Terms of Service
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Health Information Privacy Notice -->
+        <div
+          class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md dark:bg-blue-900/20 dark:border-blue-800"
+        >
+          <div class="flex items-start space-x-2">
+            <div class="text-blue-600 dark:text-blue-400 text-lg">🔒</div>
+            <div class="flex-1">
+              <h4
+                class="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1"
+              >
+                Your Privacy is Protected
+              </h4>
+              <p
+                class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed"
+              >
+                Your information is secure and used solely for generating your
+                personalized life insurance quote. Health information,
+                medications, and personal details are encrypted and protected.
+                We do not share or sell your information to third parties.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div
+          v-auto-animate
+          class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-700"
+        >
+          <!-- Previous Button -->
+          <Button
+            v-if="currentStep > 1"
+            type="button"
+            @click="previousStep"
+            class="bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100"
+          >
+            <span v-auto-animate class="flex items-center gap-2">
+              <Icon name="heroicons:arrow-left" class="h-4 w-4" />
+              Previous
+            </span>
+          </Button>
+
+          <!-- Next/Submit Button -->
+          <Button
+            v-if="currentStep < 3"
+            type="button"
+            @click="nextStep"
+            :disabled="isSubmitting || !isCurrentStepValid"
+            :class="
+              [
+                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
+                isSubmitting
+                  ? 'scale-95 animate-pulse'
+                  : 'hover:scale-105 hover:shadow-lg',
+              ].join(' ')
+            "
+          >
+            <span v-auto-animate class="flex items-center gap-2">
+              Next
+              <Icon name="heroicons:arrow-right" class="h-4 w-4" />
+            </span>
+          </Button>
+
+          <!-- Final Submit Button -->
+          <Button
+            v-if="currentStep === 3"
+            type="submit"
+            :disabled="isSubmitting || !isCurrentStepValid"
+            :class="
+              [
+                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
+                isSubmitting
+                  ? 'scale-95 animate-pulse'
+                  : 'hover:scale-105 hover:shadow-lg',
+              ].join(' ')
+            "
+          >
+            <span v-auto-animate class="flex items-center gap-2">
+              <Icon
+                v-if="isSubmitting"
+                name="heroicons:arrow-path"
+                class="h-4 w-4 animate-spin"
+              />
+              {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
+            </span>
+          </Button>
+
+          <div v-if="currentStep === 1" class="text-right">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+              * Required fields
+            </p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+              Your information is secure and confidential
+            </p>
+          </div>
+        </div>
+      </form>
+
+      <!-- Success/Error Messages -->
+      <div
+        v-if="submitted"
+        v-auto-animate
+        class="mt-4 p-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 shadow-lg animate-in slide-in-from-top duration-500"
+      >
+        <div class="flex items-center gap-2">
+          <Icon
+            name="heroicons:check-circle"
+            class="h-5 w-5 text-green-600 dark:text-green-400 animate-in zoom-in duration-300 delay-200"
+          />
+          <p class="text-sm text-green-700 dark:text-green-400">
+            Thank you! We'll contact you within 24 hours with your personalized
+            quote.
+          </p>
+        </div>
+      </div>
+
+      <div
+        v-if="error"
+        v-auto-animate
+        class="mt-4 p-4 rounded-md animate-in slide-in-from-top duration-500"
+        :class="{
+          'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700':
+            errorType === 'duplicate_email',
+          'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700':
+            errorType !== 'duplicate_email',
+        }"
+      >
+        <div class="flex items-start space-x-3">
+          <div class="flex-shrink-0">
+            <Icon
+              :name="
+                errorType === 'duplicate_email'
+                  ? 'heroicons:check-circle'
+                  : 'heroicons:exclamation-triangle'
+              "
+              :class="{
+                'w-5 h-5 text-green-600 dark:text-green-400':
+                  errorType === 'duplicate_email',
+                'w-5 h-5 text-red-600 dark:text-red-400':
+                  errorType !== 'duplicate_email',
+              }"
+            />
+          </div>
+          <div class="flex-1">
+            <h3
+              class="text-sm font-medium"
+              :class="{
+                'text-green-800 dark:text-green-200':
+                  errorType === 'duplicate_email',
+                'text-red-800 dark:text-red-200':
+                  errorType !== 'duplicate_email',
+              }"
+            >
+              {{
+                errorType === 'duplicate_email'
+                  ? "We're Already Working on Your Quote!"
+                  : 'Submission Error'
+              }}
+            </h3>
+            <p
+              class="mt-1 text-sm"
+              :class="{
+                'text-green-700 dark:text-green-300':
+                  errorType === 'duplicate_email',
+                'text-red-700 dark:text-red-300':
+                  errorType !== 'duplicate_email',
+              }"
+            >
+              {{ errorMessage }}
+            </p>
+
+            <!-- Contact information for duplicate email -->
+            <div v-if="errorType === 'duplicate_email'" class="mt-3 space-y-2">
+              <div class="flex items-center space-x-4 text-sm">
+                <a
+                  :href="`tel:+1${agencyPhone.replace(/[^\d]/g, '')}`"
+                  class="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/40"
+                >
+                  <Icon name="heroicons:phone" class="w-4 h-4 mr-2" />
+                  Call {{ agencyPhone }}
+                </a>
+                <a
+                  :href="`mailto:${agencyEmail}`"
+                  class="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:text-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/40"
+                >
+                  <Icon name="heroicons:envelope" class="w-4 h-4 mr-2" />
+                  Email Us
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -644,10 +792,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useAutoAnimate } from '@formkit/auto-animate/vue';
+import { useLocalStorage } from '@vueuse/core';
 import MailIcon from './icons/MailIcon.vue';
 import Button from './Button.vue';
+import MultiStepProgressBar from './MultiStepProgressBar.vue';
 import {
   calculateAge,
   isValidAge,
@@ -660,6 +810,19 @@ import {
 const [formParent] = useAutoAnimate();
 const [personalInfoParent] = useAutoAnimate();
 const [nameFieldsParent] = useAutoAnimate();
+
+// Multi-step form state
+const currentStep = ref(1);
+const isMounted = ref(false);
+
+// Local storage for form submission tracking
+const quoteFormSubmitted = useLocalStorage('quoteFormSubmitted', false);
+const submittedUserName = useLocalStorage('submittedUserName', '');
+
+// Hook to track when component is mounted (for hydration)
+onMounted(() => {
+  isMounted.value = true;
+});
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();
@@ -718,21 +881,68 @@ const maxDate = computed(() => {
   return getTodayInputFormat();
 });
 
-const isFormValid = computed(() => {
+// Step 1: Personal Information validation
+const isStep1Valid = computed(() => {
   const requiredFields = [
     'firstName',
     'lastName',
     'email',
     'phone',
     'dateOfBirth',
-    'coverageType',
+    'city',
+    'state',
   ];
   const hasRequiredFields = requiredFields.every(
     (field) => (form[field as keyof typeof form] as string).trim() !== ''
   );
-  const hasNoErrors = Object.values(errors).every((error) => error === '');
-  const hasConsent = form.tcpaConsent === true;
-  return hasRequiredFields && hasNoErrors && hasConsent;
+  const hasNoErrors = Object.entries(errors)
+    .filter(([key]) =>
+      [
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'dateOfBirth',
+        'city',
+        'state',
+      ].includes(key)
+    )
+    .every(([, error]) => error === '');
+  return hasRequiredFields && hasNoErrors;
+});
+
+// Step 2: Health Information validation
+const isStep2Valid = computed(() => {
+  const requiredFields = ['healthConditions', 'medications'];
+  const hasRequiredFields = requiredFields.every(
+    (field) => (form[field as keyof typeof form] as string).trim() !== ''
+  );
+  const hasNoErrors = Object.entries(errors)
+    .filter(([key]) => ['healthConditions', 'medications'].includes(key))
+    .every(([, error]) => error === '');
+  return hasRequiredFields && hasNoErrors;
+});
+
+// Step 3: Coverage Information validation
+const isStep3Valid = computed(() => {
+  const hasRequiredFields =
+    (form.coverageType as string).trim() !== '' && form.tcpaConsent === true;
+  const hasNoErrors = Object.entries(errors)
+    .filter(([key]) => ['coverageType'].includes(key))
+    .every(([, error]) => error === '');
+  return hasRequiredFields && hasNoErrors;
+});
+
+// Current step validation
+const isCurrentStepValid = computed(() => {
+  if (currentStep.value === 1) return isStep1Valid.value;
+  if (currentStep.value === 2) return isStep2Valid.value;
+  if (currentStep.value === 3) return isStep3Valid.value;
+  return false;
+});
+
+const isFormValid = computed(() => {
+  return isStep1Valid.value && isStep2Valid.value && isStep3Valid.value;
 });
 
 // Validation functions
@@ -913,6 +1123,47 @@ const validateAllFields = () => {
   return Object.values(errors).every((error) => error === '');
 };
 
+// Step Navigation
+const nextStep = () => {
+  if (currentStep.value < 3) {
+    // Validate current step before moving forward
+    if (!isCurrentStepValid.value) {
+      // Validate all fields in current step
+      if (currentStep.value === 1) {
+        [
+          'firstName',
+          'lastName',
+          'email',
+          'phone',
+          'dateOfBirth',
+          'city',
+          'state',
+        ].forEach((field) => {
+          validateField(field as keyof typeof form);
+        });
+      } else if (currentStep.value === 2) {
+        ['healthConditions', 'medications'].forEach((field) => {
+          validateField(field as keyof typeof form);
+        });
+      } else if (currentStep.value === 3) {
+        ['coverageType'].forEach((field) => {
+          validateField(field as keyof typeof form);
+        });
+      }
+      return;
+    }
+    currentStep.value++;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+const previousStep = () => {
+  if (currentStep.value > 1) {
+    currentStep.value--;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
 // Form submission
 const handleSubmit = async () => {
   if (!validateAllFields()) {
@@ -961,6 +1212,11 @@ const handleSubmit = async () => {
     Object.keys(errors).forEach((key) => {
       errors[key as keyof typeof errors] = '';
     });
+
+    // Store submission in localStorage and advance progress
+    quoteFormSubmitted.value = true;
+    submittedUserName.value = form.firstName;
+    currentStep.value = 4; // Mark step 3 as complete by advancing to step 4
 
     submitted.value = true;
 
