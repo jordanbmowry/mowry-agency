@@ -23,6 +23,21 @@ export const validateAge = (dateOfBirth: string): boolean => {
   return isValidAge(dateOfBirth, 18);
 };
 
+// Sex validation
+export const validateSex = (sex: string): boolean => {
+  return ['Male', 'Female'].includes(sex);
+};
+
+// Height validation (4'0" to 7'0")
+export const validateHeight = (height: number): boolean => {
+  return height >= 4.0 && height <= 7.0;
+};
+
+// Weight validation (50-500 lbs)
+export const validateWeight = (weight: number): boolean => {
+  return weight >= 50 && weight <= 500;
+};
+
 // Token encoding/decoding
 export const encodeEmailToken = (email: string): string => {
   return Buffer.from(email).toString('base64');

@@ -31,6 +31,10 @@ export type Database = {
           lead_type: string | null;
           lead_source: string | null;
           status: string | null;
+          sex: 'Male' | 'Female' | null;
+          height: number | null;
+          weight: number | null;
+          loan_amount: number | null;
         };
         Insert: {
           id?: string;

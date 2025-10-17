@@ -1,6 +1,9 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
 import {
   validateEmail,
+  validateSex,
+  validateHeight,
+  validateWeight,
   transformLeadData,
   isDuplicateEmailError,
   extractClientInfo,
@@ -22,6 +25,9 @@ export default defineEventHandler(async (event) => {
       !body.email ||
       !body.phone ||
       !body.dateOfBirth ||
+      !body.sex ||
+      !body.height ||
+      !body.weight ||
       !body.city ||
       !body.state ||
       !body.coverageType ||
@@ -30,7 +36,31 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 400,
         statusMessage:
-          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, city, state, coverageType, and tcpaConsent are required',
+          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, sex, height, weight, city, state, coverageType, and tcpaConsent are required',
+      });
+    }
+
+    // Validate sex
+    if (!validateSex(body.sex)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid sex value',
+      });
+    }
+
+    // Validate height
+    if (!validateHeight(parseFloat(body.height))) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid height value',
+      });
+    }
+
+    // Validate weight
+    if (!validateWeight(parseFloat(body.weight))) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid weight value',
       });
     }
 
