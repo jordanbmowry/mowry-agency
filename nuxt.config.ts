@@ -12,7 +12,40 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/content',
     '@nuxtjs/seo',
-    '@nuxtjs/supabase',
+    [
+      '@nuxtjs/supabase',
+      {
+        redirect: true,
+        redirectOptions: {
+          login: '/admin/login',
+          callback: '/confirm',
+          exclude: [
+            '/',
+            '/about',
+            '/agents',
+            '/carriers',
+            '/projects',
+            '/quote',
+            '/articles/*',
+            '/speaking',
+            '/uses',
+          ],
+        },
+        cookieOptions: {
+          maxAge: 60 * 60 * 8, // 8 hours
+          sameSite: 'lax',
+          secure: true,
+        },
+        clientOptions: {
+          auth: {
+            flowType: 'pkce',
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            persistSession: true,
+          },
+        },
+      },
+    ],
     '@netlify/nuxt',
     '@vee-validate/nuxt',
     '@formkit/auto-animate/nuxt',
