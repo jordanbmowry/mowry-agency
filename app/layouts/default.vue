@@ -9,9 +9,9 @@
   </div>
 
   <!-- Content structure -->
-  <div ref="layoutParent" class="relative flex w-full flex-col">
+  <div class="relative flex w-full flex-col">
     <Header />
-    <main ref="mainParent" class="flex-auto">
+    <main class="flex-auto">
       <slot />
     </main>
     <Footer />
@@ -19,11 +19,6 @@
 </template>
 
 <script setup>
-import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import Header from '~/components/Header.vue';
 import Footer from '~/components/Footer.vue';
-
-// Auto-animate refs
-const [layoutParent] = useAutoAnimate();
-const [mainParent] = useAutoAnimate();
 </script>
