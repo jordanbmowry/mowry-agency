@@ -24,6 +24,7 @@ export interface Lead {
   height: string | null;
   weight: string | null;
   loan_amount: number | null;
+  status: 'new' | 'in_progress' | 'contacted' | 'closed' | null;
 }
 
 export interface Database {
