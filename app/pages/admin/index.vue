@@ -7,12 +7,21 @@
         >
           Admin Dashboard
         </h1>
-        <button
-          @click="handleSignOut"
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
-        >
-          Sign Out
-        </button>
+        <div class="flex items-center gap-4">
+          <button
+            @click="handleExportCSV"
+            :disabled="exporting || quotes.length === 0"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400 dark:bg-green-700 dark:hover:bg-green-800 dark:disabled:bg-green-600"
+          >
+            {{ exporting ? 'Exporting...' : 'Export to CSV' }}
+          </button>
+          <button
+            @click="handleSignOut"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
+          >
+            Sign Out
+          </button>
+        </div>
       </div>
 
       <div
@@ -116,6 +125,8 @@ const supabase = useSupabaseClient();
 const quotes = ref<Lead[]>([]);
 const loading = ref(true);
 const updatingIds = ref<string[]>([]);
+const exporting = ref(false);
+const { exportLeadsToCSV } = useLeadsExport();
 
 // Fetch quotes on mount
 onMounted(async () => {
@@ -179,6 +190,26 @@ async function handleSignOut() {
     navigateTo('/admin/login');
   } catch (e) {
     console.error('Error signing out:', e);
+  }
+}
+
+// Export to CSV handler
+async function handleExportCSV() {
+  try {
+    exporting.value = true;
+    await exportLeadsToCSV(quotes.value);
+    // Refresh the quotes to update exported_to_csv status
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    quotes.value = data as unknown as Lead[];
+  } catch (e) {
+    console.error('Error exporting to CSV:', e);
+  } finally {
+    exporting.value = false;
   }
 }
 </script>

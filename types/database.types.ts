@@ -25,6 +25,10 @@ export interface Lead {
   weight: string | null;
   loan_amount: number | null;
   status: 'new' | 'in_progress' | 'contacted' | 'closed' | null;
+  exported_to_csv: boolean;
+  city: string | null;
+  state: string | null;
+  sex: string | null;
 }
 
 export interface Database {
