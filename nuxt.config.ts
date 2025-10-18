@@ -15,26 +15,12 @@ export default defineNuxtConfig({
     [
       '@nuxtjs/supabase',
       {
-        redirect: true,
+        redirect: false,
         redirectOptions: {
           login: '/admin/login',
           callback: '/confirm',
-          exclude: [
-            '/',
-            '/about',
-            '/agents',
-            '/carriers',
-            '/projects',
-            '/quote',
-            '/articles/*',
-            '/speaking',
-            '/uses',
-            '/join-us',
-            '/terms-of-service',
-            '/privacy-policy',
-            '/schedule-interview',
-            '/thank-you',
-          ],
+          include: ['/admin(/.*)'],
+          exclude: [],
         },
         cookieOptions: {
           maxAge: 60 * 60 * 8, // 8 hours
