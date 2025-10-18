@@ -1,0 +1,456 @@
+import { reactive, computed, ref } from 'vue';
+import { useLocalStorage } from '@vueuse/core';
+import {
+  calculateAge,
+  isValidAge,
+  getTodayInputFormat,
+  isValidDateString,
+} from '~/utils/dateUtils';
+
+// Types
+export interface QuoteFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  city: string;
+  state: string;
+  sex: string;
+  height: string;
+  weight: string;
+  healthConditions: string;
+  medications: string;
+  coverageType: string;
+  message: string;
+  tcpaConsent: boolean;
+  emailMarketingConsent: boolean;
+  formVersion: string;
+}
+
+export interface QuoteFormErrors {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  city: string;
+  state: string;
+  sex: string;
+  height: string;
+  weight: string;
+  healthConditions: string;
+  medications: string;
+  coverageType: string;
+}
+
+// Pure validation functions
+export const validators = {
+  email: (email: string): string => {
+    if (!email.trim()) return 'Email is required';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return 'Please enter a valid email address';
+    return '';
+  },
+
+  phone: (phone: string): string => {
+    if (!phone.trim()) return 'Phone number is required';
+    const phoneRegex = /^[\+]?[1-9]?[\s\-\.\(\)]?[\d\s\-\.\(\)]{9,15}$/;
+    if (!phoneRegex.test(phone)) return 'Please enter a valid phone number';
+    return '';
+  },
+
+  name: (name: string, fieldName: string): string => {
+    if (!name.trim()) return `${fieldName} is required`;
+    if (name.trim().length < 2)
+      return `${fieldName} must be at least 2 characters`;
+    if (name.trim().length > 50)
+      return `${fieldName} must be less than 50 characters`;
+    return '';
+  },
+
+  dateOfBirth: (dateOfBirth: string): string => {
+    if (!dateOfBirth.trim()) return 'Date of birth is required';
+
+    if (!isValidDateString(dateOfBirth)) {
+      return 'Please enter a valid date';
+    }
+
+    if (!isValidAge(dateOfBirth, 18)) {
+      return 'You must be at least 18 years old';
+    }
+
+    const age = calculateAge(dateOfBirth);
+    if (age > 100) {
+      return 'Please enter a valid date of birth';
+    }
+
+    return '';
+  },
+
+  city: (city: string): string => {
+    if (!city.trim()) return 'City is required';
+    if (city.trim().length < 2) return 'City must be at least 2 characters';
+    return '';
+  },
+
+  state: (state: string): string => {
+    if (!state.trim()) return 'State is required';
+    if (state.trim().length < 2) return 'State must be at least 2 characters';
+    return '';
+  },
+
+  sex: (sex: string): string => {
+    if (!sex.trim()) return 'Sex is required';
+    const validSexValues = ['male', 'female', 'other'];
+    if (!validSexValues.includes(sex.toLowerCase())) {
+      return 'Please select a valid option';
+    }
+    return '';
+  },
+
+  height: (height: string): string => {
+    if (!height.trim()) return 'Height is required';
+    const heightNum = parseFloat(height);
+    if (isNaN(heightNum)) return 'Please enter a valid height';
+    if (heightNum < 36 || heightNum > 96) {
+      return 'Height must be between 36 and 96 inches';
+    }
+    return '';
+  },
+
+  weight: (weight: string): string => {
+    if (!weight.trim()) return 'Weight is required';
+    const weightNum = parseFloat(weight);
+    if (isNaN(weightNum)) return 'Please enter a valid weight';
+    if (weightNum < 50 || weightNum > 500) {
+      return 'Weight must be between 50 and 500 pounds';
+    }
+    return '';
+  },
+
+  healthConditions: (value: string): string => {
+    if (!value.trim()) return 'Please describe your health conditions';
+    if (value.trim().length < 3)
+      return 'Please provide more detail (at least 3 characters)';
+    return '';
+  },
+
+  medications: (value: string): string => {
+    if (!value.trim()) return 'Please list current medications';
+    if (value.trim().length < 3)
+      return 'Please provide more detail (at least 3 characters)';
+    return '';
+  },
+
+  coverageType: (value: string): string => {
+    if (!value.trim()) return 'Coverage type is required';
+    return '';
+  },
+};
+
+// Pure function to check if required fields are filled for a step
+const hasRequiredFieldsForStep = (
+  form: QuoteFormData,
+  fields: (keyof QuoteFormData)[]
+): boolean => {
+  return fields.every((field) => {
+    const value = form[field];
+    if (typeof value === 'boolean') return value;
+    return (value as string).trim() !== '';
+  });
+};
+
+// Pure function to check if errors exist for given fields
+const hasNoErrorsForFields = (
+  errors: QuoteFormErrors,
+  fields: (keyof QuoteFormErrors)[]
+): boolean => {
+  return fields.every((field) => errors[field] === '');
+};
+
+export const useQuoteForm = () => {
+  // Multi-step form state
+  const currentStep = ref(1);
+  const isMounted = ref(false);
+
+  // Local storage for form submission tracking
+  const quoteFormSubmitted = useLocalStorage('quoteFormSubmitted', false);
+  const submittedUserName = useLocalStorage('submittedUserName', '');
+
+  // Form data with TCPA compliance
+  const form = reactive<QuoteFormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    city: '',
+    state: '',
+    sex: '',
+    height: '',
+    weight: '',
+    healthConditions: '',
+    medications: '',
+    coverageType: '',
+    message: '',
+    tcpaConsent: false,
+    emailMarketingConsent: false,
+    formVersion: 'v1.2',
+  });
+
+  // Error tracking
+  const errors = reactive<QuoteFormErrors>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    city: '',
+    state: '',
+    sex: '',
+    height: '',
+    weight: '',
+    healthConditions: '',
+    medications: '',
+    coverageType: '',
+  });
+
+  // Form state
+  const isSubmitting = ref(false);
+  const submitted = ref(false);
+  const error = ref(false);
+  const errorMessage = ref('');
+  const errorType = ref('');
+
+  // Computed: Max date for date picker
+  const maxDate = computed(() => getTodayInputFormat());
+
+  // Step 1 validation (Personal Information)
+  const step1Fields: (keyof QuoteFormData)[] = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'dateOfBirth',
+    'sex',
+    'city',
+    'state',
+  ];
+
+  const isStep1Valid = computed(() => {
+    return (
+      hasRequiredFieldsForStep(form, step1Fields) &&
+      hasNoErrorsForFields(
+        errors,
+        step1Fields.filter((f) => f in errors) as (keyof QuoteFormErrors)[]
+      )
+    );
+  });
+
+  // Step 2 validation (Health Information)
+  const step2Fields: (keyof QuoteFormData)[] = [
+    'height',
+    'weight',
+    'healthConditions',
+    'medications',
+  ];
+
+  const isStep2Valid = computed(() => {
+    return (
+      hasRequiredFieldsForStep(form, step2Fields) &&
+      hasNoErrorsForFields(errors, step2Fields as (keyof QuoteFormErrors)[])
+    );
+  });
+
+  // Step 3 validation (Coverage Information)
+  const step3Fields: (keyof QuoteFormData)[] = ['coverageType', 'tcpaConsent'];
+
+  const isStep3Valid = computed(() => {
+    return (
+      hasRequiredFieldsForStep(form, step3Fields) && errors.coverageType === ''
+    );
+  });
+
+  // Current step validation
+  const isCurrentStepValid = computed(() => {
+    if (currentStep.value === 1) return isStep1Valid.value;
+    if (currentStep.value === 2) return isStep2Valid.value;
+    if (currentStep.value === 3) return isStep3Valid.value;
+    return false;
+  });
+
+  // Overall form validation
+  const isFormValid = computed(() => {
+    return isStep1Valid.value && isStep2Valid.value && isStep3Valid.value;
+  });
+
+  // Validation function that applies validators
+  const validateField = (fieldName: keyof QuoteFormErrors) => {
+    const value = form[fieldName as keyof QuoteFormData];
+
+    switch (fieldName) {
+      case 'firstName':
+        errors.firstName = validators.name(value as string, 'First name');
+        break;
+      case 'lastName':
+        errors.lastName = validators.name(value as string, 'Last name');
+        break;
+      case 'email':
+        errors.email = validators.email(value as string);
+        break;
+      case 'phone':
+        errors.phone = validators.phone(value as string);
+        break;
+      case 'dateOfBirth':
+        errors.dateOfBirth = validators.dateOfBirth(value as string);
+        break;
+      case 'city':
+        errors.city = validators.city(value as string);
+        break;
+      case 'state':
+        errors.state = validators.state(value as string);
+        break;
+      case 'sex':
+        errors.sex = validators.sex(value as string);
+        break;
+      case 'height':
+        errors.height = validators.height(value as string);
+        break;
+      case 'weight':
+        errors.weight = validators.weight(value as string);
+        break;
+      case 'healthConditions':
+        errors.healthConditions = validators.healthConditions(value as string);
+        break;
+      case 'medications':
+        errors.medications = validators.medications(value as string);
+        break;
+      case 'coverageType':
+        errors.coverageType = validators.coverageType(value as string);
+        break;
+    }
+  };
+
+  // Navigation functions
+  const goToStep = (step: number) => {
+    if (step >= 1 && step <= 3) {
+      currentStep.value = step;
+    }
+  };
+
+  const nextStep = () => {
+    if (isCurrentStepValid.value && currentStep.value < 3) {
+      currentStep.value++;
+    }
+  };
+
+  const previousStep = () => {
+    if (currentStep.value > 1) {
+      currentStep.value--;
+    }
+  };
+
+  // Reset form state
+  const resetForm = () => {
+    Object.keys(form).forEach((key) => {
+      const typedKey = key as keyof QuoteFormData;
+      if (typeof form[typedKey] === 'boolean') {
+        (form[typedKey] as boolean) = false;
+      } else {
+        (form[typedKey] as string) = '';
+      }
+    });
+
+    Object.keys(errors).forEach((key) => {
+      errors[key as keyof QuoteFormErrors] = '';
+    });
+
+    currentStep.value = 1;
+    isSubmitting.value = false;
+    submitted.value = false;
+    error.value = false;
+    errorMessage.value = '';
+    errorType.value = '';
+  };
+
+  // Form submission handler
+  const submitForm = async () => {
+    if (!isFormValid.value) {
+      return { success: false, error: 'Please complete all required fields' };
+    }
+
+    isSubmitting.value = true;
+    error.value = false;
+    errorMessage.value = '';
+
+    try {
+      const response = await $fetch('/api/quote', {
+        method: 'POST',
+        body: form,
+      });
+
+      submitted.value = true;
+      quoteFormSubmitted.value = true;
+      submittedUserName.value = form.firstName;
+
+      return { success: true, data: response };
+    } catch (err: any) {
+      console.error('Form submission error:', err);
+
+      error.value = true;
+      submitted.value = false;
+
+      // Handle duplicate email gracefully
+      if (err.data?.isDuplicate) {
+        errorType.value = 'duplicate_email';
+        errorMessage.value =
+          err.data.message || "We're Already Working on Your Quote!";
+        return { success: true, isDuplicate: true, data: err.data };
+      }
+
+      errorType.value = 'submission_error';
+      errorMessage.value =
+        err.data?.message ||
+        'There was an error submitting your request. Please try again or call us directly.';
+
+      return { success: false, error: errorMessage.value };
+    } finally {
+      isSubmitting.value = false;
+    }
+  };
+
+  return {
+    // State
+    form,
+    errors,
+    currentStep,
+    isMounted,
+    isSubmitting,
+    submitted,
+    error,
+    errorMessage,
+    errorType,
+    quoteFormSubmitted,
+    submittedUserName,
+
+    // Computed
+    maxDate,
+    isStep1Valid,
+    isStep2Valid,
+    isStep3Valid,
+    isCurrentStepValid,
+    isFormValid,
+
+    // Methods
+    validateField,
+    goToStep,
+    nextStep,
+    previousStep,
+    resetForm,
+    submitForm,
+
+    // Validators (export for testing)
+    validators,
+  };
+};
