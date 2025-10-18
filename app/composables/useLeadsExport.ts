@@ -1,40 +1,9 @@
+import type { Database } from '~/types/database.types';
+
+type Lead = Database['public']['Tables']['leads']['Row'];
+
 export const useLeadsExport = () => {
   const supabase = useSupabaseClient();
-
-  interface Lead {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string | null;
-    message: string | null;
-    date_of_birth: string | null;
-    coverage_type: string | null;
-    health_conditions: string | null;
-    current_medications: string | null;
-    lead_type: string | null;
-    lead_source: string | null;
-    status: string | null;
-    agent_notes: string | null;
-    city: string | null;
-    state: string | null;
-    tcpa_consent: boolean;
-    tcpa_consent_timestamp: string | null;
-    unsubscribed_at: string | null;
-    email_marketing_consent: boolean;
-    tcpa_text: string | null;
-    ip_address: string | null;
-    user_agent: string | null;
-    form_version: string | null;
-    compliance_review_status: string | null;
-    sex: string | null;
-    height: string | null;
-    weight: string | null;
-    loan_amount: number | null;
-    exported_to_csv: boolean;
-  }
 
   const leadsToCSVRow = (lead: Lead): string[] => {
     // Function to format health conditions for specific fields
@@ -81,8 +50,8 @@ export const useLeadsExport = () => {
       '', // Form Filled By
       '', // Pref.Contact Method
       lead.loan_amount?.toString() || '',
-      lead.height === null ? '' : lead.height,
-      lead.weight === null ? '' : lead.weight,
+      lead.height === null ? '' : lead.height.toString(),
+      lead.weight === null ? '' : lead.weight.toString(),
       '', // High BP/Chol.?
       '', // Heart Problems?
       '', // Diabetes?
