@@ -35,6 +35,7 @@ export type Database = {
           height: number | null;
           weight: number | null;
           loan_amount: number | null;
+          agent_notes: string | null;
         };
         Insert: {
           id?: string;
@@ -57,6 +58,7 @@ export type Database = {
           lead_type?: string | null;
           lead_source?: string | null;
           status?: string | null;
+          agent_notes?: string | null;
         };
         Update: {
           id?: string;
@@ -79,6 +81,7 @@ export type Database = {
           lead_type?: string | null;
           lead_source?: string | null;
           status?: string | null;
+          agent_notes?: string | null;
         };
         Relationships: [];
       };

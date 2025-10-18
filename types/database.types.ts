@@ -29,6 +29,7 @@ export interface Lead {
   city: string | null;
   state: string | null;
   sex: string | null;
+  agent_notes: string | null;
 }
 
 export interface Database {
