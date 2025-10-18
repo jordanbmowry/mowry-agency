@@ -29,6 +29,11 @@ export default defineNuxtConfig({
             '/articles/*',
             '/speaking',
             '/uses',
+            '/join-us',
+            '/terms-of-service',
+            '/privacy-policy',
+            '/schedule-interview',
+            '/thank-you',
           ],
         },
         cookieOptions: {
