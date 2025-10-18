@@ -1,96 +1,148 @@
 <template>
-  <div class="min-h-screen bg-zinc-50 dark:bg-black">
-    <Container class="py-16">
-      <div class="flex justify-between items-center mb-8">
-        <h1
-          class="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100"
-        >
-          Admin Dashboard
-        </h1>
-        <div class="flex items-center gap-4">
+  <div class="min-h-screen bg-zinc-50 dark:bg-black py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+          <h1 class="text-base font-semibold text-gray-900 dark:text-white">
+            Leads Management
+          </h1>
+          <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+            A list of all leads including their contact information, coverage type, and
+            status.
+          </p>
+        </div>
+        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none flex gap-3">
           <button
+            type="button"
             @click="handleExportCSV"
             :disabled="exporting || quotes.length === 0"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400 dark:bg-green-700 dark:hover:bg-green-800 dark:disabled:bg-green-600"
+            class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:bg-green-400 dark:bg-green-700 dark:hover:bg-green-600"
           >
-            {{ exporting ? 'Exporting...' : 'Export to CSV' }}
+            {{ exporting ? "Exporting..." : "Export CSV" }}
           </button>
           <button
+            type="button"
             @click="handleSignOut"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
+            class="block rounded-md bg-zinc-900 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
           >
             Sign Out
           </button>
         </div>
       </div>
+    </div>
 
-      <div
-        class="bg-white dark:bg-zinc-900 shadow overflow-hidden sm:rounded-md"
-      >
-        <ul role="list" class="divide-y divide-zinc-200 dark:divide-zinc-700">
-          <li v-for="quote in quotes" :key="quote.id" class="px-6 py-4">
-            <div class="flex items-center justify-between gap-6">
-              <div class="flex-1">
-                <h3
-                  class="text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                >
-                  {{ quote.first_name }} {{ quote.last_name }}
-                </h3>
-                <div class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                  <p>Email: {{ quote.email }}</p>
-                  <p>Phone: {{ quote.phone }}</p>
-                  <p>Coverage Type: {{ quote.coverage_type }}</p>
-                  <p>Created: {{ formatDate(quote.created_at) }}</p>
-                </div>
-                <div class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
-                  <p>Message: {{ quote.message }}</p>
-                </div>
-              </div>
-              <div class="flex flex-col items-end gap-2">
-                <div class="flex items-center gap-2">
-                  <label
-                    for="status-select-"
-                    :key="`status-label-${quote.id}`"
-                    class="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                  >
-                    Status:
-                  </label>
-                  <select
-                    :key="`status-${quote.id}`"
-                    :value="quote.status"
-                    @change="
-                      (e) =>
-                        handleStatusChange(
-                          quote.id,
-                          (e.target as HTMLSelectElement).value
-                        )
-                    "
-                    :disabled="updatingIds.includes(quote.id)"
-                    class="rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-zinc-100 disabled:text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:disabled:bg-zinc-700 dark:disabled:text-zinc-400"
-                  >
-                    <option value="new">New</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="contacted">Contacted</option>
-                    <option value="closed">Closed</option>
-                  </select>
-                </div>
+    <div class="mt-8 flow-root overflow-hidden">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <table class="w-full text-left">
+          <thead class="bg-white dark:bg-gray-900">
+            <tr>
+              <th
+                scope="col"
+                class="relative isolate py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Name
+                <div
+                  class="absolute inset-y-0 right-full -z-10 w-screen border-b border-b-gray-200 dark:border-b-white/15"
+                />
+                <div
+                  class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-b-gray-200 dark:border-b-white/15"
+                />
+              </th>
+              <th
+                scope="col"
+                class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell dark:text-white"
+              >
+                Email
+              </th>
+              <th
+                scope="col"
+                class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 md:table-cell dark:text-white"
+              >
+                Phone
+              </th>
+              <th
+                scope="col"
+                class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell dark:text-white"
+              >
+                Coverage Type
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white"
+              >
+                Status
+              </th>
+              <th scope="col" class="py-3.5 pl-3">
+                <span class="sr-only">View</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="quote in quotes" :key="quote.id">
+              <td
+                class="relative py-4 pr-3 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                {{ quote.first_name }} {{ quote.last_name }}
+                <div
+                  class="absolute right-full bottom-0 h-px w-screen bg-gray-100 dark:bg-white/10"
+                />
+                <div
+                  class="absolute bottom-0 left-0 h-px w-screen bg-gray-100 dark:bg-white/10"
+                />
+              </td>
+              <td
+                class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell dark:text-gray-400"
+              >
+                {{ quote.email }}
+              </td>
+              <td
+                class="hidden px-3 py-4 text-sm text-gray-500 md:table-cell dark:text-gray-400"
+              >
+                {{ quote.phone || "N/A" }}
+              </td>
+              <td
+                class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell dark:text-gray-400"
+              >
+                {{ quote.coverage_type || "N/A" }}
+              </td>
+              <td class="px-3 py-4 text-sm">
                 <span
-                  v-if="updatingIds.includes(quote.id)"
-                  class="text-xs text-zinc-500 dark:text-zinc-400"
+                  :class="[
+                    'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
+                    quote.status === 'new'
+                      ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400'
+                      : quote.status === 'in_progress'
+                      ? 'bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400'
+                      : quote.status === 'contacted'
+                      ? 'bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-600/20 dark:bg-purple-400/10 dark:text-purple-400'
+                      : quote.status === 'closed'
+                      ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-400/10 dark:text-green-400'
+                      : 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-600/20 dark:bg-gray-400/10 dark:text-gray-400',
+                  ]"
                 >
-                  Updating...
+                  {{ quote.status || "new" }}
                 </span>
-              </div>
-            </div>
-          </li>
-        </ul>
+              </td>
+              <td class="py-4 pl-3 text-right text-sm font-medium">
+                <a
+                  :href="`/admin/${quote.id}`"
+                  class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                >
+                  View<span class="sr-only"
+                    >, {{ quote.first_name }} {{ quote.last_name }}</span
+                  >
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </Container>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { formatDate } from '~/lib/formatDate';
+import { formatDate } from "~/lib/formatDate";
 
 interface Lead {
   id: string;
@@ -118,7 +170,7 @@ interface Lead {
 }
 
 definePageMeta({
-  middleware: ['admin'],
+  middleware: ["admin"],
 });
 
 const supabase = useSupabaseClient();
@@ -132,14 +184,14 @@ const { exportLeadsToCSV } = useLeadsExport();
 onMounted(async () => {
   try {
     const { data, error } = await supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
-    quotes.value = data as unknown as Lead[];
+    quotes.value = (data as unknown) as Lead[];
   } catch (e) {
-    console.error('Error fetching quotes:', e);
+    console.error("Error fetching quotes:", e);
   } finally {
     loading.value = false;
   }
@@ -151,9 +203,9 @@ async function handleStatusChange(leadId: string, newStatus: string) {
     updatingIds.value.push(leadId);
 
     const { error } = await supabase
-      .from('leads')
+      .from("leads")
       .update({ status: newStatus })
-      .eq('id', leadId);
+      .eq("id", leadId);
 
     if (error) throw error;
 
@@ -163,18 +215,18 @@ async function handleStatusChange(leadId: string, newStatus: string) {
       quote.status = newStatus;
     }
   } catch (e) {
-    console.error('Error updating status:', e);
+    console.error("Error updating status:", e);
     // Re-fetch to get the actual value from the database
     const { data, error } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('id', leadId)
+      .from("leads")
+      .select("*")
+      .eq("id", leadId)
       .single();
 
     if (!error && data) {
       const index = quotes.value.findIndex((q: Lead) => q.id === leadId);
       if (index !== -1) {
-        quotes.value[index] = data as unknown as Lead;
+        quotes.value[index] = (data as unknown) as Lead;
       }
     }
   } finally {
@@ -187,9 +239,9 @@ async function handleSignOut() {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    navigateTo('/admin/login');
+    navigateTo("/admin/login");
   } catch (e) {
-    console.error('Error signing out:', e);
+    console.error("Error signing out:", e);
   }
 }
 
@@ -200,14 +252,14 @@ async function handleExportCSV() {
     await exportLeadsToCSV(quotes.value);
     // Refresh the quotes to update exported_to_csv status
     const { data, error } = await supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
-    quotes.value = data as unknown as Lead[];
+    quotes.value = (data as unknown) as Lead[];
   } catch (e) {
-    console.error('Error exporting to CSV:', e);
+    console.error("Error exporting to CSV:", e);
   } finally {
     exporting.value = false;
   }
