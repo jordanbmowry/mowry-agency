@@ -34,7 +34,7 @@ A modern digital agency website built with Nuxt 3, featuring a pixel-perfect mig
 
 - **Framework**: Nuxt 3 with Vue 3 Composition API
 - **Styling**: Tailwind CSS v4 with custom design system
-- **UI Components**: Headless UI Vue for accessible interactions
+- **UI Components**: Nuxt UI for consistent, accessible components
 - **Theme Management**: Nuxt Color Mode for theme switching
 - **Image Optimization**: Nuxt Image with automatic WebP conversion
 - **Animation**: @vueuse/motion and @formkit/auto-animate

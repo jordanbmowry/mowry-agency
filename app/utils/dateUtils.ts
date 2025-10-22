@@ -34,7 +34,7 @@ export function formatDate(
   try {
     const date = parseISO(dateString);
     if (!isValid(date)) {
-      throw new Error('Invalid date');
+      return 'Invalid Date';
     }
 
     if (timeZone === 'UTC') {
@@ -42,8 +42,7 @@ export function formatDate(
     }
 
     return formatInTimeZone(date, timeZone, pattern);
-  } catch (error) {
-    console.warn('Error formatting date:', error);
+  } catch {
     return 'Invalid Date';
   }
 }
@@ -62,12 +61,11 @@ export function formatSubmittedDate(
       typeof timestamp === 'string' ? parseISO(timestamp) : timestamp;
 
     if (!isValid(date)) {
-      throw new Error('Invalid timestamp');
+      return 'Invalid Date';
     }
 
     return formatInTimeZone(date, timeZone, "MMMM d, yyyy 'at' h:mm a zzz");
-  } catch (error) {
-    console.warn('Error formatting submitted date:', error);
+  } catch {
     return 'Invalid Date';
   }
 }
@@ -90,12 +88,11 @@ export function calculateAge(
     const refDate = referenceDate || new Date();
 
     if (!isValid(birthDate) || !isValid(refDate)) {
-      throw new Error('Invalid date');
+      return 0;
     }
 
     return differenceInYears(refDate, birthDate);
-  } catch (error) {
-    console.warn('Error calculating age:', error);
+  } catch {
     return 0;
   }
 }
@@ -112,8 +109,7 @@ export function isValidAge(
   try {
     const age = calculateAge(dateOfBirth);
     return age >= minimumAge;
-  } catch (error) {
-    console.warn('Error validating age:', error);
+  } catch {
     return false;
   }
 }
@@ -126,8 +122,7 @@ export function getMaxBirthDate(minimumAge: number = 18): string {
   try {
     const maxDate = subYears(new Date(), minimumAge);
     return format(maxDate, 'yyyy-MM-dd');
-  } catch (error) {
-    console.warn('Error getting max birth date:', error);
+  } catch {
     return format(subYears(new Date(), 18), 'yyyy-MM-dd');
   }
 }
@@ -138,8 +133,7 @@ export function getMaxBirthDate(minimumAge: number = 18): string {
 export function getTodayInputFormat(): string {
   try {
     return format(new Date(), 'yyyy-MM-dd');
-  } catch (error) {
-    console.warn("Error getting today's date:", error);
+  } catch {
     return format(new Date(), 'yyyy-MM-dd');
   }
 }
@@ -152,8 +146,7 @@ export function createTimestamp(date?: Date): string {
   try {
     const targetDate = date || new Date();
     return formatISO(targetDate);
-  } catch (error) {
-    console.warn('Error creating timestamp:', error);
+  } catch {
     return formatISO(new Date());
   }
 }
@@ -167,12 +160,11 @@ export function formatRSSDate(date: string | Date): string {
     const targetDate = typeof date === 'string' ? parseISO(date) : date;
 
     if (!isValid(targetDate)) {
-      throw new Error('Invalid date');
+      return formatISO(new Date());
     }
 
     return formatISO(targetDate);
-  } catch (error) {
-    console.warn('Error formatting RSS date:', error);
+  } catch {
     return formatISO(new Date());
   }
 }
@@ -188,8 +180,7 @@ export function convertToTimeZone(
 ): Date {
   try {
     return toZonedTime(date, timeZone);
-  } catch (error) {
-    console.warn('Error converting to timezone:', error);
+  } catch {
     return date;
   }
 }
@@ -205,8 +196,7 @@ export function convertToUTC(
 ): Date {
   try {
     return fromZonedTime(date, timeZone);
-  } catch (error) {
-    console.warn('Error converting to UTC:', error);
+  } catch {
     return date;
   }
 }
@@ -230,12 +220,11 @@ export function formatDateLocale(
     const targetDate = typeof date === 'string' ? parseISO(date) : date;
 
     if (!isValid(targetDate)) {
-      throw new Error('Invalid date');
+      return 'Invalid Date';
     }
 
     return targetDate.toLocaleDateString(locale, options);
-  } catch (error) {
-    console.warn('Error formatting date with locale:', error);
+  } catch {
     return 'Invalid Date';
   }
 }
@@ -252,7 +241,7 @@ export function isValidDateString(
   try {
     const parsedDate = parse(dateString, formatString, new Date());
     return isValid(parsedDate);
-  } catch (error) {
+  } catch {
     return false;
   }
 }

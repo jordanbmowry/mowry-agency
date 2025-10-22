@@ -105,7 +105,6 @@ export default defineEventHandler(async (event) => {
 
     // Handle other database errors
     if (insertError) {
-      console.error('Database error:', insertError);
       throw createError({
         statusCode: 500,
         statusMessage:
@@ -149,8 +148,6 @@ export default defineEventHandler(async (event) => {
     };
   } catch (error: any) {
     // Enhanced error handling with user-friendly messages
-    console.error('Quote form error:', error);
-
     if (error.statusCode) {
       throw error; // Re-throw createError errors
     }

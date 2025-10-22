@@ -7,8 +7,8 @@
             Leads Management
           </h1>
           <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
-            A list of all leads including their contact information, coverage type, and
-            status.
+            A list of all leads including their contact information, coverage
+            type, and status.
           </p>
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none flex gap-3">
@@ -16,9 +16,9 @@
             type="button"
             @click="handleExportCSV"
             :disabled="exporting || leads.length === 0"
-            class="block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:bg-green-400 dark:bg-green-700 dark:hover:bg-green-600"
+            class="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
           >
-            {{ exporting ? "Exporting..." : "Export CSV" }}
+            {{ exporting ? 'Exporting...' : 'Export CSV' }}
           </button>
           <button
             type="button"
@@ -102,18 +102,18 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from "~/types/database.types";
-import LeadsFilters from "~/components/admin/LeadsFilters.vue";
-import LeadsTable from "~/components/admin/LeadsTable.vue";
-import LeadsPagination from "~/components/admin/LeadsPagination.vue";
-import { useLeadsFilters } from "~/composables/useLeadsFilters";
-import { usePagination } from "~/composables/usePagination";
-import { useLeadsExport } from "~/composables/useLeadsExport";
+import type { Database } from '~/types/database.types';
+import LeadsFilters from '~/components/admin/LeadsFilters.vue';
+import LeadsTable from '~/components/admin/LeadsTable.vue';
+import LeadsPagination from '~/components/admin/LeadsPagination.vue';
+import { useLeadsFilters } from '~/composables/useLeadsFilters';
+import { usePagination } from '~/composables/usePagination';
+import { useLeadsExport } from '~/composables/useLeadsExport';
 
-type Lead = Database["public"]["Tables"]["leads"]["Row"];
+type Lead = Database['public']['Tables']['leads']['Row'];
 
 definePageMeta({
-  middleware: ["admin"],
+  middleware: ['admin'],
 });
 
 const supabase = useSupabaseClient();
@@ -132,28 +132,25 @@ const pagination = usePagination({
 const fetchLeads = async () => {
   try {
     loading.value = true;
-    console.log("Fetching leads...");
-    console.log("Pagination offset:", pagination.offset.value);
-    console.log("Filter state:", filters.filterState.value);
 
     // Get total count with filters
-    let countQuery = supabase.from("leads").select("*", { count: "exact", head: true });
+    let countQuery = supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true });
     countQuery = filters.applyToQuery(countQuery);
 
     const { count, error: countError } = await countQuery;
     if (countError) {
-      console.error("Count query error:", countError);
       throw countError;
     }
 
-    console.log("Total count:", count);
     pagination.setTotalCount(count || 0);
 
     // Get paginated data with filters
     let dataQuery = supabase
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false });
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false });
 
     dataQuery = filters.applyToQuery(dataQuery);
 
@@ -164,15 +161,13 @@ const fetchLeads = async () => {
     );
 
     if (error) {
-      console.error("Data query error:", error);
       throw error;
     }
 
-    console.log("Fetched leads:", data?.length || 0);
-    console.log("Leads data:", data);
     leads.value = data || [];
   } catch (e) {
-    console.error("Error fetching leads:", e);
+    // Error handling - consider using a toast notification instead
+    throw e;
   } finally {
     loading.value = false;
   }
@@ -181,7 +176,6 @@ const fetchLeads = async () => {
 // Initialize filters composable
 const filters = useLeadsFilters({
   onFilterChange: () => {
-    console.log("Filter changed, fetching leads...");
     // Reset to first page when filters change
     pagination.goToPage(1);
     fetchLeads();
@@ -192,7 +186,6 @@ const filters = useLeadsFilters({
 watch(
   () => pagination.currentPage.value,
   (newPage, oldPage) => {
-    console.log(`Page changed from ${oldPage} to ${newPage}`);
     fetchLeads();
   },
   { immediate: false }
@@ -209,9 +202,10 @@ const handleSignOut = async () => {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    navigateTo("/admin/login");
+    navigateTo('/admin/login');
   } catch (e) {
-    console.error("Error signing out:", e);
+    // Error handling - consider using a toast notification
+    throw e;
   }
 };
 
@@ -224,7 +218,8 @@ const handleExportCSV = async () => {
     // Refresh the leads to update exported_to_csv status
     await fetchLeads();
   } catch (e) {
-    console.error("Error exporting to CSV:", e);
+    // Error handling - consider using a toast notification
+    throw e;
   } finally {
     exporting.value = false;
   }
@@ -232,7 +227,6 @@ const handleExportCSV = async () => {
 
 // Fetch leads on mount
 onMounted(() => {
-  console.log("Component mounted, calling fetchLeads...");
   fetchLeads();
 });
 </script>

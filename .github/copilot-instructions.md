@@ -8,9 +8,10 @@ This is a **modern digital agency website** built with Nuxt 3, featuring a pixel
 
 - **Framework**: Nuxt 3 with Vue 3 Composition API
 - **Styling**: Tailwind CSS v4 with custom design system
+- **UI Components**: Nuxt UI for consistent, accessible UI components
 - **Database**: Supabase (PostgreSQL) with Row Level Security
 - **Email**: Resend API for transactional email notifications
-- **UI Library**: Headless UI Vue for accessible components
+- **UI Library**: Headless UI Vue for accessible components (legacy)
 - **Theme System**: Nuxt Color Mode for dark/light theme switching
 - **Images**: Nuxt Image for optimized image handling with WebP
 - **Animations**: @formkit/auto-animate and @vueuse/motion
@@ -169,9 +170,223 @@ export const useFeature = () => {
     loading: readonly(loading),
     hasData,
     fetchData,
-  };
 };
 ```
+
+## Nuxt UI System
+
+### Overview
+
+This project uses **Nuxt UI** as the primary UI component library, providing a consistent, accessible, and customizable design system built on top of Tailwind CSS and Headless UI. All UI components follow the zinc color palette and modern design principles.
+
+### Core UI Components
+
+Nuxt UI provides a comprehensive set of pre-built components that are used throughout the application:
+
+#### **Button Component** (`UButton`)
+
+```vue
+<!-- Multiple variants available -->
+<UButton variant="solid">Default Button</UButton>
+<UButton variant="outline">Outline Button</UButton>
+<UButton variant="soft">Soft Button</UButton>
+<UButton variant="ghost">Ghost Button</UButton>
+<UButton variant="link">Link Button</UButton>
+
+<!-- Different sizes and colors -->
+<UButton size="xs" color="primary">Extra Small</UButton>
+<UButton size="sm" color="gray">Small</UButton>
+<UButton size="md" color="red">Medium</UButton>
+<UButton size="lg" color="green">Large</UButton>
+<UButton size="xl" color="blue">Extra Large</UButton>
+```
+
+#### **Input Components**
+
+```vue
+<!-- Basic Input -->
+<UInput
+  v-model="value"
+  placeholder="Enter text..."
+  :disabled="false"
+  :required="true"
+/>
+
+<!-- Textarea -->
+<UTextarea
+  v-model="message"
+  :rows="4"
+  :maxlength="500"
+  placeholder="Your message..."
+/>
+
+<!-- Select -->
+<USelect
+  v-model="selected"
+  :options="[
+    { label: 'Option 1', value: 'opt1' },
+    { label: 'Option 2', value: 'opt2' },
+  ]"
+  placeholder="Choose an option"
+/>
+```
+
+#### **Form Components**
+
+Enhanced form components that wrap Nuxt UI components with labels, errors, and help text:
+
+```vue
+<!-- FormInput - Wraps UInput with label and validation -->
+<FormInput
+  id="email"
+  label="Email Address"
+  type="email"
+  v-model="form.email"
+  :error="errors.email"
+  :required="true"
+  help-text="We'll send your quote details here"
+  @blur="validateField('email')"
+/>
+
+<!-- FormSelect - Wraps USelect with label and validation -->
+<FormSelect
+  id="country"
+  label="Country"
+  v-model="form.country"
+  :options="countryOptions"
+  :error="errors.country"
+  :required="true"
+  @blur="validateField('country')"
+/>
+
+<!-- FormTextarea - Wraps UTextarea with label and validation -->
+<FormTextarea
+  id="message"
+  label="Message"
+  v-model="form.message"
+  :rows="4"
+  :maxlength="500"
+  :error="errors.message"
+  help-text="Tell us more about your needs"
+/>
+```
+
+### Nuxt UI Configuration
+
+Nuxt UI is configured in `nuxt.config.ts`:
+
+```typescript
+modules: [
+  '@nuxt/ui',
+  // ... other modules
+],
+```
+
+### Available Components
+
+Nuxt UI provides a comprehensive set of components including:
+
+- **Forms**: UInput, UTextarea, USelect, UCheckbox, URadio, UToggle
+- **Navigation**: UButton, ULink, UBreadcrumb, UPagination
+- **Feedback**: UAlert, UNotification, UProgress, USpinner
+- **Overlay**: UModal, UPopover, UTooltip, UDropdown
+- **Data Display**: UTable, UCard, UBadge, UAvatar
+- **Layout**: UContainer, UDivider, USeparator
+
+### Design System
+
+#### **Color Palette**
+
+- Primary: Zinc scale (zinc-50 to zinc-950)
+- Accent: Teal for focus states and highlights
+- Error: Red scale for validation errors
+- Success: Green scale for success states
+
+#### **Component Styling Principles**
+
+- ✅ Built on Tailwind CSS with consistent design tokens
+- ✅ Support dark mode automatically
+- ✅ Maintain consistent spacing and typography
+- ✅ Use semantic color tokens (primary, gray, red, green, blue)
+- ✅ Follow accessibility best practices
+- ✅ Fully customizable via Tailwind configuration
+
+### Component Development Guidelines
+
+#### **Creating New UI Components**
+
+1. Place custom components in `app/components/ui/`
+2. Use TypeScript with proper interfaces
+3. Support all necessary props (disabled, required, etc.)
+4. Implement proper event emitters
+5. Support dark mode with Nuxt UI's automatic theming
+6. Follow accessibility standards
+7. Use Nuxt UI base components when possible
+
+#### **Using Nuxt UI Components**
+
+```vue
+<script setup lang="ts">
+import { computed } from 'vue';
+
+// Always use TypeScript interfaces
+interface Props {
+  variant?: 'solid' | 'outline' | 'soft' | 'ghost' | 'link';
+  disabled?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  color?:
+    | 'primary'
+    | 'gray'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'lime'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'fuchsia'
+    | 'pink'
+    | 'rose';
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'solid',
+  disabled: false,
+  size: 'md',
+  color: 'primary',
+});
+
+const isDisabled = computed(() => props.disabled);
+</script>
+
+<template>
+  <div class="space-y-4">
+    <UInput v-model="value" :disabled="isDisabled" />
+    <UButton
+      :variant="props.variant"
+      :size="props.size"
+      :color="props.color"
+      :disabled="isDisabled"
+    >
+      Submit
+    </UButton>
+  </div>
+</template>
+```
+
+### Migration Notes
+
+- **Using**: `@nuxt/ui` module for all UI components
+- **Enhanced**: All form components use Nuxt UI base components
+- **Maintained**: Original Mowry Agency design system and branding
+- **Improved**: Better TypeScript support and consistency across components
 
 ## Component Architecture
 
@@ -1080,6 +1295,7 @@ Usage:
 spotlight-nuxt/
 ├── app/
 │   ├── components/           # Reusable UI components
+│   │   ├── ui/              # Nuxt UI components (Button, Input, Select, etc.)
 │   │   ├── form/            # Form components (FormInput, FormSelect, FormTextarea)
 │   │   ├── quote/           # Quote form step components
 │   │   ├── admin/           # Admin dashboard components
@@ -1093,6 +1309,8 @@ spotlight-nuxt/
 │   │   ├── useLeadsExport.ts        # CSV export
 │   │   ├── useDatabase.ts           # Supabase operations
 │   │   └── ...                      # Other composables
+│   ├── lib/                 # Utility functions
+│   │   └── utils.ts                # General utility functions
 │   ├── layouts/             # Page layouts (default.vue)
 │   ├── pages/               # File-based routing
 │   │   ├── index.vue               # Home page

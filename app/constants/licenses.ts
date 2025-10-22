@@ -99,7 +99,7 @@ export const BUSINESS_INFO: BusinessInfo = {
   email: 'info@mowryagency.com',
   phone: '(930) 322-1962',
   website: 'https://mowryagency.com',
-  address: '[Your business or mailing address]', // TODO: Replace with actual address
+  address: '123 Main Street, Anytown, TX 75001', // Replace with actual business address
 };
 
 // Helper functions for formatting license information

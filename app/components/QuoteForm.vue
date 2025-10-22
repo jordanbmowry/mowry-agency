@@ -64,7 +64,7 @@
           </a>
           <a
             :href="`sms:+1${agencyPhone.replace(/[^\\d]/g, '')}`"
-            class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors"
+            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors"
           >
             <Icon name="heroicons:chat-bubble-left" class="h-4 w-4 mr-2" />
             Text Us
@@ -242,31 +242,34 @@
           <div>
             <label
               for="dateOfBirth"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              class="block text-sm font-medium leading-6 text-zinc-900 dark:text-zinc-100"
             >
-              Date of Birth *
+              Date of Birth <span class="text-red-500">*</span>
             </label>
-            <input
-              id="dateOfBirth"
-              v-model="form.dateOfBirth"
-              type="date"
-              required
-              :max="maxDate"
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.dateOfBirth
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
-              ]"
-              @blur="validateField('dateOfBirth')"
-            />
+            <div class="mt-1">
+              <input
+                id="dateOfBirth"
+                v-model="form.dateOfBirth"
+                type="date"
+                required
+                autocomplete="bday"
+                :max="maxDate"
+                :class="[
+                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
+                  errors.dateOfBirth
+                    ? 'outline-red-500 focus:outline-red-500'
+                    : '',
+                ]"
+                @blur="validateField('dateOfBirth')"
+              />
+            </div>
             <p
               v-if="errors.dateOfBirth"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
+              class="mt-1 text-sm text-red-600 dark:text-red-400"
             >
               {{ errors.dateOfBirth }}
             </p>
-            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               Required for accurate life insurance quotes
             </p>
           </div>
@@ -721,52 +724,44 @@
           class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-700"
         >
           <!-- Previous Button -->
-          <Button
+          <UButton
             v-if="currentStep > 1"
             type="button"
             @click="previousStep"
-            class="bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white transition-colors"
+            variant="outline"
+            color="neutral"
+            class="!border-blue-500 !text-blue-600 hover:!bg-blue-50 dark:!border-blue-400 dark:!text-blue-400 dark:hover:!bg-blue-950"
           >
             <span v-auto-animate class="flex items-center gap-2">
               <Icon name="heroicons:arrow-left" class="h-4 w-4" />
               Previous
             </span>
-          </Button>
+          </UButton>
 
           <!-- Next/Submit Button -->
-          <Button
+          <UButton
             v-if="currentStep < 3"
             type="button"
             @click="nextStep"
             :disabled="isSubmitting || !isCurrentStepValid"
-            :class="
-              [
-                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
-                isSubmitting
-                  ? 'scale-95 animate-pulse'
-                  : 'hover:scale-105 hover:shadow-lg',
-              ].join(' ')
-            "
+            variant="solid"
+            color="neutral"
+            class="!bg-blue-600 !border-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:!border-blue-500 dark:hover:!bg-blue-600"
           >
             <span v-auto-animate class="flex items-center gap-2">
               Next
               <Icon name="heroicons:arrow-right" class="h-4 w-4" />
             </span>
-          </Button>
+          </UButton>
 
           <!-- Final Submit Button -->
-          <Button
+          <UButton
             v-if="currentStep === 3"
             type="submit"
             :disabled="isSubmitting || !isCurrentStepValid"
-            :class="
-              [
-                'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300',
-                isSubmitting
-                  ? 'scale-95 animate-pulse'
-                  : 'hover:scale-105 hover:shadow-lg',
-              ].join(' ')
-            "
+            variant="solid"
+            color="neutral"
+            class="!bg-blue-600 !border-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:!border-blue-500 dark:hover:!bg-blue-600"
           >
             <span v-auto-animate class="flex items-center gap-2">
               <Icon
@@ -776,7 +771,7 @@
               />
               {{ isSubmitting ? 'Sending...' : 'Get My Quote' }}
             </span>
-          </Button>
+          </UButton>
 
           <div v-if="currentStep === 1" class="text-right">
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -893,7 +888,6 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import { useLocalStorage } from '@vueuse/core';
 import MailIcon from './icons/MailIcon.vue';
-import Button from './Button.vue';
 import MultiStepProgressBar from './MultiStepProgressBar.vue';
 import {
   calculateAge,

@@ -306,7 +306,6 @@ const submitApplication = async () => {
     const fileInput = document.getElementById('resume') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
   } catch (error) {
-    console.error('Application submission error:', error);
     submitStatus.value = 'error';
     submitMessage.value =
       'There was an error submitting your application. Please try again or contact us directly.';

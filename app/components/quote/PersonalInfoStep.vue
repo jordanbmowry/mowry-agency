@@ -49,32 +49,32 @@
       />
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <FormInput
-        id="dateOfBirth"
-        label="Date of Birth"
-        type="date"
-        v-model="form.dateOfBirth"
-        :error="errors.dateOfBirth"
-        :required="true"
-        :max="maxDate"
-        autocomplete="bday"
-        help-text="Must be 18 years or older"
-        @blur="emit('validate', 'dateOfBirth')"
-      />
+    <!-- Date of Birth - Full Width -->
+    <FormInput
+      id="dateOfBirth"
+      label="Date of Birth"
+      type="date"
+      v-model="form.dateOfBirth"
+      :error="errors.dateOfBirth"
+      :required="true"
+      :max="maxDate"
+      autocomplete="bday"
+      help-text="Must be 18 years or older"
+      @blur="emit('validate', 'dateOfBirth')"
+    />
 
-      <FormSelect
-        id="sex"
-        label="Sex"
-        v-model="form.sex"
-        :options="sexOptions"
-        :error="errors.sex"
-        :required="true"
-        placeholder="Select sex"
-        help-text="Required for accurate quotes"
-        @blur="emit('validate', 'sex')"
-      />
-    </div>
+    <!-- Sex field in its own section -->
+    <FormSelect
+      id="sex"
+      label="Sex"
+      v-model="form.sex"
+      :options="sexOptions"
+      :error="errors.sex"
+      :required="true"
+      placeholder="Select sex"
+      help-text="Required for accurate quotes"
+      @blur="emit('validate', 'sex')"
+    />
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <FormInput

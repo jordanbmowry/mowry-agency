@@ -354,7 +354,7 @@ onMounted(() => {
       const progress = JSON.parse(savedProgress);
       videos.value = progress;
     } catch (e) {
-      console.log('Could not load saved progress');
+      // Could not load saved progress - this is expected for first-time users
     }
   }
 });

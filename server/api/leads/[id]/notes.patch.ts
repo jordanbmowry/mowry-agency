@@ -36,7 +36,6 @@ export default defineEventHandler(async (event) => {
       .single();
 
     if (error) {
-      console.error('Supabase error updating agent notes:', error);
       throw createError({
         statusCode: 500,
         statusMessage: `Failed to update agent notes: ${error.message}`,
@@ -48,8 +47,6 @@ export default defineEventHandler(async (event) => {
       data,
     };
   } catch (error) {
-    console.error('Error in notes.patch.ts:', error);
-
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error;
     }

@@ -1,19 +1,5 @@
 // Functional API client composable
-
-export interface QuoteFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  city: string;
-  state: string;
-  coverageType: string;
-  healthConditions?: string;
-  medications?: string;
-  message?: string;
-  tcpaConsent: boolean;
-}
+import type { QuoteFormData } from './useQuoteForm';
 
 export interface ApiResponse<T = any> {
   success: boolean;

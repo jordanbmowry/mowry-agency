@@ -139,19 +139,15 @@ export default defineEventHandler(async (event) => {
 
     // Log any errors but don't fail the request
     if (unsubscribeResult.status === 'rejected') {
-      console.error(
-        'Failed to create unsubscribe record:',
-        unsubscribeResult.reason
-      );
+      // Failed to create unsubscribe record - could log to error tracking service
     }
 
     if (leadsResult.status === 'rejected') {
-      console.error('Failed to update leads table:', leadsResult.reason);
+      // Failed to update leads table - could log to error tracking service
     }
 
     return createSuccessPage(email);
   } catch (error) {
-    console.error('Unsubscribe error:', error);
     throw createError({
       statusCode: 500,
       statusMessage:

@@ -2,41 +2,41 @@
   <div class="mt-8 flow-root overflow-hidden">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <table class="w-full text-left">
-        <thead class="bg-white dark:bg-gray-900">
+        <thead class="bg-white dark:bg-zinc-950">
           <tr>
             <th
               scope="col"
-              class="relative isolate py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white"
+              class="relative isolate py-3.5 pr-3 text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100"
             >
               Name
               <div
-                class="absolute inset-y-0 right-full -z-10 w-screen border-b border-b-gray-200 dark:border-b-white/15"
+                class="absolute inset-y-0 right-full -z-10 w-screen border-b border-b-zinc-200 dark:border-b-zinc-700"
               />
               <div
-                class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-b-gray-200 dark:border-b-white/15"
+                class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-b-zinc-200 dark:border-b-zinc-700"
               />
             </th>
             <th
               scope="col"
-              class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell dark:text-white"
+              class="hidden px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 sm:table-cell dark:text-zinc-100"
             >
               Email
             </th>
             <th
               scope="col"
-              class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 md:table-cell dark:text-white"
+              class="hidden px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 md:table-cell dark:text-zinc-100"
             >
               Phone
             </th>
             <th
               scope="col"
-              class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell dark:text-white"
+              class="hidden px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 lg:table-cell dark:text-zinc-100"
             >
               Coverage Type
             </th>
             <th
               scope="col"
-              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white"
+              class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100"
             >
               Status
             </th>
@@ -48,28 +48,28 @@
         <tbody>
           <tr v-for="lead in leads" :key="lead.id">
             <td
-              class="relative py-4 pr-3 text-sm font-medium text-gray-900 dark:text-white"
+              class="relative py-4 pr-3 text-sm font-medium text-zinc-900 dark:text-zinc-100"
             >
               {{ lead.first_name }} {{ lead.last_name }}
               <div
-                class="absolute right-full bottom-0 h-px w-screen bg-gray-100 dark:bg-white/10"
+                class="absolute right-full bottom-0 h-px w-screen bg-zinc-100 dark:bg-zinc-800"
               />
               <div
-                class="absolute bottom-0 left-0 h-px w-screen bg-gray-100 dark:bg-white/10"
+                class="absolute bottom-0 left-0 h-px w-screen bg-zinc-100 dark:bg-zinc-800"
               />
             </td>
             <td
-              class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell dark:text-gray-400"
+              class="hidden px-3 py-4 text-sm text-zinc-500 sm:table-cell dark:text-zinc-400"
             >
               {{ lead.email }}
             </td>
             <td
-              class="hidden px-3 py-4 text-sm text-gray-500 md:table-cell dark:text-gray-400"
+              class="hidden px-3 py-4 text-sm text-zinc-500 md:table-cell dark:text-zinc-400"
             >
               {{ lead.phone || 'N/A' }}
             </td>
             <td
-              class="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell dark:text-gray-400"
+              class="hidden px-3 py-4 text-sm text-zinc-500 lg:table-cell dark:text-zinc-400"
             >
               {{ lead.coverage_type || 'N/A' }}
             </td>
@@ -95,10 +95,10 @@
       <!-- Empty State -->
       <div
         v-if="leads.length === 0"
-        class="text-center py-12 text-gray-500 dark:text-gray-400"
+        class="text-center py-12 text-zinc-500 dark:text-zinc-400"
       >
         <svg
-          class="mx-auto h-12 w-12 text-gray-400"
+          class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -110,10 +110,10 @@
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+        <h3 class="mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
           No leads found
         </h3>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           {{
             isFiltering
               ? 'Try adjusting your filters'

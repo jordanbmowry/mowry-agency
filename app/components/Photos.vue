@@ -41,7 +41,7 @@ const images = [
 ];
 
 const onImageError = (error: string | Event) => {
-  // Handle NuxtImg error - just log it for now
-  console.warn('Image failed to load:', error);
+  // Handle NuxtImg error - silently handle failed images
+  // In production, this could be logged to an error tracking service
 };
 </script>

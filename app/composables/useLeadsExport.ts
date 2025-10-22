@@ -146,7 +146,7 @@ export const useLeadsExport = () => {
 
       return { success: true };
     } catch (error) {
-      console.error('Error exporting leads to CSV:', error);
+      // Re-throw error for caller to handle
       throw error;
     }
   };

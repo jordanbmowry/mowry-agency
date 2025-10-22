@@ -1,9 +1,11 @@
 <template>
-  <div class="flex w-full">
-    <NuxtLayout>
-      <NuxtPage :key="$route.fullPath" />
-    </NuxtLayout>
-  </div>
+  <UApp>
+    <div class="flex w-full">
+      <NuxtLayout>
+        <NuxtPage :key="$route.fullPath" />
+      </NuxtLayout>
+    </div>
+  </UApp>
 </template>
 
 <script setup>

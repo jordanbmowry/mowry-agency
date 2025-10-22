@@ -6,12 +6,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: 'app/',
   modules: [
-    '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
     '@nuxt/image',
     '@nuxt/icon',
     '@nuxt/content',
     '@nuxtjs/seo',
+    '@nuxt/ui',
     [
       '@nuxtjs/supabase',
       {
@@ -41,7 +41,7 @@ export default defineNuxtConfig({
     '@vee-validate/nuxt',
     '@formkit/auto-animate/nuxt',
   ],
-  css: ['~/assets/css/main.css', '@vuepic/vue-datepicker/dist/main.css'],
+  css: ['~/assets/css/main.css'],
   colorMode: {
     classSuffix: '',
     preference: 'system', // Default to system preference
