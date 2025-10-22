@@ -6,7 +6,7 @@
     <div class="flex items-center justify-end mb-8">
       <NuxtLink
         to="/admin"
-        class="group text-sm font-semibold leading-6 text-zinc-800 dark:text-zinc-200 hover:text-zinc-700 dark:hover:text-zinc-300"
+        class="group text-sm font-semibold leading-6 text-zinc-800 dark:text-zinc-200 hover:text-zinc-700 dark:hover:text-zinc-300 cursor-pointer"
       >
         <span aria-hidden="true">←</span> Back to Leads
       </NuxtLink>
@@ -208,7 +208,7 @@
               <button
                 @click="saveNotes"
                 :disabled="isSaving || !notesChanged"
-                class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black dark:hover:bg-zinc-100 dark:focus:ring-zinc-400 dark:focus:ring-offset-zinc-900"
+                class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-black dark:hover:bg-zinc-100 dark:focus:ring-zinc-400 dark:focus:ring-offset-zinc-900 cursor-pointer"
               >
                 {{ isSaving ? 'Saving...' : 'Save Notes' }}
               </button>

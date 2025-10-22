@@ -130,6 +130,9 @@ export default defineNuxtConfig({
       plugins: [vue()],
       external: ['nuxt/dist/app/components/test-component-wrapper'],
     },
+    experimental: {
+      openAPI: true,
+    },
   },
   vite: {
     build: {

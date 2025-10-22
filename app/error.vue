@@ -38,7 +38,7 @@
         <div class="mt-10 flex justify-center">
           <NuxtLink
             to="/"
-            class="group text-sm font-semibold leading-7 text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+            class="group text-sm font-semibold leading-7 text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors cursor-pointer"
             @click="handleError"
           >
             <span

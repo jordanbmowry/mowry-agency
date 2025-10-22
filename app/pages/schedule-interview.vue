@@ -276,7 +276,7 @@
       <button
         v-if="allVideosWatched"
         @click="scheduleInterview"
-        class="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors duration-200 shadow-lg"
+        class="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors duration-200 shadow-lg cursor-pointer"
       >
         Schedule Your Interview
       </button>

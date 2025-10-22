@@ -43,14 +43,14 @@
           <button
             type="submit"
             :disabled="loading"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200 cursor-pointer disabled:cursor-not-allowed"
           >
             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
               <span v-if="loading" class="h-5 w-5">
                 <!-- Add a loading spinner here if needed -->
               </span>
             </span>
-            {{ loading ? "Signing in..." : "Sign in" }}
+            {{ loading ? 'Signing in...' : 'Sign in' }}
           </button>
         </div>
 
@@ -66,38 +66,40 @@
 const supabase = useSupabaseClient<any>();
 const router = useRouter();
 
-const email = ref("");
-const password = ref("");
+const email = ref('');
+const password = ref('');
 const loading = ref(false);
-const error = ref("");
+const error = ref('');
 
 async function handleLogin() {
   try {
     loading.value = true;
-    error.value = "";
+    error.value = '';
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    });
+    const { data, error: signInError } = await supabase.auth.signInWithPassword(
+      {
+        email: email.value,
+        password: password.value,
+      }
+    );
 
     if (signInError) throw signInError;
 
     // Check if user has admin role
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user?.id)
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user?.id)
       .single();
 
-    if (profile?.role !== "admin") {
-      throw new Error("Unauthorized access");
+    if (profile?.role !== 'admin') {
+      throw new Error('Unauthorized access');
     }
 
     // Redirect to admin dashboard
-    router.push("/admin");
+    router.push('/admin');
   } catch (e: any) {
-    error.value = e.message || "An error occurred during sign in";
+    error.value = e.message || 'An error occurred during sign in';
   } finally {
     loading.value = false;
   }

@@ -77,7 +77,7 @@
           Your privacy is important to us. Please review our
           <NuxtLink
             href="/privacy-policy"
-            class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400"
+            class="text-blue-600 hover:text-blue-800 underline dark:text-blue-400 cursor-pointer"
             >Privacy Policy</NuxtLink
           >
           to understand how we collect, use, and protect your personal
