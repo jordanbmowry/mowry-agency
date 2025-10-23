@@ -216,12 +216,130 @@
           </div>
         </div>
       </div>
+
+      <!-- Danger Zone Section -->
+      <div class="mt-12 border-t border-zinc-200 dark:border-zinc-800 pt-8">
+        <div
+          class="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10 p-6"
+        >
+          <div class="flex items-center">
+            <Icon
+              name="heroicons:exclamation-triangle"
+              class="h-5 w-5 text-red-600 dark:text-red-400"
+            />
+            <h3
+              class="ml-2 text-base font-semibold text-red-900 dark:text-red-100"
+            >
+              Danger Zone
+            </h3>
+          </div>
+          <p class="mt-2 text-sm text-red-700 dark:text-red-300">
+            Permanently delete this lead and all associated data. This action
+            cannot be undone.
+          </p>
+          <div class="mt-4">
+            <UButton
+              color="error"
+              variant="solid"
+              @click="showDeleteModal = true"
+              :disabled="isDeleting"
+              class="cursor-pointer"
+            >
+              <Icon name="heroicons:trash" class="h-4 w-4" />
+              Delete Lead
+            </UButton>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else class="mt-16 flex items-center justify-center">
       <p class="text-zinc-600 dark:text-zinc-400">No lead found</p>
     </div>
   </SimpleLayout>
+
+  <!-- Delete Confirmation Modal -->
+  <UModal
+    v-model:open="showDeleteModal"
+    :overlay="true"
+    :transition="true"
+    :dismissible="false"
+    title="Delete Lead"
+  >
+    <template #header>
+      <div class="flex items-center">
+        <Icon
+          name="heroicons:exclamation-triangle"
+          class="h-5 w-5 text-red-500"
+        />
+        <h3 class="ml-2 text-lg font-semibold text-gray-900 dark:text-white">
+          Delete Lead
+        </h3>
+      </div>
+    </template>
+
+    <template #body>
+      <div class="space-y-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          This action cannot be undone. This will permanently delete the lead
+          for
+          <strong>{{ data?.first_name }} {{ data?.last_name }}</strong>
+          and all associated data.
+        </p>
+
+        <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+          <p class="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+            To confirm deletion, please type the lead's email address below:
+          </p>
+          <p class="text-sm text-red-600 dark:text-red-400 mb-3">
+            <code
+              class="bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded text-xs"
+              >{{ data?.email }}</code
+            >
+          </p>
+          <UInput
+            v-model="confirmEmailInput"
+            placeholder="Enter lead email to confirm deletion"
+            :color="confirmEmailInput === data?.email ? 'success' : 'error'"
+            class="w-full"
+          />
+        </div>
+
+        <div
+          v-if="deleteError"
+          class="rounded-md bg-red-50 dark:bg-red-900/20 p-3"
+        >
+          <p class="text-sm text-red-600 dark:text-red-400">
+            {{ deleteError }}
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="flex justify-end space-x-2">
+        <UButton
+          color="neutral"
+          variant="ghost"
+          @click="closeDeleteModal"
+          :disabled="isDeleting"
+        >
+          Cancel
+        </UButton>
+        <UButton
+          color="error"
+          variant="solid"
+          @click="deleteLead"
+          :disabled="!canDelete || isDeleting"
+          :loading="isDeleting"
+          class="cursor-pointer"
+        >
+          <Icon v-if="!isDeleting" name="heroicons:trash" class="h-4 w-4" />
+          {{ isDeleting ? 'Deleting...' : 'Delete Lead' }}
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
@@ -250,9 +368,20 @@ const originalNotes = ref<string>('');
 const isSaving = ref(false);
 const saveStatus = ref<'saving' | 'saved' | 'error' | null>(null);
 
+// Delete modal state
+const showDeleteModal = ref(false);
+const confirmEmailInput = ref('');
+const isDeleting = ref(false);
+const deleteError = ref<string | null>(null);
+
 // Computed property to check if notes have changed
 const notesChanged = computed(() => {
   return agentNotes.value !== originalNotes.value;
+});
+
+// Computed property to check if deletion can proceed
+const canDelete = computed(() => {
+  return confirmEmailInput.value === data.value?.email;
 });
 
 // Fetch lead data
@@ -323,6 +452,38 @@ const saveNotes = async () => {
     }, 5000);
   } finally {
     isSaving.value = false;
+  }
+};
+
+// Delete modal functions
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+  confirmEmailInput.value = '';
+  deleteError.value = null;
+};
+
+const deleteLead = async () => {
+  if (!canDelete.value || isDeleting.value) return;
+
+  try {
+    isDeleting.value = true;
+    deleteError.value = null;
+
+    const response = await $fetch(`/api/leads/${leadId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.success) {
+      // Navigate back to admin dashboard after successful deletion
+      await navigateTo('/admin');
+    } else {
+      throw new Error(response.message || 'Failed to delete lead');
+    }
+  } catch (err) {
+    deleteError.value =
+      err instanceof Error ? err.message : 'Failed to delete lead';
+  } finally {
+    isDeleting.value = false;
   }
 };
 </script>

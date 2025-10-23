@@ -57,21 +57,21 @@
         <div class="mt-3 flex flex-col sm:flex-row gap-2">
           <a
             :href="`tel:+1${agencyPhone.replace(/[^\\d]/g, '')}`"
-            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors"
+            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors cursor-pointer"
           >
             <Icon name="heroicons:phone" class="h-4 w-4 mr-2" />
             Call Us
           </a>
           <a
             :href="`sms:+1${agencyPhone.replace(/[^\\d]/g, '')}`"
-            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors"
+            class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors cursor-pointer"
           >
             <Icon name="heroicons:chat-bubble-left" class="h-4 w-4 mr-2" />
             Text Us
           </a>
           <a
             :href="`mailto:${agencyEmail}`"
-            class="inline-flex items-center justify-center px-4 py-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded-md text-sm font-medium transition-colors"
+            class="inline-flex items-center justify-center px-4 py-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded-md text-sm font-medium transition-colors cursor-pointer"
           >
             <Icon name="heroicons:envelope" class="h-4 w-4 mr-2" />
             Email Us
@@ -730,7 +730,7 @@
             @click="previousStep"
             variant="outline"
             color="neutral"
-            class="!border-blue-500 !text-blue-600 hover:!bg-blue-50 dark:!border-blue-400 dark:!text-blue-400 dark:hover:!bg-blue-950"
+            class="!border-blue-500 !text-blue-600 hover:!bg-blue-50 dark:!border-blue-400 dark:!text-blue-400 dark:hover:!bg-blue-950 cursor-pointer"
           >
             <span v-auto-animate class="flex items-center gap-2">
               <Icon name="heroicons:arrow-left" class="h-4 w-4" />
@@ -746,7 +746,7 @@
             :disabled="isSubmitting || !isCurrentStepValid"
             variant="solid"
             color="neutral"
-            class="!bg-blue-600 !border-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:!border-blue-500 dark:hover:!bg-blue-600"
+            class="!bg-blue-600 !border-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:!border-blue-500 dark:hover:!bg-blue-600 cursor-pointer"
           >
             <span v-auto-animate class="flex items-center gap-2">
               Next
@@ -761,7 +761,7 @@
             :disabled="isSubmitting || !isCurrentStepValid"
             variant="solid"
             color="neutral"
-            class="!bg-blue-600 !border-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:!border-blue-500 dark:hover:!bg-blue-600"
+            class="!bg-blue-600 !border-blue-600 !text-white hover:!bg-blue-700 dark:!bg-blue-500 dark:!border-blue-500 dark:hover:!bg-blue-600 cursor-pointer"
           >
             <span v-auto-animate class="flex items-center gap-2">
               <Icon
