@@ -16,7 +16,7 @@ export interface FieldConfig {
   required?: boolean;
 }
 
-export interface ValidationErrors {
+export interface FormValidationErrors {
   [key: string]: string;
 }
 
@@ -122,14 +122,14 @@ const validateField = (value: any, config: FieldConfig): string | null => {
 const validateAllFields = (
   formData: Record<string, any>,
   fieldConfigs: Record<string, FieldConfig>
-): ValidationErrors => {
+): FormValidationErrors => {
   return Object.entries(fieldConfigs).reduce((errors, [fieldName, config]) => {
     const error = validateField(formData[fieldName], config);
     if (error) {
       errors[fieldName] = error;
     }
     return errors;
-  }, {} as ValidationErrors);
+  }, {} as FormValidationErrors);
 };
 
 /**
@@ -139,7 +139,7 @@ export const useFormValidation = <T extends Record<string, any>>(
   formData: Ref<T>,
   fieldConfigs: Record<keyof T, FieldConfig>
 ) => {
-  const errors = ref<ValidationErrors>({});
+  const errors = ref<FormValidationErrors>({});
   const touchedFields = ref<Set<string>>(new Set());
 
   // Validate a single field (pure function wrapped in reactive)

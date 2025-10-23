@@ -12,7 +12,7 @@
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
-    <UTextarea
+    <textarea
       :id="id"
       v-model="textareaValue"
       :placeholder="placeholder"
@@ -21,8 +21,7 @@
       :readonly="readonly"
       :rows="rows"
       :maxlength="maxlength"
-      :color="error ? 'error' : 'neutral'"
-      :class="textareaClass"
+      :class="textareaClasses"
       @blur="handleBlur"
     />
     <div v-if="maxlength" class="flex justify-between items-center">
@@ -86,6 +85,34 @@ const characterCount = computed(() => props.modelValue.length);
 const textareaValue = computed({
   get: () => props.modelValue,
   set: (value: string) => emit('update:modelValue', value),
+});
+
+const textareaClasses = computed(() => {
+  const baseClasses = [
+    'block w-full rounded-md border-0 py-1.5 px-3',
+    'text-zinc-900 dark:text-white',
+    'shadow-sm ring-1 ring-inset',
+    'placeholder:text-zinc-400 dark:placeholder:text-zinc-500',
+    'focus:ring-2 focus:ring-inset',
+    'sm:text-sm sm:leading-6',
+    'resize-none',
+    // Background - matching Nuxt UI darker blue
+    'bg-white dark:bg-slate-900',
+    // Disabled state
+    'disabled:bg-zinc-50 dark:disabled:bg-slate-800',
+    'disabled:text-zinc-500 dark:disabled:text-zinc-400',
+    'disabled:cursor-not-allowed',
+    // Border and focus colors - matching Nuxt UI neutral
+    props.error
+      ? 'ring-red-300 dark:ring-red-700 focus:ring-red-500 dark:focus:ring-red-400'
+      : 'ring-zinc-300 dark:ring-slate-700 focus:ring-zinc-500 dark:focus:ring-zinc-400',
+  ];
+
+  if (props.textareaClass) {
+    baseClasses.push(props.textareaClass);
+  }
+
+  return baseClasses.join(' ');
 });
 
 const handleBlur = () => {

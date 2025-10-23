@@ -126,278 +126,112 @@
             ref="nameFieldsParent"
             class="grid grid-cols-1 sm:grid-cols-2 gap-4"
           >
-            <div>
-              <label
-                for="firstName"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                First Name *
-              </label>
-              <input
-                id="firstName"
-                v-model="form.firstName"
-                type="text"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.firstName
-                    ? 'outline-red-500 dark:outline-red-400'
-                    : '',
-                ]"
-                placeholder="John"
-                @blur="validateField('firstName')"
-              />
-              <p
-                v-if="errors.firstName"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.firstName }}
-              </p>
-            </div>
-            <div>
-              <label
-                for="lastName"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                Last Name *
-              </label>
-              <input
-                id="lastName"
-                v-model="form.lastName"
-                type="text"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.lastName ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                placeholder="Doe"
-                @blur="validateField('lastName')"
-              />
-              <p
-                v-if="errors.lastName"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.lastName }}
-              </p>
-            </div>
+            <FormInput
+              id="firstName"
+              label="First Name"
+              v-model="form.firstName"
+              type="text"
+              :required="true"
+              :error="errors.firstName"
+              placeholder="John"
+              color="neutral"
+              @blur="validateField('firstName')"
+            />
+            <FormInput
+              id="lastName"
+              label="Last Name"
+              v-model="form.lastName"
+              type="text"
+              :required="true"
+              :error="errors.lastName"
+              placeholder="Doe"
+              color="neutral"
+              @blur="validateField('lastName')"
+            />
           </div>
 
           <!-- Email and Phone -->
           <div v-auto-animate class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                for="email"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                Email Address *
-              </label>
-              <input
-                id="email"
-                v-model="form.email"
-                type="email"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.email ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                placeholder="john@example.com"
-                @blur="validateField('email')"
-              />
-              <p
-                v-if="errors.email"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.email }}
-              </p>
-            </div>
-            <div>
-              <label
-                for="phone"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                Phone Number *
-              </label>
-              <input
-                id="phone"
-                v-model="form.phone"
-                type="tel"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.phone ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                placeholder="(555) 123-4567"
-                @blur="validateField('phone')"
-              />
-              <p
-                v-if="errors.phone"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.phone }}
-              </p>
-            </div>
+            <FormInput
+              id="email"
+              label="Email Address"
+              v-model="form.email"
+              type="email"
+              :required="true"
+              :error="errors.email"
+              placeholder="john@example.com"
+              color="neutral"
+              @blur="validateField('email')"
+            />
+            <FormInput
+              id="phone"
+              label="Phone Number"
+              v-model="form.phone"
+              type="tel"
+              :required="true"
+              :error="errors.phone"
+              placeholder="(555) 123-4567"
+              color="neutral"
+              @blur="validateField('phone')"
+            />
           </div>
 
           <!-- Date of Birth -->
-          <div>
-            <label
-              for="dateOfBirth"
-              class="block text-sm font-medium leading-6 text-zinc-900 dark:text-zinc-100"
-            >
-              Date of Birth <span class="text-red-500">*</span>
-            </label>
-            <div class="mt-1">
-              <input
-                id="dateOfBirth"
-                v-model="form.dateOfBirth"
-                type="date"
-                required
-                autocomplete="bday"
-                :max="maxDate"
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.dateOfBirth
-                    ? 'outline-red-500 focus:outline-red-500'
-                    : '',
-                ]"
-                @blur="validateField('dateOfBirth')"
-              />
-            </div>
-            <p
-              v-if="errors.dateOfBirth"
-              class="mt-1 text-sm text-red-600 dark:text-red-400"
-            >
-              {{ errors.dateOfBirth }}
-            </p>
-            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              Required for accurate life insurance quotes
-            </p>
-          </div>
+          <FormInput
+            id="dateOfBirth"
+            label="Date of Birth"
+            v-model="form.dateOfBirth"
+            type="date"
+            :required="true"
+            :error="errors.dateOfBirth"
+            :max="maxDate"
+            autocomplete="bday"
+            color="neutral"
+            help-text="Required for accurate life insurance quotes"
+            @blur="validateField('dateOfBirth')"
+          />
 
           <!-- Sex -->
-          <div>
-            <label
-              for="sex"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Sex *
-            </label>
-            <select
-              id="sex"
-              v-model="form.sex"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.sex ? 'outline-red-500 dark:outline-red-400' : '',
-              ]"
-              @blur="validateField('sex')"
-            >
-              <option value="">Select sex...</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-            <p
-              v-if="errors.sex"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.sex }}
-            </p>
-          </div>
+          <FormSelect
+            id="sex"
+            label="Sex"
+            v-model="form.sex"
+            :required="true"
+            :error="errors.sex"
+            :options="sexOptions"
+            placeholder="Select sex..."
+            color="neutral"
+            @blur="validateField('sex')"
+          />
 
           <!-- City and State -->
           <div v-auto-animate class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <!-- City -->
-            <div>
-              <label
-                for="city"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                City *
-              </label>
-              <input
-                id="city"
-                v-model="form.city"
-                type="text"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.city ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                placeholder="Enter your city"
-                @blur="validateField('city')"
-              />
-              <p
-                v-if="errors.city"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.city }}
-              </p>
-            </div>
+            <FormInput
+              id="city"
+              label="City"
+              v-model="form.city"
+              type="text"
+              :required="true"
+              :error="errors.city"
+              placeholder="Enter your city"
+              color="neutral"
+              @blur="validateField('city')"
+            />
 
             <!-- State -->
-            <div>
-              <label
-                for="state"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                State *
-              </label>
-              <select
-                id="state"
-                v-model="form.state"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.state ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                @blur="validateField('state')"
-              >
-                <option value="">Select your state</option>
-                <option value="AL">Alabama</option>
-                <option value="AR">Arkansas</option>
-                <option value="AZ">Arizona</option>
-                <option value="CA">California</option>
-                <option value="CO">Colorado</option>
-                <option value="CT">Connecticut</option>
-                <option value="FL">Florida</option>
-                <option value="GA">Georgia</option>
-                <option value="IA">Iowa</option>
-                <option value="ID">Idaho</option>
-                <option value="IL">Illinois</option>
-                <option value="IN">Indiana</option>
-                <option value="MA">Massachusetts</option>
-                <option value="MD">Maryland</option>
-                <option value="MI">Michigan</option>
-                <option value="MN">Minnesota</option>
-                <option value="MO">Missouri</option>
-                <option value="MT">Montana</option>
-                <option value="NC">North Carolina</option>
-                <option value="NE">Nebraska</option>
-                <option value="NJ">New Jersey</option>
-                <option value="NM">New Mexico</option>
-                <option value="NV">Nevada</option>
-                <option value="OH">Ohio</option>
-                <option value="PA">Pennsylvania</option>
-                <option value="SC">South Carolina</option>
-                <option value="SD">South Dakota</option>
-                <option value="TN">Tennessee</option>
-                <option value="TX">Texas</option>
-                <option value="UT">Utah</option>
-                <option value="VA">Virginia</option>
-                <option value="WA">Washington</option>
-                <option value="WI">Wisconsin</option>
-                <option value="WY">Wyoming</option>
-              </select>
-              <p
-                v-if="errors.state"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.state }}
-              </p>
-              <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                We can only provide quotes in states where we're licensed
-              </p>
-            </div>
+            <FormSelect
+              id="state"
+              label="State"
+              v-model="form.state"
+              :required="true"
+              :error="errors.state"
+              :options="stateOptions"
+              placeholder="Select your state"
+              color="neutral"
+              help-text="We can only provide quotes in states where we're licensed"
+              @blur="validateField('state')"
+            />
           </div>
         </div>
 
@@ -427,135 +261,61 @@
           <!-- Physical Information -->
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <!-- Height -->
-            <div>
-              <label
-                for="height"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                Height *
-              </label>
-              <input
-                id="height"
-                v-model="form.height"
-                type="number"
-                step="0.1"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.height ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                placeholder="5.5"
-                @blur="validateField('height')"
-              />
-              <p
-                v-if="errors.height"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.height }}
-              </p>
-              <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                Enter as decimal (e.g., 5.5 for 5'6")
-              </p>
-            </div>
+            <FormInput
+              id="height"
+              label="Height"
+              v-model="form.height"
+              type="number"
+              step="0.1"
+              :required="true"
+              :error="errors.height"
+              placeholder="5.5"
+              color="neutral"
+              help-text="Enter as decimal (e.g., 5.5 for 5'6&quot;)"
+              @blur="validateField('height')"
+            />
 
             <!-- Weight -->
-            <div>
-              <label
-                for="weight"
-                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                Weight *
-              </label>
-              <input
-                id="weight"
-                v-model="form.weight"
-                type="number"
-                step="0.1"
-                required
-                :class="[
-                  'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                  errors.weight ? 'outline-red-500 dark:outline-red-400' : '',
-                ]"
-                placeholder="190.5"
-                @blur="validateField('weight')"
-              />
-              <p
-                v-if="errors.weight"
-                class="mt-1 text-xs text-red-600 dark:text-red-400"
-              >
-                {{ errors.weight }}
-              </p>
-              <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                Enter weight in pounds
-              </p>
-            </div>
+            <FormInput
+              id="weight"
+              label="Weight"
+              v-model="form.weight"
+              type="number"
+              step="0.1"
+              :required="true"
+              :error="errors.weight"
+              placeholder="190.5"
+              color="neutral"
+              help-text="Enter weight in pounds"
+              @blur="validateField('weight')"
+            />
           </div>
 
           <!-- Health Conditions -->
-          <div>
-            <label
-              for="healthConditions"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Current Health Conditions
-            </label>
-            <textarea
-              id="healthConditions"
-              v-model="form.healthConditions"
-              rows="3"
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.healthConditions
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
-              ]"
-              placeholder="Please list any current health conditions, diagnosed illnesses, or ongoing medical concerns. If none, please write 'None'."
-              @blur="validateField('healthConditions')"
-            />
-            <p
-              v-if="errors.healthConditions"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.healthConditions }}
-            </p>
-            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              This information helps us find the best rates and is kept strictly
-              confidential
-            </p>
-          </div>
+          <FormTextarea
+            id="healthConditions"
+            label="Current Health Conditions"
+            v-model="form.healthConditions"
+            :rows="3"
+            :error="errors.healthConditions"
+            placeholder="Please list any current health conditions, diagnosed illnesses, or ongoing medical concerns. If none, please write 'None'."
+            color="neutral"
+            help-text="This information helps us find the best rates and is kept strictly confidential"
+            @blur="validateField('healthConditions')"
+          />
 
           <!-- Medications -->
-          <div>
-            <label
-              for="medications"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Current Medications
-            </label>
-            <textarea
-              id="medications"
-              v-model="form.medications"
-              rows="3"
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.medications
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
-              ]"
-              placeholder="Please list all current medications including dosages if known. If none, please write 'None'."
-              @blur="validateField('medications')"
-            />
-            <p
-              v-if="errors.medications"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.medications }}
-            </p>
-            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Include prescription medications, over-the-counter drugs, and
-              supplements
-            </p>
-          </div>
+          <FormTextarea
+            id="medications"
+            label="Current Medications"
+            v-model="form.medications"
+            :rows="3"
+            :error="errors.medications"
+            placeholder="Please list all current medications including dosages if known. If none, please write 'None'."
+            color="neutral"
+            help-text="Include prescription medications, over-the-counter drugs, and supplements"
+            @blur="validateField('medications')"
+          />
         </div>
 
         <!-- Step 3: Coverage Information Section -->
@@ -567,65 +327,29 @@
           </h3>
 
           <!-- Coverage Type -->
-          <div>
-            <label
-              for="coverageType"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Type of Coverage Interested In *
-            </label>
-            <select
-              id="coverageType"
-              v-model="form.coverageType"
-              required
-              :class="[
-                'mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400',
-                errors.coverageType
-                  ? 'outline-red-500 dark:outline-red-400'
-                  : '',
-              ]"
-              @blur="validateField('coverageType')"
-            >
-              <option value="">Select coverage type...</option>
-              <option value="term-life">Term Life Insurance</option>
-              <option value="whole-life">Whole Life Insurance</option>
-              <option value="iul">Indexed Universal Life (IUL)</option>
-              <option value="mortgage-protection">Mortgage Protection</option>
-              <option value="final-expense">Final Expense Insurance</option>
-              <option value="annuities">Annuities</option>
-              <option value="not-sure">Not Sure - Need Guidance</option>
-            </select>
-            <p
-              v-if="errors.coverageType"
-              class="mt-1 text-xs text-red-600 dark:text-red-400"
-            >
-              {{ errors.coverageType }}
-            </p>
-            <p v-else class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              We'll help you find the best coverage type for your needs
-            </p>
-          </div>
+          <FormSelect
+            id="coverageType"
+            label="Type of Coverage Interested In"
+            v-model="form.coverageType"
+            :required="true"
+            :error="errors.coverageType"
+            :options="coverageTypeOptions"
+            placeholder="Select coverage type..."
+            color="neutral"
+            help-text="We'll help you find the best coverage type for your needs"
+            @blur="validateField('coverageType')"
+          />
 
           <!-- Message -->
-          <div>
-            <label
-              for="message"
-              class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-            >
-              Additional Information or Questions
-            </label>
-            <textarea
-              id="message"
-              v-model="form.message"
-              rows="4"
-              class="mt-1 w-full appearance-none rounded-md bg-white px-3 py-2 shadow-md shadow-zinc-800/5 outline outline-zinc-900/10 placeholder:text-zinc-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-blue-500 sm:text-sm dark:bg-zinc-700/15 dark:text-zinc-200 dark:outline-zinc-700 dark:placeholder:text-zinc-500 dark:focus:ring-blue-400/10 dark:focus:outline-blue-400"
-              placeholder="Tell us about your family's protection needs, coverage amount you're considering, your goals, timeline, or any questions about life insurance..."
-            />
-            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Optional - Any additional details that might help us serve you
-              better
-            </p>
-          </div>
+          <FormTextarea
+            id="message"
+            label="Additional Information or Questions"
+            v-model="form.message"
+            :rows="4"
+            placeholder="Tell us about your family's protection needs, coverage amount you're considering, your goals, timeline, or any questions about life insurance..."
+            color="neutral"
+            help-text="Optional - Any additional details that might help us serve you better"
+          />
         </div>
 
         <!-- TCPA Consent Section - Only shown on final step -->
@@ -889,6 +613,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import { useLocalStorage } from '@vueuse/core';
 import MailIcon from './icons/MailIcon.vue';
 import MultiStepProgressBar from './MultiStepProgressBar.vue';
+import { useStatesData } from '~/composables/useCitiesData';
 import {
   calculateAge,
   isValidAge,
@@ -923,6 +648,34 @@ const agencyEmail = config.public.agencyEmail as string;
 // TCPA compliance text - must match server-side version
 const tcpaConsentText =
   'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.';
+
+// Form options for Nuxt UI components
+const { states } = useStatesData();
+
+// Convert states to options format for FormSelect
+const stateOptions = computed(() =>
+  states.map((state) => ({
+    label: state.displayName,
+    value: state.code,
+  }))
+);
+
+// Sex options for FormSelect
+const sexOptions = [
+  { label: 'Male', value: 'Male' },
+  { label: 'Female', value: 'Female' },
+];
+
+// Coverage type options for FormSelect
+const coverageTypeOptions = [
+  { label: 'Term Life Insurance', value: 'term-life' },
+  { label: 'Whole Life Insurance', value: 'whole-life' },
+  { label: 'Indexed Universal Life (IUL)', value: 'iul' },
+  { label: 'Mortgage Protection', value: 'mortgage-protection' },
+  { label: 'Final Expense Insurance', value: 'final-expense' },
+  { label: 'Annuities', value: 'annuities' },
+  { label: 'Not Sure - Need Guidance', value: 'not-sure' },
+];
 
 // Agency licensing disclosure
 const licensingDisclosure =

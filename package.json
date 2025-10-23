@@ -29,8 +29,6 @@
     "@supabase/supabase-js": "^2.74.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/nodemailer": "^7.0.2",
-    "@vee-validate/nuxt": "^4.15.1",
-    "@vee-validate/yup": "^4.15.1",
     "@vue-email/components": "^0.0.21",
     "@vue-email/nuxt": "^0.8.19",
     "@vue-email/render": "^0.0.9",
@@ -42,6 +40,7 @@
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.3",
     "feed": "^5.1.0",
+    "joi": "^18.0.1",
     "nodemailer": "^7.0.9",
     "nuxt": "^4.1.2",
     "pg": "^8.16.3",
@@ -50,8 +49,7 @@
     "tailwind-merge": "^2.5.5",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
-    "vue3-simple-typeahead": "^1.0.11",
-    "yup": "^1.7.1"
+    "vue3-simple-typeahead": "^1.0.11"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.3",
@@ -59,6 +57,7 @@
     "@playwright/test": "^1.56.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/vue": "^8.1.0",
+    "@types/joi": "^17.2.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^18.0.1",

@@ -8,6 +8,7 @@
         @update:model-value="
           (value: string) => $emit('update:searchInput', value)
         "
+        color="neutral"
         placeholder="Search by name, email, or phone..."
       >
         <template #leading>
@@ -23,6 +24,7 @@
         (value: any) => $emit('update:statusFilter', value || '')
       "
       :options="statusOptions"
+      color="neutral"
       placeholder="All Statuses"
     />
 

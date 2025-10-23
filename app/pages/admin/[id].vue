@@ -23,15 +23,53 @@
     </div>
 
     <div v-else-if="data" class="mt-8">
-      <div class="px-4 sm:px-0">
-        <h3 class="text-base/7 font-semibold text-zinc-900 dark:text-zinc-100">
-          Lead Information
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm/6 text-zinc-500 dark:text-zinc-400">
-          Personal details and insurance requirements.
-        </p>
+      <!-- Mode Toggle Header -->
+      <div class="px-4 sm:px-0 flex items-center justify-between">
+        <div>
+          <h3
+            class="text-base/7 font-semibold text-zinc-900 dark:text-zinc-100"
+          >
+            {{ isEditMode ? 'Edit Lead Information' : 'Lead Information' }}
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm/6 text-zinc-500 dark:text-zinc-400">
+            {{
+              isEditMode
+                ? 'Update lead details and insurance requirements.'
+                : 'Personal details and insurance requirements.'
+            }}
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <UButton
+            v-if="!isEditMode"
+            variant="outline"
+            size="sm"
+            @click="toggleEditMode"
+          >
+            Edit Lead
+          </UButton>
+          <UButton
+            v-if="isEditMode"
+            variant="ghost"
+            size="sm"
+            @click="cancelEdit"
+          >
+            Cancel
+          </UButton>
+        </div>
       </div>
-      <div class="mt-6">
+
+      <!-- Edit Mode -->
+      <div v-if="isEditMode" class="mt-6">
+        <AdminLeadEditForm
+          :lead="data"
+          @success="handleEditSuccess"
+          @cancel="cancelEdit"
+        />
+      </div>
+
+      <!-- View Mode -->
+      <div v-else class="mt-6">
         <dl
           class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-8 border-t border-zinc-200 dark:border-zinc-800"
         >
@@ -83,6 +121,54 @@
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
               {{ data.city }}, {{ data.state }}
+            </dd>
+          </div>
+          <div
+            class="border-t border-zinc-200 dark:border-zinc-800 px-4 py-6 sm:col-span-1 sm:px-0"
+          >
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Sex
+            </dt>
+            <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
+              {{ data.sex || 'N/A' }}
+            </dd>
+          </div>
+          <div
+            class="border-t border-zinc-200 dark:border-zinc-800 px-4 py-6 sm:col-span-1 sm:px-0"
+          >
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Height
+            </dt>
+            <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
+              {{
+                data.height
+                  ? `${data.height}' (${data.height} feet decimal)`
+                  : 'N/A'
+              }}
+            </dd>
+          </div>
+          <div
+            class="border-t border-zinc-200 dark:border-zinc-800 px-4 py-6 sm:col-span-1 sm:px-0"
+          >
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Weight
+            </dt>
+            <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
+              {{ data.weight ? `${data.weight} lbs` : 'N/A' }}
+            </dd>
+          </div>
+          <div
+            class="border-t border-zinc-200 dark:border-zinc-800 px-4 py-6 sm:col-span-1 sm:px-0"
+          >
+            <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Loan Amount
+            </dt>
+            <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
+              {{
+                data.loan_amount
+                  ? `$${data.loan_amount.toLocaleString()}`
+                  : 'N/A'
+              }}
             </dd>
           </div>
           <div
@@ -179,9 +265,9 @@
           <div class="relative">
             <textarea
               v-model="agentNotes"
-              rows="6"
+              :rows="6"
               placeholder="Add notes about this lead..."
-              class="block w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm focus:border-zinc-500 dark:focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+              class="block w-full rounded-md border-0 py-1.5 px-3 text-zinc-900 dark:text-white bg-white dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-slate-700 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-inset focus:ring-zinc-500 dark:focus:ring-zinc-400 sm:text-sm sm:leading-6 resize-none"
             />
             <div class="mt-4 flex items-center justify-between">
               <div v-if="saveStatus" class="text-sm">
@@ -344,6 +430,7 @@
 
 <script setup lang="ts">
 import type { Database } from '~/types/database.types';
+import AdminLeadEditForm from '~/components/admin/AdminLeadEditForm.vue';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
@@ -367,6 +454,9 @@ const agentNotes = ref<string>('');
 const originalNotes = ref<string>('');
 const isSaving = ref(false);
 const saveStatus = ref<'saving' | 'saved' | 'error' | null>(null);
+
+// Edit mode state
+const isEditMode = ref(false);
 
 // Delete modal state
 const showDeleteModal = ref(false);
@@ -453,6 +543,22 @@ const saveNotes = async () => {
   } finally {
     isSaving.value = false;
   }
+};
+
+// Edit mode functions
+const toggleEditMode = () => {
+  isEditMode.value = true;
+};
+
+const cancelEdit = () => {
+  isEditMode.value = false;
+};
+
+const handleEditSuccess = (updatedLead: Lead) => {
+  // Update the local data with the updated lead
+  data.value = updatedLead;
+  // Exit edit mode
+  isEditMode.value = false;
 };
 
 // Delete modal functions

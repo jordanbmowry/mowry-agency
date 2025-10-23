@@ -38,7 +38,6 @@ export default defineNuxtConfig({
       },
     ],
     '@netlify/nuxt',
-    '@vee-validate/nuxt',
     '@formkit/auto-animate/nuxt',
   ],
   css: ['~/assets/css/main.css'],

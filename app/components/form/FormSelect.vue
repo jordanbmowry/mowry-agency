@@ -15,12 +15,13 @@
     <USelect
       :id="id"
       v-model="selectValue"
-      :options="options"
+      :items="options"
       :placeholder="placeholder"
       :required="required"
       :disabled="disabled"
       :color="error ? 'error' : 'neutral'"
-      :class="selectClass"
+      size="lg"
+      :class="['w-full', selectClass]"
       @blur="handleBlur"
     />
     <p v-if="error" class="text-sm text-red-600 dark:text-red-400">
