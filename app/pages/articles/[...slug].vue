@@ -47,9 +47,9 @@
               <span class="ml-3">{{ formatDate(article.date as string) }}</span>
             </time>
           </header>
-          <Prose class="mt-8" data-mdx-content>
+          <div class="mt-8">
             <ContentRenderer :value="article" />
-          </Prose>
+          </div>
         </article>
 
         <div v-else class="text-center py-8">

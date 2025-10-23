@@ -61,6 +61,13 @@ export default defineNuxtConfig({
         },
       },
     },
+    renderer: {
+      anchorLinks: {
+        h2: true,
+        h3: true,
+        h4: true,
+      },
+    },
   },
   supabase: {
     // Disable authentication redirects for public website

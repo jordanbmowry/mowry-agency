@@ -1,185 +1,78 @@
 <template>
-  <SimpleLayout
-    title="Privacy Policy"
-    intro="How we collect, use, and protect your personal information."
-  >
-    <Container>
-      <div class="prose prose-zinc dark:prose-invert max-w-none">
-        <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-          Last updated: {{ lastUpdated }}
-        </p>
+  <Container class="mt-16 lg:mt-32">
+    <div class="xl:relative">
+      <div class="mx-auto max-w-2xl">
+        <button
+          type="button"
+          @click="$router.back()"
+          aria-label="Go back"
+          class="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md ring-1 shadow-zinc-800/5 ring-zinc-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20 cursor-pointer"
+        >
+          <Icon
+            name="heroicons:arrow-left"
+            class="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400"
+          />
+        </button>
 
-        <h2>Information We Collect</h2>
-        <p>
-          When you use our services, we may collect the following types of
-          information:
-        </p>
-        <ul>
-          <li>
-            <strong>Personal Information:</strong> Name, email address, phone
-            number, date of birth, and other contact details you provide
-          </li>
-          <li>
-            <strong>Health Information:</strong> Medical conditions,
-            medications, and health-related information for insurance quotes.
-            This information is collected solely for underwriting purposes and
-            is protected with enhanced security measures similar to HIPAA
-            standards.
-          </li>
-          <li>
-            <strong>Financial Information:</strong> Coverage preferences,
-            financial goals, and insurance needs
-          </li>
-          <li>
-            <strong>Technical Information:</strong> IP address, browser type,
-            device information, and usage data
-          </li>
-        </ul>
-
-        <h2>How We Use Your Information</h2>
-        <p>We use your information to:</p>
-        <ul>
-          <li>
-            Provide personalized life insurance quotes and recommendations
-          </li>
-          <li>Contact you about insurance products and services</li>
-          <li>Process your insurance applications and claims</li>
-          <li>Improve our website and services</li>
-          <li>Comply with legal and regulatory requirements</li>
-          <li>Send you marketing communications (with your consent)</li>
-        </ul>
-
-        <h2>Information Sharing</h2>
-        <p>We may share your information with:</p>
-        <ul>
-          <li>
-            <strong>Insurance Carriers:</strong> To obtain quotes and process
-            applications
-          </li>
-          <li>
-            <strong>Service Providers:</strong> Third-party vendors who help us
-            operate our business
-          </li>
-          <li>
-            <strong>Legal Requirements:</strong> When required by law or to
-            protect our rights
-          </li>
-          <li>
-            <strong>Business Transfers:</strong> In connection with a sale or
-            merger of our business
-          </li>
-        </ul>
-        <p>
-          <strong
-            >We do not sell your personal information to third parties for
-            marketing purposes.</strong
-          >
-        </p>
-
-        <h2>Data Security</h2>
-        <p>
-          We implement appropriate technical and organizational measures to
-          protect your personal information against unauthorized access,
-          alteration, disclosure, or destruction. This includes:
-        </p>
-        <ul>
-          <li>SSL encryption for data transmission</li>
-          <li>Secure data storage with encryption at rest</li>
-          <li>Regular security assessments and updates</li>
-          <li>
-            Limited access to personal information on a need-to-know basis
-          </li>
-          <li>
-            <strong>Enhanced Health Information Protection:</strong> Medical and
-            health data is subject to additional security protocols and is only
-            accessed by authorized personnel for legitimate underwriting
-            purposes
-          </li>
-        </ul>
-
-        <h2>Your Rights</h2>
-        <p>Depending on your location, you may have the right to:</p>
-        <ul>
-          <li>Access the personal information we hold about you</li>
-          <li>Request correction of inaccurate information</li>
-          <li>Request deletion of your personal information</li>
-          <li>Object to or restrict processing of your information</li>
-          <li>Withdraw consent for marketing communications</li>
-          <li>Data portability (receive a copy of your data)</li>
-        </ul>
-
-        <h2>Cookies and Tracking</h2>
-        <p>
-          Our website uses cookies and similar technologies to improve your
-          experience and analyze website usage. You can control cookie settings
-          through your browser preferences.
-        </p>
-
-        <h2>Third-Party Links</h2>
-        <p>
-          Our website may contain links to third-party websites. We are not
-          responsible for the privacy practices of these external sites.
-        </p>
-
-        <h2>Children's Privacy</h2>
-        <p>
-          Our services are not intended for children under 18. We do not
-          knowingly collect personal information from minors.
-        </p>
-
-        <h2>Changes to This Policy</h2>
-        <p>
-          We may update this Privacy Policy from time to time. We will notify
-          you of any material changes by posting the new policy on our website
-          and updating the "Last updated" date.
-        </p>
-
-        <h2>Contact Us</h2>
-        <p>
-          If you have any questions about this Privacy Policy or how we handle
-          your personal information, please contact us:
-        </p>
-        <div class="bg-zinc-50 dark:bg-zinc-800 p-4 rounded-lg">
-          <p>
-            <strong>Mowry Agency</strong><br />
-            Owned and operated by Mowry Digital Enterprise LLC
-          </p>
-          <p>
-            Email:
-            <a
-              :href="`mailto:${config.public.agencyEmail}`"
-              class="text-blue-600 hover:text-blue-800 dark:text-blue-400"
-              >{{ config.public.agencyEmail }}</a
-            ><br />
-            Phone:
-            <a
-              :href="`tel:+1${cleanPhone}`"
-              class="text-blue-600 hover:text-blue-800 dark:text-blue-400"
-              >{{ config.public.agencyPhone }}</a
-            >
+        <div v-if="pending" class="text-center py-8">
+          <p class="text-zinc-600 dark:text-zinc-400">
+            Loading privacy policy...
           </p>
         </div>
+
+        <div v-else-if="error" class="text-center py-8">
+          <p class="text-zinc-600 dark:text-zinc-400">
+            Error loading privacy policy: {{ error }}
+          </p>
+        </div>
+
+        <article v-else-if="data">
+          <header class="flex flex-col">
+            <h1
+              class="mt-6 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100"
+            >
+              Privacy Policy
+            </h1>
+            <time
+              class="order-first flex items-center text-base text-zinc-400 dark:text-zinc-500"
+            >
+              <span
+                class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"
+              />
+              <span class="ml-3"
+                >How we collect, use, and protect your personal
+                information</span
+              >
+            </time>
+          </header>
+
+          <div class="mt-8">
+            <ContentRenderer :value="data" />
+          </div>
+        </article>
       </div>
-    </Container>
-  </SimpleLayout>
+    </div>
+  </Container>
 </template>
 
 <script setup lang="ts">
-import SimpleLayout from '~/components/SimpleLayout.vue';
-import Container from '~/components/Container.vue';
+definePageMeta({
+  title: 'Privacy Policy - Mowry Agency',
+  description:
+    'Learn how Mowry Agency collects, uses, and protects your personal information. Our commitment to data privacy and security.',
+});
 
-const config = useRuntimeConfig();
-const agencyPhone = config.public.agencyPhone as string;
-const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
-
-const lastUpdated = 'October 14, 2025';
-
-// Set page metadata
 useSeoMeta({
   title: 'Privacy Policy - Mowry Agency',
   description:
     'Learn how Mowry Agency collects, uses, and protects your personal information. Our commitment to data privacy and security.',
-  keywords:
-    'privacy policy, data protection, personal information, Mowry Agency, life insurance privacy',
+  ogTitle: 'Privacy Policy - Mowry Agency',
+  ogDescription:
+    'Learn how Mowry Agency collects, uses, and protects your personal information. Our commitment to data privacy and security.',
+  ogType: 'website',
 });
+
+const { data, pending, error } = await useAsyncData('privacy-policy', () =>
+  queryCollection('content').path('/privacy-policy').first()
+);
 </script>
