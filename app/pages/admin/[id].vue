@@ -48,14 +48,6 @@
           >
             Edit Lead
           </UButton>
-          <UButton
-            v-if="isEditMode"
-            variant="ghost"
-            size="sm"
-            @click="cancelEdit"
-          >
-            Cancel
-          </UButton>
         </div>
       </div>
 
@@ -100,7 +92,7 @@
               Phone number
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.phone || 'N/A' }}
+              {{ formatPhone(data.phone) }}
             </dd>
           </div>
           <div
@@ -110,7 +102,7 @@
               Date of birth
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.date_of_birth || 'N/A' }}
+              {{ formatDate(data.date_of_birth) }}
             </dd>
           </div>
           <div
@@ -130,7 +122,7 @@
               Sex
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.sex || 'N/A' }}
+              {{ formatSex(data.sex) }}
             </dd>
           </div>
           <div
@@ -140,11 +132,7 @@
               Height
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{
-                data.height
-                  ? `${data.height}' (${data.height} feet decimal)`
-                  : 'N/A'
-              }}
+              {{ formatHeight(data.height) }}
             </dd>
           </div>
           <div
@@ -154,7 +142,7 @@
               Weight
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.weight ? `${data.weight} lbs` : 'N/A' }}
+              {{ formatWeight(data.weight) }}
             </dd>
           </div>
           <div
@@ -164,11 +152,7 @@
               Loan Amount
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{
-                data.loan_amount
-                  ? `$${data.loan_amount.toLocaleString()}`
-                  : 'N/A'
-              }}
+              {{ formatCurrency(data.loan_amount) }}
             </dd>
           </div>
           <div
@@ -178,7 +162,7 @@
               Coverage type
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.coverage_type || 'N/A' }}
+              {{ formatCoverageType(data.coverage_type) }}
             </dd>
           </div>
           <div
@@ -188,7 +172,7 @@
               Health conditions
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.health_conditions || 'None reported' }}
+              {{ formatHealthConditions(data.health_conditions) }}
             </dd>
           </div>
           <div
@@ -198,7 +182,7 @@
               Current medications
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.medications || 'None reported' }}
+              {{ formatMedications(data.medications) }}
             </dd>
           </div>
           <div
@@ -232,7 +216,7 @@
                           : 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-600/20 dark:bg-gray-400/10 dark:text-gray-400',
                 ]"
               >
-                {{ data.status || 'new' }}
+                {{ formatStatus(data.status) }}
               </span>
             </dd>
           </div>
@@ -243,7 +227,7 @@
               Created at
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ new Date(data.created_at).toLocaleString() }}
+              {{ formatDateTime(data.created_at) }}
             </dd>
           </div>
         </dl>
@@ -437,6 +421,21 @@ type Lead = Database['public']['Tables']['leads']['Row'];
 definePageMeta({
   middleware: ['admin'],
 });
+
+// Import formatters
+const {
+  formatCoverageType,
+  formatStatus,
+  formatSex,
+  formatHealthConditions,
+  formatMedications,
+  formatDateTime,
+  formatHeight,
+  formatWeight,
+  formatCurrency,
+  formatPhone,
+  formatDate,
+} = useFormatters();
 
 const route = useRoute();
 const supabase = useSupabaseClient();

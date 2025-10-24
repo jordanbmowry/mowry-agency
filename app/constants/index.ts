@@ -59,6 +59,8 @@ export const FORM_FIELDS = Object.freeze({
       { value: 'term-life', label: 'Term Life Insurance' },
       { value: 'whole-life', label: 'Whole Life Insurance' },
       { value: 'iul', label: 'Indexed Universal Life (IUL)' },
+      { value: 'mortgage-protection', label: 'Mortgage Protection' },
+      { value: 'final-expense', label: 'Final Expense Insurance' },
       { value: 'not-sure', label: 'Not Sure / Need Guidance' },
     ],
   },

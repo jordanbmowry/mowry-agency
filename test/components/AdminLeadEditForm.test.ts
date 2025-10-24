@@ -86,7 +86,7 @@ const createMockLead = (overrides: Partial<Lead> = {}): Lead => ({
   lead_type: null,
   lead_source: null,
   status: 'new',
-  sex: 'Male',
+  sex: 'male',
   height: 5.8,
   weight: 180,
   loan_amount: 100000,
@@ -201,7 +201,7 @@ describe('AdminLeadEditForm', () => {
     });
 
     it('should handle invalid sex values gracefully', async () => {
-      const leadWithInvalidSex = createMockLead({ sex: 'Other' as any });
+      const leadWithInvalidSex = createMockLead({ sex: 'invalid' as any });
       wrapper = mountComponent({ lead: leadWithInvalidSex });
 
       // Should fallback to empty string for invalid sex
@@ -302,7 +302,7 @@ describe('AdminLeadEditForm', () => {
       const validLead = createMockLead({
         status: 'in_progress',
         coverage_type: 'whole-life',
-        sex: 'Female',
+        sex: 'female',
       });
       wrapper = mountComponent({ lead: validLead });
 
@@ -313,7 +313,7 @@ describe('AdminLeadEditForm', () => {
       const mixedLead = createMockLead({
         status: 'contacted', // valid
         coverage_type: 'invalid_type', // invalid
-        sex: 'Male', // valid
+        sex: 'male', // valid
       });
       wrapper = mountComponent({ lead: mixedLead });
 

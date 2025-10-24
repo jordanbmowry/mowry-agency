@@ -4,7 +4,7 @@
       id="coverageType"
       label="Type of Coverage Interested In"
       v-model="form.coverageType"
-      :options="coverageOptions"
+      :options="coverageTypeOptions"
       :error="errors.coverageType"
       :required="true"
       placeholder="Select coverage type"
@@ -151,12 +151,12 @@ const tcpaConsentText =
 const licensingDisclosure =
   'Mowry Agency is owned by Mowry Digital Enterprise LLC. Licensed to sell life insurance products.';
 
-const coverageOptions = [
+const coverageTypeOptions = [
   { value: 'term-life', label: 'Term Life Insurance' },
   { value: 'whole-life', label: 'Whole Life Insurance' },
-  { value: 'universal-life', label: 'Universal Life Insurance' },
-  { value: 'final-expense', label: 'Final Expense Insurance' },
+  { value: 'iul', label: 'Indexed Universal Life (IUL)' },
   { value: 'mortgage-protection', label: 'Mortgage Protection' },
+  { value: 'final-expense', label: 'Final Expense Insurance' },
   { value: 'not-sure', label: 'Not Sure - Help Me Decide' },
 ];
 </script>

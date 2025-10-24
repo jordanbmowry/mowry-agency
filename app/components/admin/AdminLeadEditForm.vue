@@ -341,6 +341,7 @@
 import type { Database } from '~/types/database.types';
 import { useStatesData } from '~/composables/useCitiesData';
 import { useDebounceFn, watchDebounced } from '@vueuse/core';
+import { useLeadEditValidation } from '~/composables/useJoiValidation';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
@@ -355,6 +356,9 @@ interface Emits {
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
+
+// Initialize Joi validation
+const joiValidation = useLeadEditValidation();
 
 // Form state - create explicit interface for form data
 interface FormData {
@@ -411,26 +415,14 @@ const originalData = ref<FormData>({
   current_medications: '',
 });
 
-const errors = ref<Record<string, string>>({});
+// Use Joi validation errors
+const errors = computed(() => joiValidation.errors.value);
 const isSubmitting = ref(false);
 const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
 const submitError = ref<string | null>(null);
 const isValidating = ref(false);
 
-// Height conversion utilities
-const inchesToFeetDecimal = (totalInches: string | number | null): string => {
-  if (!totalInches) return '';
-  const inches =
-    typeof totalInches === 'string' ? parseFloat(totalInches) : totalInches;
-  if (isNaN(inches)) return '';
-
-  const feet = Math.floor(inches / 12);
-  const remainingInches = inches % 12;
-  // Convert remaining inches to decimal (0-11 inches becomes 0.0-0.11)
-  const decimal = Math.round(remainingInches);
-  return `${feet}.${decimal}`;
-};
-
+// Height conversion utility - converts feet.decimal (e.g., 5.8) to total inches
 const feetDecimalToInches = (feetDecimal: string): number => {
   if (!feetDecimal) return 0;
   const num = parseFloat(feetDecimal);
@@ -440,6 +432,8 @@ const feetDecimalToInches = (feetDecimal: string): number => {
   const inches = Math.round((num - feet) * 10); // Get decimal part as inches (0.8 = 8 inches)
   return feet * 12 + inches;
 };
+
+// Initialize form with lead data
 
 // Initialize form with lead data
 const initializeForm = () => {
@@ -452,7 +446,7 @@ const initializeForm = () => {
     sex: props.lead.sex || '',
     city: props.lead.city || '',
     state: props.lead.state || '',
-    height: inchesToFeetDecimal(props.lead.height),
+    height: props.lead.height ? String(props.lead.height) : '',
     weight: String(props.lead.weight || ''),
     coverage_type: props.lead.coverage_type || '',
     loan_amount: props.lead.loan_amount || null,
@@ -521,7 +515,6 @@ const isFormValid = computed(() => {
 const sexOptions = [
   { label: 'Male', value: 'male' },
   { label: 'Female', value: 'female' },
-  { label: 'Other', value: 'other' },
 ];
 
 const statusOptions = [
@@ -534,10 +527,10 @@ const statusOptions = [
 const coverageTypeOptions = [
   { label: 'Term Life Insurance', value: 'term-life' },
   { label: 'Whole Life Insurance', value: 'whole-life' },
-  { label: 'Universal Life Insurance', value: 'universal-life' },
+  { label: 'Indexed Universal Life (IUL)', value: 'iul' },
+  { label: 'Mortgage Protection', value: 'mortgage-protection' },
   { label: 'Final Expense Insurance', value: 'final-expense' },
-  { label: 'Disability Insurance', value: 'disability' },
-  { label: 'Other', value: 'other' },
+  { label: 'Not Sure', value: 'not-sure' },
 ];
 
 // Use the states data composable for state options
@@ -556,117 +549,26 @@ const maxDate = new Date(
   .toISOString()
   .split('T')[0];
 
-// Simple validation functions
-const validateRequired = (
-  value: string | null | undefined,
-  fieldName: string
-): string => {
-  if (!value || value.trim() === '') {
-    return `${fieldName} is required`;
-  }
-  return '';
-};
-
-const validateEmail = (email: string): string => {
-  if (!email) return 'Email is required';
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return 'Please enter a valid email address';
-  }
-  return '';
-};
-
-const validatePhone = (phone: string): string => {
-  if (!phone) return 'Phone number is required';
-  const phoneRegex = /^[\d\s()+-]+$/;
-  const digitsOnly = phone.replace(/\D/g, '');
-  if (!phoneRegex.test(phone) || digitsOnly.length < 10) {
-    return 'Please enter a valid phone number';
-  }
-  return '';
-};
-
-const validateHeight = (height: string): string => {
-  if (!height) return 'Height is required';
-  const num = parseFloat(height);
-  if (isNaN(num)) return 'Please enter a valid height';
-
-  // Convert feet.inches format to total inches
-  // e.g., 5.8 = 5 feet 8 inches = 68 inches
-  const feet = Math.floor(num);
-  const inches = Math.round((num - feet) * 10); // Get decimal part as inches
-  const totalInches = feet * 12 + inches;
-
-  if (totalInches < 36 || totalInches > 96) {
-    return 'Height must be between 3.0 and 8.0 (3\'0" to 8\'0")';
-  }
-  return '';
-};
-
-const validateWeight = (weight: string): string => {
-  if (!weight) return 'Weight is required';
-  const num = parseFloat(weight);
-  if (isNaN(num) || num < 50 || num > 500) {
-    return 'Weight must be between 50 and 500 pounds';
-  }
-  return '';
-};
-
-// Immediate validation function (for blur events)
+// Immediate validation function using Joi (for blur events)
 const validateFieldImmediate = (fieldName: string) => {
-  const value = form.value[fieldName as keyof typeof form.value];
-  let error = '';
+  isValidating.value = true;
 
-  switch (fieldName) {
-    case 'first_name':
-      error = validateRequired(value as string, 'First name');
-      break;
-    case 'last_name':
-      error = validateRequired(value as string, 'Last name');
-      break;
-    case 'email':
-      error = validateEmail(value as string);
-      break;
-    case 'phone':
-      error = validatePhone(value as string);
-      break;
-    case 'date_of_birth':
-      error = validateRequired(value as string, 'Date of birth');
-      break;
-    case 'sex':
-      error = validateRequired(value as string, 'Sex');
-      break;
-    case 'city':
-      error = validateRequired(value as string, 'City');
-      break;
-    case 'state':
-      error = validateRequired(value as string, 'State');
-      break;
-    case 'height':
-      error = validateHeight(value as string);
-      break;
-    case 'weight':
-      error = validateWeight(value as string);
-      break;
-    case 'coverage_type':
-      error = validateRequired(value as string, 'Coverage type');
-      break;
-    case 'status':
-      error = validateRequired(value as string, 'Status');
-      break;
-    case 'loan_amount':
-      if (value === null || value === undefined || value === '') {
-        // Allow empty values
-        break;
-      }
-      const numValue = typeof value === 'string' ? parseFloat(value) : value;
-      if (isNaN(numValue) || numValue < 0) {
-        error = 'Loan amount must be a positive number';
-      }
-      break;
+  const value = form.value[fieldName as keyof typeof form.value];
+
+  // Prepare data for Joi validation (convert to proper types)
+  let dataToValidate: any = value;
+
+  if (fieldName === 'height' || fieldName === 'weight') {
+    // Convert string to number for Joi validation
+    dataToValidate = value ? parseFloat(value as string) : null;
   }
 
-  errors.value = { ...errors.value, [fieldName]: error };
+  // Validate using Joi
+  joiValidation.validateField(fieldName, dataToValidate);
+
+  setTimeout(() => {
+    isValidating.value = false;
+  }, 50);
 };
 
 // Debounced validation function (300ms delay) with loading state
@@ -710,7 +612,7 @@ const validateAllFields = () => {
 // Reset form to original values
 const resetForm = () => {
   form.value = { ...originalData.value };
-  errors.value = {};
+  joiValidation.clearErrors(); // Clear Joi validation errors
   submitStatus.value = 'idle';
   submitError.value = null;
 };
@@ -733,18 +635,26 @@ const handleSubmit = async () => {
     submitStatus.value = 'idle';
     submitError.value = null;
 
-    // Prepare the update data
-    const updateData = { ...form.value };
-
-    // Convert height from feet.inches format to total inches for database
-    if (updateData.height) {
-      updateData.height = String(feetDecimalToInches(updateData.height));
-    }
-
-    // Convert string numbers to actual numbers where needed
-    if (updateData.loan_amount && typeof updateData.loan_amount === 'string') {
-      updateData.loan_amount = parseFloat(updateData.loan_amount);
-    }
+    // Prepare the update data - convert form data to database format
+    const updateData: any = {
+      first_name: form.value.first_name,
+      last_name: form.value.last_name,
+      email: form.value.email,
+      phone: form.value.phone,
+      date_of_birth: form.value.date_of_birth,
+      sex: form.value.sex?.toLowerCase(), // Convert to lowercase for validation
+      city: form.value.city,
+      state: form.value.state,
+      height: form.value.height ? parseFloat(form.value.height) : null,
+      weight: form.value.weight ? parseFloat(form.value.weight) : null,
+      coverage_type: form.value.coverage_type,
+      health_conditions: form.value.health_conditions,
+      current_medications: form.value.current_medications,
+      status: form.value.status,
+      loan_amount: form.value.loan_amount
+        ? parseFloat(String(form.value.loan_amount))
+        : null,
+    };
 
     const response = await fetch(`/api/leads/${props.lead.id}`, {
       method: 'PUT',

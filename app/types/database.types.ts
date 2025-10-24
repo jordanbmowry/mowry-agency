@@ -31,7 +31,7 @@ export type Database = {
           lead_type: string | null;
           lead_source: string | null;
           status: string | null;
-          sex: 'Male' | 'Female' | null;
+          sex: 'male' | 'female' | null;
           height: number | null;
           weight: number | null;
           loan_amount: number | null;

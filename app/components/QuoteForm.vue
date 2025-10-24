@@ -662,8 +662,8 @@ const stateOptions = computed(() =>
 
 // Sex options for FormSelect
 const sexOptions = [
-  { label: 'Male', value: 'Male' },
-  { label: 'Female', value: 'Female' },
+  { label: 'Male', value: 'male' },
+  { label: 'Female', value: 'female' },
 ];
 
 // Coverage type options for FormSelect
@@ -673,7 +673,6 @@ const coverageTypeOptions = [
   { label: 'Indexed Universal Life (IUL)', value: 'iul' },
   { label: 'Mortgage Protection', value: 'mortgage-protection' },
   { label: 'Final Expense Insurance', value: 'final-expense' },
-  { label: 'Annuities', value: 'annuities' },
   { label: 'Not Sure - Need Guidance', value: 'not-sure' },
 ];
 
@@ -878,7 +877,7 @@ const validateCity = (city: string): string => {
 
 const validateSex = (sex: string): string => {
   if (!sex) return 'Sex is required';
-  if (!['Male', 'Female'].includes(sex)) return 'Please select Male or Female';
+  if (!['male', 'female'].includes(sex)) return 'Please select a valid option';
   return '';
 };
 

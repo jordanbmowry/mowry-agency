@@ -73,16 +73,8 @@ export default defineEventHandler(async (event) => {
 
     console.log('Validation passed. Cleaned data:', validatedData);
 
-    // Transform sex values to match database constraint (Male/Female instead of male/female)
+    // Use validated data directly - sex is already lowercase ('male' or 'female')
     const dbData = { ...validatedData };
-    if (dbData.sex) {
-      if (dbData.sex === 'male') dbData.sex = 'Male';
-      else if (dbData.sex === 'female') dbData.sex = 'Female';
-      else if (dbData.sex === 'other') {
-        // Database constraint only allows Male/Female, so remove 'other' for now
-        delete dbData.sex;
-      }
-    }
 
     // Update the lead with validated data
     const { data: updatedLead, error: updateError } = await supabase

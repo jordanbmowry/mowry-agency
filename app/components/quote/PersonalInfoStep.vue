@@ -124,6 +124,5 @@ const emit = defineEmits<{
 const sexOptions = [
   { value: 'male', label: 'Male' },
   { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
 ];
 </script>

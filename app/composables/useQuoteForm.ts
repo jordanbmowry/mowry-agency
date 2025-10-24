@@ -7,8 +7,11 @@ import {
   isValidDateString,
 } from '~/utils/dateUtils';
 
-// Import validators from the main validation composable to avoid duplication
-import { validators } from '~/composables/useFormValidation';
+// Import Joi validation for DRY principle and database consistency
+import {
+  useQuoteFormValidation,
+  type QuoteFormData as JoiQuoteFormData,
+} from '~/composables/useJoiValidation';
 
 // Types
 export interface QuoteFormData {
@@ -47,88 +50,6 @@ export interface QuoteFormErrors {
   coverageType: string;
 }
 
-// Custom validators specific to quote form
-const quoteValidators = {
-  dateOfBirth: (dateOfBirth: string): string => {
-    if (!dateOfBirth.trim()) return 'Date of birth is required';
-
-    if (!isValidDateString(dateOfBirth)) {
-      return 'Please enter a valid date';
-    }
-
-    if (!isValidAge(dateOfBirth, 18)) {
-      return 'You must be at least 18 years old';
-    }
-
-    const age = calculateAge(dateOfBirth);
-    if (age > 100) {
-      return 'Please enter a valid date of birth';
-    }
-
-    return '';
-  },
-
-  height: (height: string): string => {
-    if (!height.trim()) return 'Height is required';
-    const heightNum = parseFloat(height);
-    if (isNaN(heightNum)) return 'Please enter a valid height';
-    if (heightNum < 36 || heightNum > 96) {
-      return 'Height must be between 36 and 96 inches';
-    }
-    return '';
-  },
-
-  weight: (weight: string): string => {
-    if (!weight.trim()) return 'Weight is required';
-    const weightNum = parseFloat(weight);
-    if (isNaN(weightNum)) return 'Please enter a valid weight';
-    if (weightNum < 50 || weightNum > 500) {
-      return 'Weight must be between 50 and 500 pounds';
-    }
-    return '';
-  },
-
-  healthConditions: (value: string): string => {
-    if (!value.trim()) return 'Please describe your health conditions';
-    if (value.trim().length < 3)
-      return 'Please provide more detail (at least 3 characters)';
-    return '';
-  },
-
-  medications: (value: string): string => {
-    if (!value.trim()) return 'Please list current medications';
-    if (value.trim().length < 3)
-      return 'Please provide more detail (at least 3 characters)';
-    return '';
-  },
-
-  coverageType: (value: string): string => {
-    if (!value.trim()) return 'Coverage type is required';
-    return '';
-  },
-
-  sex: (sex: string): string => {
-    if (!sex.trim()) return 'Sex is required';
-    const validSexValues = ['male', 'female', 'other'];
-    if (!validSexValues.includes(sex.toLowerCase())) {
-      return 'Please select a valid option';
-    }
-    return '';
-  },
-
-  city: (city: string): string => {
-    if (!city.trim()) return 'City is required';
-    if (city.trim().length < 2) return 'City must be at least 2 characters';
-    return '';
-  },
-
-  state: (state: string): string => {
-    if (!state.trim()) return 'State is required';
-    if (state.trim().length < 2) return 'State must be at least 2 characters';
-    return '';
-  },
-};
-
 // Pure function to check if required fields are filled for a step
 const hasRequiredFieldsForStep = (
   form: QuoteFormData,
@@ -158,6 +79,9 @@ export const useQuoteForm = () => {
   const quoteFormSubmitted = useLocalStorage('quoteFormSubmitted', false);
   const submittedUserName = useLocalStorage('submittedUserName', '');
 
+  // Initialize Joi validation
+  const joiValidation = useQuoteFormValidation();
+
   // Form data with TCPA compliance
   const form = reactive<QuoteFormData>({
     firstName: '',
@@ -179,7 +103,7 @@ export const useQuoteForm = () => {
     formVersion: 'v1.2',
   });
 
-  // Error tracking
+  // Error tracking (using Joi validation errors)
   const errors = reactive<QuoteFormErrors>({
     firstName: '',
     lastName: '',
@@ -265,88 +189,11 @@ export const useQuoteForm = () => {
     return isStep1Valid.value && isStep2Valid.value && isStep3Valid.value;
   });
 
-  // Validation function that applies validators
+  // Validation function using Joi
   const validateField = (fieldName: keyof QuoteFormErrors) => {
     const value = form[fieldName as keyof QuoteFormData];
-
-    // Helper function to get error message from ValidationRule
-    const getErrorMessage = (
-      rule: import('~/composables/useFormValidation').ValidationRule
-    ): string => {
-      return rule.validate(value) ? '' : rule.message;
-    };
-
-    switch (fieldName) {
-      case 'firstName':
-        errors.firstName = getErrorMessage(
-          validators.required('First name is required')
-        );
-        if (!errors.firstName && value) {
-          const nameError = validators.minLength(
-            2,
-            'First name must be at least 2 characters'
-          );
-          errors.firstName = getErrorMessage(nameError);
-        }
-        break;
-      case 'lastName':
-        errors.lastName = getErrorMessage(
-          validators.required('Last name is required')
-        );
-        if (!errors.lastName && value) {
-          const nameError = validators.minLength(
-            2,
-            'Last name must be at least 2 characters'
-          );
-          errors.lastName = getErrorMessage(nameError);
-        }
-        break;
-      case 'email':
-        errors.email = getErrorMessage(
-          validators.required('Email is required')
-        );
-        if (!errors.email && value) {
-          errors.email = getErrorMessage(validators.email());
-        }
-        break;
-      case 'phone':
-        errors.phone = getErrorMessage(
-          validators.required('Phone is required')
-        );
-        if (!errors.phone && value) {
-          errors.phone = getErrorMessage(validators.phone());
-        }
-        break;
-      case 'dateOfBirth':
-        errors.dateOfBirth = quoteValidators.dateOfBirth(value as string);
-        break;
-      case 'city':
-        errors.city = quoteValidators.city(value as string);
-        break;
-      case 'state':
-        errors.state = quoteValidators.state(value as string);
-        break;
-      case 'sex':
-        errors.sex = quoteValidators.sex(value as string);
-        break;
-      case 'height':
-        errors.height = quoteValidators.height(value as string);
-        break;
-      case 'weight':
-        errors.weight = quoteValidators.weight(value as string);
-        break;
-      case 'healthConditions':
-        errors.healthConditions = quoteValidators.healthConditions(
-          value as string
-        );
-        break;
-      case 'medications':
-        errors.medications = quoteValidators.medications(value as string);
-        break;
-      case 'coverageType':
-        errors.coverageType = quoteValidators.coverageType(value as string);
-        break;
-    }
+    const errorMsg = joiValidation.validateField(fieldName, value);
+    errors[fieldName] = errorMsg;
   };
 
   // Navigation functions
@@ -464,8 +311,5 @@ export const useQuoteForm = () => {
     previousStep,
     resetForm,
     submitForm,
-
-    // Quote-specific validators (export for testing)
-    quoteValidators,
   };
 };

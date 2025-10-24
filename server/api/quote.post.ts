@@ -1,14 +1,11 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
 import {
-  validateEmail,
-  validateSex,
-  validateHeight,
-  validateWeight,
   transformLeadData,
   isDuplicateEmailError,
   extractClientInfo,
 } from '../utils/form-utils';
 import { sendQuoteEmails } from '../utils/email-service-vue';
+import { quoteValidationSchema } from '../utils/validation';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -18,65 +15,75 @@ export default defineEventHandler(async (event) => {
     // Get runtime config
     const config = useRuntimeConfig();
 
-    // Basic validation
-    if (
-      !body.firstName ||
-      !body.lastName ||
-      !body.email ||
-      !body.phone ||
-      !body.dateOfBirth ||
-      !body.sex ||
-      !body.height ||
-      !body.weight ||
-      !body.city ||
-      !body.state ||
-      !body.coverageType ||
-      !body.tcpaConsent
-    ) {
-      throw createError({
-        statusCode: 400,
-        statusMessage:
-          'Missing required fields: firstName, lastName, email, phone, dateOfBirth, sex, height, weight, city, state, coverageType, and tcpaConsent are required',
-      });
-    }
+    // Transform data from camelCase to snake_case for validation
+    const transformedBody = {
+      first_name: body.firstName,
+      last_name: body.lastName,
+      email: body.email,
+      phone: body.phone,
+      date_of_birth: body.dateOfBirth,
+      sex: body.sex,
+      city: body.city,
+      state: body.state,
+      height:
+        typeof body.height === 'string' ? parseFloat(body.height) : body.height,
+      weight:
+        typeof body.weight === 'string' ? parseFloat(body.weight) : body.weight,
+      coverage_type: body.coverageType,
+      health_conditions: body.healthConditions,
+      current_medications: body.medications || body.currentMedications,
+      tcpa_consent: body.tcpaConsent,
+      message: body.message,
+    };
 
-    // Validate sex
-    if (!validateSex(body.sex)) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid sex value',
+    // Validate using Joi schema
+    const { error: validationError, value: validatedData } =
+      quoteValidationSchema.validate(transformedBody, {
+        abortEarly: false,
+        stripUnknown: true,
       });
-    }
 
-    // Validate height
-    if (!validateHeight(parseFloat(body.height))) {
+    if (validationError) {
+      console.error('Joi validation error:', validationError.details);
+      const errors = validationError.details.map((detail) => ({
+        field: detail.path.join('.'),
+        message: detail.message,
+      }));
+
       throw createError({
         statusCode: 400,
-        statusMessage: 'Invalid height value',
-      });
-    }
-
-    // Validate weight
-    if (!validateWeight(parseFloat(body.weight))) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid weight value',
-      });
-    }
-
-    // Validate email format
-    if (!validateEmail(body.email)) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid email format',
+        statusMessage: 'Validation failed',
+        data: { errors },
       });
     }
 
     // Extract client information for TCPA compliance audit trail
     const clientInfo = extractClientInfo(event);
 
+    // Transform validated data back to camelCase for transformLeadData function
+    const formDataForTransform = {
+      firstName: validatedData.first_name,
+      lastName: validatedData.last_name,
+      email: validatedData.email,
+      phone: validatedData.phone,
+      dateOfBirth: validatedData.date_of_birth,
+      sex: validatedData.sex,
+      city: validatedData.city,
+      state: validatedData.state,
+      height: validatedData.height,
+      weight: validatedData.weight,
+      coverageType: validatedData.coverage_type,
+      healthConditions: validatedData.health_conditions,
+      medications: validatedData.current_medications,
+      tcpaConsent: validatedData.tcpa_consent,
+      message: validatedData.message || '',
+      formVersion: body.formVersion || 'v1.0',
+      tcpaText: body.tcpaText,
+      emailMarketingConsent: body.emailMarketingConsent || false,
+    };
+
     // Transform and sanitize data for database with compliance info
-    const leadData = transformLeadData(body, clientInfo);
+    const leadData = transformLeadData(formDataForTransform, clientInfo);
 
     // Get Supabase client with service role for bypassing RLS
     const supabase = serverSupabaseServiceRole(event);
@@ -105,6 +112,11 @@ export default defineEventHandler(async (event) => {
 
     // Handle other database errors
     if (insertError) {
+      console.error('Database insert error:', insertError);
+      console.error(
+        'Lead data being inserted:',
+        JSON.stringify(leadData, null, 2)
+      );
       throw createError({
         statusCode: 500,
         statusMessage:

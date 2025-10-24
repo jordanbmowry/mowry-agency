@@ -117,32 +117,46 @@ export const safeAsync = async <T>(
 };
 
 // Data transformation utilities with enhanced TCPA compliance
-export const transformLeadData = (formData: any, clientInfo?: any) => ({
-  first_name: formData.firstName,
-  last_name: formData.lastName,
-  email: formData.email.toLowerCase(),
-  phone: formData.phone,
-  date_of_birth: formData.dateOfBirth,
-  coverage_type: formData.coverageType,
-  health_conditions: formData.healthConditions,
-  current_medications: formData.medications || formData.currentMedications,
-  message: formData.message,
-  city: formData.city,
-  state: formData.state,
-  sex: formData.sex,
-  height: formData.height,
-  weight: formData.weight,
-  tcpa_consent: formData.tcpaConsent,
-  tcpa_text: formData.tcpaText || getTcpaConsentText(formData.formVersion),
-  email_marketing_consent: formData.emailMarketingConsent || false,
-  ip_address: clientInfo?.ip,
-  user_agent: clientInfo?.userAgent,
-  form_version: formData.formVersion || 'v1.0',
-  compliance_review_status: 'pending',
-  lead_type: 'insurance_quote',
-  lead_source: 'quote_form',
-  status: 'new',
-});
+// Pure function: transforms frontend form data (camelCase) to database format (snake_case)
+// Handles type conversions: string → number for height/weight
+export const transformLeadData = (formData: any, clientInfo?: any) => {
+  // Convert height and weight from strings to numbers
+  const height =
+    typeof formData.height === 'string'
+      ? parseFloat(formData.height)
+      : formData.height;
+  const weight =
+    typeof formData.weight === 'string'
+      ? parseFloat(formData.weight)
+      : formData.weight;
+
+  return {
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    email: formData.email.toLowerCase(),
+    phone: formData.phone,
+    date_of_birth: formData.dateOfBirth,
+    coverage_type: formData.coverageType,
+    health_conditions: formData.healthConditions,
+    current_medications: formData.medications || formData.currentMedications,
+    message: formData.message,
+    city: formData.city,
+    state: formData.state,
+    sex: formData.sex,
+    height: height || null, // Ensure number or null
+    weight: weight || null, // Ensure number or null
+    tcpa_consent: formData.tcpaConsent,
+    tcpa_text: formData.tcpaText || getTcpaConsentText(formData.formVersion),
+    email_marketing_consent: formData.emailMarketingConsent || false,
+    ip_address: clientInfo?.ip,
+    user_agent: clientInfo?.userAgent,
+    form_version: formData.formVersion || 'v1.0',
+    compliance_review_status: 'pending',
+    lead_type: 'insurance_quote',
+    lead_source: 'quote_form',
+    status: 'new',
+  };
+};
 
 // Create unsubscribe link
 export const createUnsubscribeLink = (

@@ -66,16 +66,16 @@
             <td
               class="hidden px-3 py-4 text-sm text-zinc-500 md:table-cell dark:text-zinc-400"
             >
-              {{ lead.phone || 'N/A' }}
+              {{ formatPhone(lead.phone) }}
             </td>
             <td
               class="hidden px-3 py-4 text-sm text-zinc-500 lg:table-cell dark:text-zinc-400"
             >
-              {{ lead.coverage_type || 'N/A' }}
+              {{ formatCoverageType(lead.coverage_type) }}
             </td>
             <td class="px-3 py-4 text-sm">
               <span :class="getStatusClasses(lead.status)">
-                {{ lead.status || 'new' }}
+                {{ formatStatus(lead.status) }}
               </span>
             </td>
             <td class="py-4 pl-3 text-right text-sm font-medium">
@@ -138,6 +138,9 @@ interface LeadsTableProps {
 }
 
 defineProps<LeadsTableProps>();
+
+// Import formatters
+const { formatCoverageType, formatStatus, formatPhone } = useFormatters();
 
 const getStatusClasses = (status: string | null) => {
   return getStatusBadgeClasses(status || 'new');

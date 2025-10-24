@@ -1,42 +1,53 @@
 import Joi from 'joi';
 import { ref, computed, readonly } from 'vue';
+import type { QuoteFormData } from './useQuoteForm';
 
-// Joi validation schema for admin lead edit form
-export const leadEditValidationSchema = Joi.object({
-  first_name: Joi.string().required().min(2).max(100).trim().messages({
+/**
+ * Joi Validation Schemas for Lead Forms
+ * All schemas match database.types.ts constraints from the 'leads' table
+ */
+
+// Shared field validators matching database constraints
+const sharedValidators = {
+  firstName: Joi.string().required().min(2).max(100).trim().messages({
     'string.empty': 'First name is required',
     'string.min': 'First name must be at least 2 characters',
     'string.max': 'First name must be less than 100 characters',
   }),
 
-  last_name: Joi.string().required().min(2).max(100).trim().messages({
+  lastName: Joi.string().required().min(2).max(100).trim().messages({
     'string.empty': 'Last name is required',
     'string.min': 'Last name must be at least 2 characters',
     'string.max': 'Last name must be less than 100 characters',
   }),
 
-  email: Joi.string().required().email().max(100).trim().lowercase().messages({
+  email: Joi.string().required().email().max(254).trim().lowercase().messages({
     'string.empty': 'Email is required',
     'string.email': 'Please enter a valid email address',
-    'string.max': 'Email must be less than 100 characters',
+    'string.max': 'Email must be less than 254 characters',
   }),
 
+  // Database: phone: string (required, not nullable)
   phone: Joi.string()
     .required()
     .custom((value, helpers) => {
-      // Remove all non-digit characters for validation
       const digitsOnly = value.replace(/\D/g, '');
       if (digitsOnly.length < 10) {
         return helpers.error('phone.length');
+      }
+      if (digitsOnly.length > 15) {
+        return helpers.error('phone.maxLength');
       }
       return value;
     })
     .messages({
       'string.empty': 'Phone number is required',
-      'phone.length': 'Phone number must be at least 10 digits',
+      'phone.length': 'Phone number must have at least 10 digits',
+      'phone.maxLength': 'Phone number must be less than 15 digits',
     }),
 
-  date_of_birth: Joi.string()
+  // Database: date_of_birth: string | null
+  dateOfBirth: Joi.string()
     .required()
     .custom((value, helpers) => {
       const date = new Date(value);
@@ -45,6 +56,10 @@ export const leadEditValidationSchema = Joi.object({
       }
 
       const today = new Date();
+      if (date > today) {
+        return helpers.error('date.future');
+      }
+
       const age = today.getFullYear() - date.getFullYear();
       const monthDiff = today.getMonth() - date.getMonth();
 
@@ -56,8 +71,11 @@ export const leadEditValidationSchema = Joi.object({
         actualAge = age - 1;
       }
 
-      if (actualAge < 18 || actualAge > 85) {
-        return helpers.error('date.age');
+      if (actualAge < 18) {
+        return helpers.error('date.minAge');
+      }
+      if (actualAge > 100) {
+        return helpers.error('date.maxAge');
       }
 
       return value;
@@ -65,50 +83,39 @@ export const leadEditValidationSchema = Joi.object({
     .messages({
       'string.empty': 'Date of birth is required',
       'date.invalid': 'Please enter a valid date',
-      'date.age': 'Must be between 18 and 85 years old',
+      'date.future': 'Date of birth cannot be in the future',
+      'date.minAge': 'You must be at least 18 years old',
+      'date.maxAge': 'Please enter a valid date of birth',
     }),
 
-  sex: Joi.string().required().valid('male', 'female', 'other').messages({
-    'string.empty': 'Sex is required',
+  // Database: sex: string | null
+  sex: Joi.string().required().valid('male', 'female').messages({
+    'any.required': 'Sex is required',
     'any.only': 'Please select a valid option',
   }),
 
-  city: Joi.string().required().min(2).max(50).trim().messages({
+  // Database: city: string | null
+  city: Joi.string().required().min(2).max(100).trim().messages({
     'string.empty': 'City is required',
     'string.min': 'City must be at least 2 characters',
-    'string.max': 'City must be less than 50 characters',
+    'string.max': 'City must be less than 100 characters',
   }),
 
-  state: Joi.string().required().length(2).messages({
+  // Database: state: string | null
+  state: Joi.string().required().length(2).uppercase().messages({
     'string.empty': 'State is required',
     'string.length': 'State must be a 2-letter code',
   }),
 
-  height: Joi.number()
-    .required()
-    .custom((value, helpers) => {
-      // Height should be in decimal feet format (e.g., 5.8 for 5'8")
-      if (value < 3.0 || value > 8.0) {
-        return helpers.error('height.range');
-      }
+  // Database: height: number | null (in inches: 36-96)
+  height: Joi.number().required().min(36).max(96).messages({
+    'number.base': 'Height must be a number',
+    'any.required': 'Height is required',
+    'number.min': 'Height must be between 36 and 96 inches',
+    'number.max': 'Height must be between 36 and 96 inches',
+  }),
 
-      // Convert to inches for validation
-      const feet = Math.floor(value);
-      const inches = Math.round((value - feet) * 10);
-      const totalInches = feet * 12 + inches;
-
-      if (totalInches < 36 || totalInches > 96) {
-        return helpers.error('height.range');
-      }
-
-      return value;
-    })
-    .messages({
-      'number.base': 'Height must be a number',
-      'any.required': 'Height is required',
-      'height.range': 'Height must be between 3.0 and 8.0 (3\'0" to 8\'0")',
-    }),
-
+  // Database: weight: number | null (in pounds: 50-500)
   weight: Joi.number().required().min(50).max(500).messages({
     'number.base': 'Weight must be a number',
     'any.required': 'Weight is required',
@@ -116,60 +123,245 @@ export const leadEditValidationSchema = Joi.object({
     'number.max': 'Weight must be between 50 and 500 pounds',
   }),
 
-  coverage_type: Joi.string().required().messages({
-    'string.empty': 'Coverage type is required',
+  // Database: health_conditions: string | null
+  healthConditions: Joi.string().required().min(3).max(500).trim().messages({
+    'string.empty': 'Please describe your health conditions or enter "None"',
+    'string.min': 'Please provide more detail (at least 3 characters)',
+    'string.max': 'Health conditions must be less than 500 characters',
   }),
 
+  // Database: current_medications: string | null
+  currentMedications: Joi.string().required().min(3).max(500).trim().messages({
+    'string.empty': 'Please list current medications or enter "None"',
+    'string.min': 'Please provide more detail (at least 3 characters)',
+    'string.max': 'Medications must be less than 500 characters',
+  }),
+
+  // Database: coverage_type: string | null
+  coverageType: Joi.string()
+    .required()
+    .valid(
+      'term-life',
+      'whole-life',
+      'iul',
+      'mortgage-protection',
+      'final-expense',
+      'not-sure'
+    )
+    .messages({
+      'string.empty': 'Coverage type is required',
+      'any.only': 'Please select a valid coverage type',
+    }),
+
+  // Database: loan_amount: number | null (optional)
+  loanAmount: Joi.number()
+    .optional()
+    .allow(null)
+    .min(0)
+    .max(10000000)
+    .messages({
+      'number.base': 'Loan amount must be a number',
+      'number.min': 'Loan amount cannot be negative',
+      'number.max': 'Loan amount must be less than $10,000,000',
+    }),
+
+  // Database: status: string (default 'new')
   status: Joi.string()
     .required()
-    .valid('new', 'in_progress', 'contacted', 'quoted', 'closed')
+    .valid('new', 'in_progress', 'contacted', 'closed')
     .messages({
       'string.empty': 'Status is required',
       'any.only': 'Please select a valid status',
     }),
 
-  health_conditions: Joi.string().optional().allow('').max(1000).messages({
-    'string.max': 'Health conditions must be less than 1000 characters',
+  // Database: tcpa_consent: boolean (required)
+  tcpaConsent: Joi.boolean().valid(true).required().messages({
+    'any.only': 'You must consent to be contacted',
+    'any.required': 'TCPA consent is required',
   }),
 
-  medications: Joi.string().optional().allow('').max(1000).messages({
-    'string.max': 'Medications must be less than 1000 characters',
-  }),
+  // Database: email_marketing_consent: boolean
+  emailMarketingConsent: Joi.boolean().optional().default(false),
 
-  loan_amount: Joi.number().optional().allow(null).min(0).messages({
-    'number.base': 'Loan amount must be a number',
-    'number.min': 'Loan amount must be positive',
-  }),
-
-  message: Joi.string().optional().allow('').max(1000).messages({
+  // Database: message: string | null
+  message: Joi.string().optional().allow('', null).max(1000).messages({
     'string.max': 'Message must be less than 1000 characters',
   }),
+
+  // Database: agent_notes: string | null (admin only)
+  agentNotes: Joi.string().optional().allow('', null).max(1000).messages({
+    'string.max': 'Agent notes must be less than 1000 characters',
+  }),
+};
+
+/**
+ * Quote Form Validation Schema (Public-facing quote request form)
+ * Matches all required fields for new lead submission
+ */
+export const quoteFormValidationSchema = Joi.object({
+  firstName: sharedValidators.firstName,
+  lastName: sharedValidators.lastName,
+  email: sharedValidators.email,
+  phone: sharedValidators.phone,
+  dateOfBirth: sharedValidators.dateOfBirth,
+  sex: sharedValidators.sex,
+  city: sharedValidators.city,
+  state: sharedValidators.state,
+  height: sharedValidators.height,
+  weight: sharedValidators.weight,
+  healthConditions: sharedValidators.healthConditions,
+  medications: sharedValidators.currentMedications, // Frontend uses 'medications'
+  coverageType: sharedValidators.coverageType,
+  tcpaConsent: sharedValidators.tcpaConsent,
+  emailMarketingConsent: sharedValidators.emailMarketingConsent,
+  message: sharedValidators.message,
+  formVersion: Joi.string().optional().default('v1.2'),
 });
 
-export interface LeadFormData {
+/**
+ * Admin Lead Edit Validation Schema
+ * Used for editing existing leads in the admin panel
+ */
+export const leadEditValidationSchema = Joi.object({
+  first_name: sharedValidators.firstName,
+  last_name: sharedValidators.lastName,
+  email: sharedValidators.email,
+  phone: sharedValidators.phone,
+  date_of_birth: sharedValidators.dateOfBirth,
+  sex: sharedValidators.sex,
+  city: sharedValidators.city,
+  state: sharedValidators.state,
+  height: sharedValidators.height,
+  weight: sharedValidators.weight,
+  coverage_type: sharedValidators.coverageType,
+  status: sharedValidators.status,
+  health_conditions: Joi.string().optional().allow('', null).max(500).messages({
+    'string.max': 'Health conditions must be less than 500 characters',
+  }),
+  current_medications: Joi.string()
+    .optional()
+    .allow('', null)
+    .max(500)
+    .messages({
+      'string.max': 'Medications must be less than 500 characters',
+    }),
+  loan_amount: sharedValidators.loanAmount,
+  agent_notes: sharedValidators.agentNotes,
+  message: sharedValidators.message,
+});
+
+// TypeScript interfaces matching the schemas
+export interface LeadEditFormData {
   first_name: string;
   last_name: string;
   email: string;
   phone: string;
   date_of_birth: string;
-  sex: 'male' | 'female' | 'other';
+  sex: 'male' | 'female';
   city: string;
   state: string;
   height: number | string;
   weight: number | string;
   coverage_type: string;
-  status: 'new' | 'in_progress' | 'contacted' | 'quoted' | 'closed';
-  health_conditions: string;
-  medications: string;
-  loan_amount: number | string | null;
-  message: string;
+  status: 'new' | 'in_progress' | 'contacted' | 'closed';
+  health_conditions?: string;
+  current_medications?: string;
+  loan_amount?: number | null;
+  agent_notes?: string;
+  message?: string;
 }
 
 export interface ValidationErrors {
   [key: string]: string;
 }
 
-export const useJoiValidation = () => {
+/**
+ * Composable for Quote Form Validation
+ */
+export const useQuoteFormValidation = () => {
+  const errors = ref<ValidationErrors>({});
+  const isValidating = ref(false);
+
+  // Validate a single field
+  const validateField = (fieldName: string, value: any): string => {
+    try {
+      const fieldSchema = quoteFormValidationSchema.extract(fieldName);
+      fieldSchema.validate(value, { abortEarly: true });
+
+      // Clear error if validation passes
+      if (errors.value[fieldName]) {
+        delete errors.value[fieldName];
+      }
+      return '';
+    } catch (error: any) {
+      const errorMessage = error.details?.[0]?.message || 'Invalid value';
+      errors.value[fieldName] = errorMessage;
+      return errorMessage;
+    }
+  };
+
+  // Validate entire form
+  const validateForm = (
+    data: QuoteFormData
+  ): { isValid: boolean; errors: ValidationErrors } => {
+    isValidating.value = true;
+    const newErrors: ValidationErrors = {};
+
+    try {
+      quoteFormValidationSchema.validate(data, { abortEarly: false });
+    } catch (error: any) {
+      if (error.details) {
+        error.details.forEach((detail: any) => {
+          newErrors[detail.path[0]] = detail.message;
+        });
+      }
+    }
+
+    errors.value = newErrors;
+    isValidating.value = false;
+
+    return {
+      isValid: Object.keys(newErrors).length === 0,
+      errors: newErrors,
+    };
+  };
+
+  // Clear all errors
+  const clearErrors = () => {
+    errors.value = {};
+  };
+
+  // Clear specific field error
+  const clearFieldError = (fieldName: string) => {
+    if (errors.value[fieldName]) {
+      delete errors.value[fieldName];
+    }
+  };
+
+  // Get error for specific field
+  const getFieldError = (fieldName: string): string => {
+    return errors.value[fieldName] || '';
+  };
+
+  // Check if form has any errors
+  const hasErrors = computed(() => Object.keys(errors.value).length > 0);
+
+  return {
+    errors: readonly(errors),
+    isValidating: readonly(isValidating),
+    validateField,
+    validateForm,
+    clearErrors,
+    clearFieldError,
+    getFieldError,
+    hasErrors,
+  };
+};
+
+/**
+ * Composable for Lead Edit Form Validation (Admin)
+ */
+export const useLeadEditValidation = () => {
   const errors = ref<ValidationErrors>({});
   const isValidating = ref(false);
 
@@ -193,7 +385,7 @@ export const useJoiValidation = () => {
 
   // Validate entire form
   const validateForm = (
-    data: LeadFormData
+    data: LeadEditFormData
   ): { isValid: boolean; errors: ValidationErrors } => {
     isValidating.value = true;
     const newErrors: ValidationErrors = {};

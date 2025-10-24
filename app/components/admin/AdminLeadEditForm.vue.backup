@@ -1,0 +1,1600 @@
+<template>
+  <div class="space-y-8">
+    <!-- Form Actions -->
+    <div class="flex items-center justify-end gap-3">
+      <div class="flex-1 flex items-center">
+        <span
+          v-if="isValidating"
+          class="inline-flex items-center text-xs text-blue-600 dark:text-blue-400"
+        >
+          <svg
+            class="animate-spin -ml-1 mr-1 h-3 w-3"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Validating...
+        </span>
+      </div>
+      <UButton
+        v-if="isDirty"
+        variant="outline"
+        size="sm"
+        @click="resetForm"
+        :disabled="isSubmitting"
+      >
+        Reset Changes
+      </UButton>
+      <UButton
+        type="submit"
+        size="sm"
+        @click="handleSubmit"
+        :loading="isSubmitting"
+        :disabled="!isDirty || !isFormValid"
+      >
+        Save Changes
+      </UButton>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div v-if="submitStatus === 'success'" class="mb-6">
+      <div class="rounded-md bg-green-50 p-4 dark:bg-green-900/20">
+        <div class="flex">
+          <div class="shrink-0">
+            <svg
+              class="h-5 w-5 text-green-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-green-800 dark:text-green-200">
+              Lead information updated successfully!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="submitStatus === 'error'" class="mb-6">
+      <div class="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+        <div class="flex">
+          <div class="shrink-0">
+            <svg
+              class="h-5 w-5 text-red-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-red-800 dark:text-red-200">
+              {{
+                submitError ||
+                'Failed to update lead information. Please try again.'
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Fields -->
+    <form @submit.prevent="handleSubmit" class="space-y-8">
+      <!-- Personal Information Section -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Personal Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormInput
+            id="first_name"
+            label="First Name"
+            v-model="form.first_name"
+            :error="errors.first_name"
+            :required="true"
+            @blur="validateField('first_name')"
+          />
+
+          <FormInput
+            id="last_name"
+            label="Last Name"
+            v-model="form.last_name"
+            :error="errors.last_name"
+            :required="true"
+            @blur="validateField('last_name')"
+          />
+
+          <FormInput
+            id="email"
+            label="Email Address"
+            type="email"
+            v-model="form.email"
+            :error="errors.email"
+            :required="true"
+            autocomplete="email"
+            @blur="validateField('email')"
+          />
+
+          <FormInput
+            id="phone"
+            label="Phone Number"
+            type="tel"
+            v-model="form.phone"
+            :error="errors.phone"
+            :required="true"
+            placeholder="555-123-4567"
+            autocomplete="tel"
+            @blur="validateField('phone')"
+          />
+
+          <FormInput
+            id="date_of_birth"
+            label="Date of Birth"
+            type="date"
+            v-model="form.date_of_birth"
+            :error="errors.date_of_birth"
+            :required="true"
+            :max="maxDate"
+            @blur="validateField('date_of_birth')"
+          />
+
+          <FormSelect
+            id="sex"
+            label="Sex"
+            v-model="form.sex"
+            :options="sexOptions"
+            :error="errors.sex"
+            :required="true"
+            @blur="validateField('sex')"
+          />
+        </div>
+      </div>
+
+      <!-- Location Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Location Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormInput
+            id="city"
+            label="City"
+            v-model="form.city"
+            :error="errors.city"
+            :required="true"
+            @blur="validateField('city')"
+          />
+
+          <FormSelect
+            id="state"
+            label="State"
+            v-model="form.state"
+            :options="stateOptions"
+            :error="errors.state"
+            :required="true"
+            @blur="validateField('state')"
+          />
+        </div>
+      </div>
+
+      <!-- Physical Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Physical Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormInput
+            id="height"
+            label="Height (feet.inches)"
+            type="number"
+            v-model="form.height"
+            :error="errors.height"
+            :required="true"
+            step="0.1"
+            min="3.0"
+            max="8.0"
+            placeholder="5.8"
+            help-text="e.g., 5.8 for 5'8&quot;"
+            @blur="validateField('height')"
+          />
+
+          <FormInput
+            id="weight"
+            label="Weight (lbs)"
+            type="number"
+            v-model="form.weight"
+            :error="errors.weight"
+            :required="true"
+            :min="50"
+            :max="500"
+            placeholder="180"
+            @blur="validateField('weight')"
+          />
+        </div>
+      </div>
+
+      <!-- Insurance Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Insurance Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormSelect
+            id="coverage_type"
+            label="Coverage Type"
+            v-model="form.coverage_type"
+            :options="coverageTypeOptions"
+            :error="errors.coverage_type"
+            :required="true"
+            @blur="validateField('coverage_type')"
+          />
+
+          <FormInput
+            id="loan_amount"
+            label="Loan Amount"
+            type="number"
+            :model-value="form.loan_amount === null ? '' : form.loan_amount"
+            @update:model-value="
+              (value: string | number) =>
+                (form.loan_amount = !value ? null : parseFloat(String(value)))
+            "
+            :error="errors.loan_amount"
+            :min="0"
+            step="1000"
+            placeholder="100000"
+            @blur="validateField('loan_amount')"
+          />
+
+          <FormSelect
+            id="status"
+            label="Lead Status"
+            v-model="form.status"
+            :options="statusOptions"
+            :error="errors.status"
+            :required="true"
+            @blur="validateField('status')"
+          />
+        </div>
+      </div>
+
+      <!-- Health Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Health Information
+        </h4>
+        <div class="space-y-6">
+          <FormTextarea
+            id="health_conditions"
+            label="Health Conditions"
+            v-model="form.health_conditions"
+            :error="errors.health_conditions"
+            :rows="3"
+            :maxlength="500"
+            help-text="List any current health conditions or concerns"
+            @blur="validateField('health_conditions')"
+          />
+
+          <FormTextarea
+            id="current_medications"
+            label="Current Medications"
+            v-model="form.current_medications"
+            :error="errors.current_medications"
+            :rows="3"
+            :maxlength="500"
+            help-text="List any medications currently being taken"
+            @blur="validateField('current_medications')"
+          />
+        </div>
+      </div>
+
+      <!-- Hidden submit button for form validation -->
+      <button type="submit" class="hidden" />
+    </form>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { Database } from '~/types/database.types';
+import { useStatesData } from '~/composables/useCitiesData';
+import { useDebounceFn, watchDebounced } from '@vueuse/core';
+import { computed, ref, reactive, onMounted, watch } from 'vue';
+import { useSupabaseClient } from '#imports';
+
+// Type definitions
+type DatabaseLead = Database['public']['Tables']['leads']['Row'];
+type FormFields = {
+  [K in keyof DatabaseLead]: K extends 'height' | 'weight'
+    ? string | null
+    : DatabaseLead[K];
+};
+
+// Props and validation interfaces
+interface Props {
+  lead: DatabaseLead;
+}
+
+interface ValidationState {
+  isValidating: boolean;
+  errors: Record<keyof FormFields, string>;
+}
+
+// Props setup
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'success', updatedLead: DatabaseLead): void;
+  (e: 'cancel'): void;
+}>();
+
+// Form state management
+const form = ref<FormFields>({
+  ...props.lead,
+  height: props.lead.height?.toString() ?? null,
+  weight: props.lead.weight?.toString() ?? null,
+});
+
+// Form state
+const originalData = ref<FormFields>({ ...form.value });
+const isValidating = ref(false);
+const isSubmitting = ref(false);
+const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
+const submitError = ref<string | null>(null);
+
+// Dependencies
+const supabase = useSupabaseClient<Database>();
+const { states } = useStatesData();
+
+// Validation state
+const validationState = reactive<ValidationState>({
+  isValidating: false,
+  errors: Object.keys(form.value).reduce(
+    (acc, key) => {
+      acc[key as keyof FormFields] = '';
+      return acc;
+    },
+    {} as Record<keyof FormFields, string>
+  ),
+});
+
+// Form options
+const sexOptions = [
+  { label: 'Male', value: 'male' },
+  { label: 'Female', value: 'female' },
+  { label: 'Other', value: 'other' },
+];
+
+const statusOptions = [
+  { label: 'New', value: 'new' },
+  { label: 'In Progress', value: 'in_progress' },
+  { label: 'Contacted', value: 'contacted' },
+  { label: 'Closed', value: 'closed' },
+];
+
+const coverageTypeOptions = [
+  { label: 'Term Life Insurance', value: 'term-life' },
+  { label: 'Whole Life Insurance', value: 'whole-life' },
+  { label: 'Universal Life Insurance', value: 'universal-life' },
+  { label: 'Final Expense Insurance', value: 'final-expense' },
+  { label: 'Disability Insurance', value: 'disability' },
+  { label: 'Other', value: 'other' },
+];
+
+// Date constraints
+const today = new Date();
+const maxDate = new Date(
+  today.getFullYear() - 18,
+  today.getMonth(),
+  today.getDate()
+)
+  .toISOString()
+  .split('T')[0];
+
+// Computed properties
+const isDirty = computed(() => {
+  return Object.keys(form.value).some((key) => {
+    const k = key as keyof FormFields;
+    return form.value[k] !== originalData.value[k];
+  });
+});
+
+const isFormValid = computed(() => {
+  return Object.values(validationState.errors).every((error) => !error);
+});
+
+const stateOptions = computed(() =>
+  states.map((state) => ({ label: state.displayName, value: state.code }))
+);
+
+// Validation helpers
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+
+// Field validation function
+const validateField = (fieldName: keyof FormFields): string => {
+  const value = form.value[fieldName];
+
+  if (fieldName === 'id' || fieldName === 'created_at') {
+    return ''; // No validation needed for these fields
+  }
+
+  // Required fields check first
+  if (
+    [
+      'first_name',
+      'last_name',
+      'email',
+      'phone',
+      'date_of_birth',
+      'sex',
+      'city',
+      'state',
+      'coverage_type',
+      'status',
+    ].includes(fieldName)
+  ) {
+    if (!value) {
+      return `${fieldName
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')} is required`;
+    }
+  }
+
+  switch (fieldName) {
+    case 'email':
+      return emailRegex.test(value as string) ? '' : 'Invalid email format';
+
+    case 'phone':
+      return phoneRegex.test(value as string)
+        ? ''
+        : 'Invalid phone format (XXX-XXX-XXXX)';
+
+    case 'height': {
+      if (!value) return '';
+      const heightNum = Number(value);
+      if (Number.isNaN(heightNum)) return 'Please enter a valid number';
+      if (heightNum < 3.0 || heightNum > 8.0) {
+        return 'Height must be between 3.0 and 8.0';
+      }
+      return '';
+    }
+
+    case 'weight': {
+      if (!value) return '';
+      const weightNum = Number(value);
+      if (Number.isNaN(weightNum)) return 'Please enter a valid number';
+      if (weightNum < 50 || weightNum > 500) {
+        return 'Weight must be between 50 and 500 pounds';
+      }
+      return '';
+    }
+
+    case 'loan_amount': {
+      if (!value) return '';
+      const amount = Number(value);
+      if (Number.isNaN(amount)) return 'Please enter a valid number';
+      if (amount < 0) return 'Loan amount cannot be negative';
+      return '';
+    }
+
+    case 'date_of_birth': {
+      if (!value) return '';
+      const dobDate = new Date(value as string);
+      if (isNaN(dobDate.getTime())) return 'Invalid date';
+      if (dobDate > new Date(maxDate)) return 'Date cannot be in the future';
+      return '';
+    }
+
+    case 'health_conditions':
+    case 'current_medications':
+    case 'medications':
+    case 'agent_notes':
+    case 'message':
+      if (value && typeof value === 'string' && value.length > 500) {
+        return 'Maximum 500 characters allowed';
+      }
+      return '';
+
+    case 'email_marketing_consent':
+      return typeof value === 'boolean' ? '' : 'Invalid value';
+
+    case 'compliance_review_status':
+    case 'form_version':
+      return ''; // No specific validation needed
+
+    default:
+      return '';
+  }
+};
+
+// Debounced validation
+const validateFieldDebounced = useDebounceFn((fieldName: keyof FormFields) => {
+  isValidating.value = true;
+  const error = validateField(fieldName);
+  validationState.errors[fieldName] = error;
+  setTimeout(() => {
+    isValidating.value = false;
+  }, 50);
+}, 300);
+
+// Form actions
+const validateAllFields = () => {
+  const fieldsToValidate = Object.keys(form.value) as (keyof FormFields)[];
+  fieldsToValidate.forEach((field) => {
+    validationState.errors[field] = validateField(field);
+  });
+  return !Object.values(validationState.errors).some((error) => error);
+};
+
+const resetForm = () => {
+  form.value = { ...originalData.value };
+  Object.keys(validationState.errors).forEach((key) => {
+    validationState.errors[key as keyof FormFields] = '';
+  });
+  submitStatus.value = 'idle';
+  submitError.value = null;
+};
+
+// Form submission
+const handleSubmit = async () => {
+  if (isSubmitting.value || !isDirty.value) return;
+
+  // Validate all fields before submission
+  if (!validateAllFields()) {
+    submitStatus.value = 'error';
+    submitError.value = 'Please fix the validation errors before submitting.';
+    return;
+  }
+
+  try {
+    isSubmitting.value = true;
+    submitStatus.value = 'idle';
+    submitError.value = null;
+
+    // Convert form data to database format
+    const formData = form.value;
+    const updateData: Partial<DatabaseLead> = {
+      first_name: formData.first_name || undefined,
+      last_name: formData.last_name || undefined,
+      email: formData.email || undefined,
+      phone: formData.phone || undefined,
+      city: formData.city || undefined,
+      coverage_type: formData.coverage_type || undefined,
+      current_medications: formData.current_medications || undefined,
+      health_conditions: formData.health_conditions || undefined,
+      agent_notes: formData.agent_notes || undefined,
+      date_of_birth: formData.date_of_birth || undefined,
+      sex: formData.sex || undefined,
+      status: formData.status || undefined,
+      height: formData.height ? parseFloat(formData.height) : undefined,
+      weight: formData.weight ? parseFloat(formData.weight) : undefined,
+      loan_amount: formData.loan_amount
+        ? typeof formData.loan_amount === 'string'
+          ? parseFloat(formData.loan_amount)
+          : formData.loan_amount
+        : undefined,
+      email_marketing_consent: formData.email_marketing_consent,
+      compliance_review_status: formData.compliance_review_status || undefined,
+      form_version: formData.form_version || undefined,
+    };
+
+    // Update in database
+    const { data: updated, error } = await supabase
+      .from('leads')
+      .update(updateData)
+      .eq('id', props.lead.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    submitStatus.value = 'success';
+    originalData.value = { ...form.value };
+
+    // Emit success event with updated lead data
+    emit('success', updated);
+
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      if (submitStatus.value === 'success') {
+        submitStatus.value = 'idle';
+      }
+    }, 3000);
+  } catch (error) {
+    console.error('Error updating lead:', error);
+    submitStatus.value = 'error';
+    submitError.value =
+      error instanceof Error
+        ? error.message
+        : 'Failed to update lead information';
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// Watchers
+onMounted(() => {
+  validateAllFields();
+});
+
+watch(
+  () => props.lead,
+  () => {
+    form.value = {
+      ...props.lead,
+      height: props.lead.height?.toString() ?? null,
+      weight: props.lead.weight?.toString() ?? null,
+    };
+    originalData.value = { ...form.value };
+    validateAllFields();
+  },
+  { deep: true }
+);
+
+watchDebounced(
+  form,
+  (newForm, oldForm) => {
+    if (!oldForm) return; // Skip initial load
+
+    // Check which fields have changed and validate them
+    Object.keys(newForm).forEach((key) => {
+      const k = key as keyof FormFields;
+      if (newForm[k] !== oldForm[k]) {
+        validateFieldDebounced(k);
+      }
+    });
+  },
+  { debounce: 300, maxWait: 1000, deep: true }
+);
+
+// Type definitions
+type DatabaseLead = Database['public']['Tables']['leads']['Row'];
+type FormFields = {
+  [K in keyof DatabaseLead]: K extends 'height' | 'weight'
+    ? string | null
+    : DatabaseLead[K];
+};
+
+// Props and validation interfaces
+interface Props {
+  lead: DatabaseLead;
+}
+
+interface ValidationState {
+  isValidating: boolean;
+  errors: Record<keyof FormFields, string>;
+}
+
+// Props setup
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'success', updatedLead: DatabaseLead): void;
+  (e: 'cancel'): void;
+}>();
+
+// Form state management
+const form = ref<FormFields>({
+  ...props.lead,
+  height: props.lead.height?.toString() ?? null,
+  weight: props.lead.weight?.toString() ?? null,
+});
+
+const originalData = ref<FormFields>({ ...form.value });
+const isValidating = ref(false);
+const isSubmitting = ref(false);
+const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
+const submitError = ref<string | null>(null);
+
+// Dependencies
+const supabase = useSupabaseClient<Database>();
+const { states } = useStatesData();
+
+// Form validation state
+const validationState = reactive<ValidationState>({
+  isValidating: false,
+  errors: Object.keys(form.value).reduce(
+    (acc, key) => {
+      acc[key as keyof FormFields] = '';
+      return acc;
+    },
+    {} as Record<keyof FormFields, string>
+  ),
+});
+type DatabaseLead = Database['public']['Tables']['leads']['Row'];
+
+// Form types with string-based height/weight for inputs
+type FormFields = {
+  [K in keyof DatabaseLead]: K extends 'height' | 'weight'
+    ? string | null
+    : DatabaseLead[K];
+};
+
+// Validation state interface
+interface ValidationState {
+  isValidating: boolean;
+  errors: Record<keyof FormFields, string>;
+}
+
+// Props and emits
+interface Props {
+  lead: DatabaseLead;
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'success', updatedLead: DatabaseLead): void;
+  (e: 'cancel'): void;
+}>();
+
+// Form management
+const supabase = useSupabaseClient<Database>();
+const { states } = useStatesData();
+
+// Initialize form with converted numeric values to string
+const form = ref<FormFields>({
+  ...props.lead,
+  height: props.lead.height?.toString() ?? null,
+  weight: props.lead.weight?.toString() ?? null,
+});
+
+// Track original data for dirty checking
+const originalData = ref<FormFields>({ ...form.value });
+
+// Validation state
+interface ValidationState {
+  isValidating: boolean;
+  errors: Record<keyof FormFields, string>;
+}
+
+const validationState = reactive<ValidationState>({
+  isValidating: false,
+  errors: Object.keys(form.value).reduce(
+    (acc, key) => {
+      acc[key as keyof FormFields] = '';
+      return acc;
+    },
+    {} as Record<keyof FormFields, string>
+  ),
+});
+
+// Form state
+const isSubmitting = ref(false);
+const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
+const submitError = ref<string | null>(null);
+
+// Computed properties
+const isDirty = computed(() => {
+  return Object.keys(form.value).some((key) => {
+    const k = key as keyof FormFields;
+    return form.value[k] !== originalData.value[k];
+  });
+});
+
+const isFormValid = computed(() => {
+  return Object.values(validationState.errors).every((error) => !error);
+});
+
+// Form validation helpers
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+
+// Form validation function
+const validateField = (field: keyof FormData): string => {
+  const value = form[field];
+
+  switch (field) {
+    case 'email':
+      return !value
+        ? ''
+        : emailRegex.test(value.toString())
+          ? ''
+          : 'Invalid email format';
+
+    case 'phone':
+      return !value
+        ? ''
+        : phoneRegex.test(value.toString())
+          ? ''
+          : 'Invalid phone format (XXX-XXX-XXXX)';
+
+    case 'height': {
+      if (!value) return '';
+      const heightNum = Number(value);
+      if (Number.isNaN(heightNum)) return 'Please enter a valid number';
+      if (heightNum < 3.0 || heightNum > 8.0) {
+        return 'Height must be between 3.0 and 8.0';
+      }
+      return '';
+    }
+
+    case 'weight': {
+      if (!value) return '';
+      const weightNum = Number(value);
+      if (Number.isNaN(weightNum)) return 'Please enter a valid number';
+      if (weightNum < 50 || weightNum > 500) {
+        return 'Weight must be between 50 and 500 pounds';
+      }
+      return '';
+    }
+
+    case 'first_name':
+    case 'last_name':
+      return !value ? 'This field is required' : '';
+
+    case 'date_of_birth':
+      if (!value) return 'Date of birth is required';
+      const dobDate = new Date(value);
+      if (isNaN(dobDate.getTime())) return 'Invalid date';
+      if (dobDate > new Date(maxDate.value))
+        return 'Date cannot be in the future';
+      return '';
+
+    case 'sex':
+    case 'city':
+    case 'state':
+    case 'coverage_type':
+    case 'status':
+      return !value ? 'This field is required' : '';
+
+    case 'loan_amount':
+      if (!value) return '';
+      const amount = Number(value);
+      if (Number.isNaN(amount)) return 'Please enter a valid number';
+      if (amount < 0) return 'Loan amount cannot be negative';
+      return '';
+
+    case 'health_conditions':
+    case 'current_medications':
+      return value && value.length > 500
+        ? 'Maximum 500 characters allowed'
+        : '';
+
+    default:
+      return '';
+  }
+};
+
+// Validation state interface
+interface ValidationState {
+  isValidating: boolean;
+  errors: Record<keyof FormData, string>;
+}
+
+// Create validation state
+const validationState = reactive<ValidationState>({
+  isValidating: false,
+  errors: {
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    date_of_birth: '',
+    sex: '',
+    city: '',
+    state: '',
+    height: '',
+    weight: '',
+    coverage_type: '',
+    loan_amount: '',
+    status: '',
+    health_conditions: '',
+    current_medications: '',
+    agent_notes: '',
+    email_marketing_consent: '',
+    compliance_review_status: '',
+    form_version: '',
+  },
+});
+
+// Create form methods
+const validateField = (fieldName: keyof FormData) => {
+  const value = form.value[fieldName];
+
+  switch (fieldName) {
+    case 'first_name':
+    case 'last_name':
+      validationState.errors[fieldName] = !value ? 'Field required' : '';
+      break;
+
+    case 'email':
+      validationState.errors.email = !value
+        ? 'Email required'
+        : !validateEmail(value)
+          ? 'Invalid email format'
+          : '';
+      break;
+
+    case 'phone':
+      validationState.errors.phone = value ? validatePhone(value) : '';
+      break;
+
+    case 'height':
+      validationState.errors.height = value ? validateHeight(value) : '';
+      break;
+
+    case 'weight':
+      validationState.errors.weight = value ? validateWeight(value) : '';
+      break;
+
+    default:
+      validationState.errors[fieldName] = '';
+  }
+};
+
+const validateFieldDebounced = debounce(validateField, 300);
+
+const resetForm = () => {
+  form.value = { ...originalData.value };
+  Object.keys(validationState.errors).forEach((key) => {
+    validationState.errors[key as keyof FormData] = '';
+  });
+};
+
+const handleSubmit = async () => {
+  // Validate all fields
+  Object.keys(form.value).forEach((key) => {
+    validateField(key as keyof FormData);
+  });
+
+  // Check for validation errors
+  const hasErrors = Object.values(validationState.errors).some(
+    (error) => error !== ''
+  );
+  if (hasErrors) return;
+
+  try {
+    await updateLead();
+    emit('success', form.value);
+  } catch (error) {
+    console.error('Error updating lead:', error);
+  }
+};
+
+// Form data interface
+interface FormData {
+  id?: string;
+  created_at?: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string;
+  phone: string | null;
+  date_of_birth: string | null;
+  sex: string | null;
+  city: string | null;
+  state: string | null;
+  height: string | null;
+  weight: string | null;
+  coverage_type: string | null;
+  loan_amount: string | number | null;
+  status: string | null;
+  health_conditions: string | null;
+  current_medications: string | null;
+  agent_notes: string | null;
+  email_marketing_consent: boolean;
+  compliance_review_status: string | null;
+  form_version: string | null;
+  medications?: string | null;
+  message?: string | null;
+}
+
+type DatabaseLead = Database['public']['Tables']['leads']['Row'];
+type UpdateLead = Database['public']['Tables']['leads']['Update'];
+
+interface FormData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  date_of_birth: string;
+  sex: string;
+  city: string;
+  state: string;
+  height: string;
+  weight: string;
+  coverage_type: string;
+  loan_amount: number | null;
+  status: string;
+  health_conditions: string;
+  current_medications: string;
+}
+
+// Form and validation state management
+const { useSupabaseClient } = useSupabase();
+const supabase = useSupabaseClient();
+
+type DatabaseLead = Database['public']['Tables']['leads']['Row'];
+type FormData = Omit<DatabaseLead, 'height' | 'weight'> & {
+  height: string | null;
+  weight: string | null;
+};
+
+const form = ref<FormData>({
+  ...props.lead,
+  // Convert number fields to string for form inputs
+  height: props.lead.height?.toString() ?? null,
+  weight: props.lead.weight?.toString() ?? null,
+});
+
+const originalData = ref<FormData>({ ...form.value });
+
+// Form state
+const isSubmitting = ref(false);
+const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
+const submitError = ref<string | null>(null);
+const isValidating = ref(false);
+const isDirty = computed(() => {
+  return Object.keys(form.value).some((key) => {
+    const k = key as keyof FormData;
+    return form.value[k] !== originalData.value[k];
+  });
+});
+
+// Submit handler with TypeScript type safety
+const handleSubmit = async () => {
+  if (!isDirty.value || !form.value) return;
+
+  // Validate all fields
+  isValidating.value = true;
+  let hasErrors = false;
+
+  for (const field of Object.keys(form.value) as (keyof FormData)[]) {
+    const error = validateField(field);
+    validationState.errors[field] = error;
+    if (error) hasErrors = true;
+  }
+
+  if (hasErrors) {
+    isValidating.value = false;
+    return;
+  }
+
+  try {
+    isSubmitting.value = true;
+    const cleanedForm: DatabaseLead = {
+      ...form.value,
+      height: form.value.height ? Number(form.value.height) : null,
+      weight: form.value.weight ? Number(form.value.weight) : null,
+      // Add required fields that might be missing
+      tcpa_consent: props.lead.tcpa_consent,
+      tcpa_consent_timestamp: props.lead.tcpa_consent_timestamp,
+      unsubscribed_at: props.lead.unsubscribed_at,
+      lead_type: props.lead.lead_type,
+      lead_source: props.lead.lead_source,
+    };
+
+    // TODO: Implement updateLead function
+    const updated = await supabase
+      .from('leads')
+      .update(cleanedForm)
+      .eq('id', form.value.id)
+      .select()
+      .single();
+
+    if (updated.error) throw updated.error;
+
+    emit('success', updated.data);
+    submitStatus.value = 'success';
+  } catch (error) {
+    submitStatus.value = 'error';
+    submitError.value = (error as Error).message;
+  } finally {
+    isSubmitting.value = false;
+    isValidating.value = false;
+  }
+};
+
+// Reset form to original values
+const resetForm = () => {
+  form.value = { ...originalData.value };
+  Object.keys(validationState.errors).forEach((key) => {
+    validationState.errors[key as keyof FormData] = '';
+  });
+};
+
+// Format height for display
+const formatHeight = (height: number | string | null): string => {
+  if (!height) return '';
+  const heightNum = typeof height === 'string' ? parseFloat(height) : height;
+  if (isNaN(heightNum)) return '';
+  return heightNum.toFixed(1);
+};
+
+const isValidHeight = (height: string): boolean => {
+  if (!height) return false;
+  const num = parseFloat(height);
+  if (isNaN(num)) return false;
+
+  // Split into feet and inches parts
+  const parts = height.split('.');
+  const feetNum = parseInt(parts[0] || '0', 10);
+  const inchesNum = parseInt(parts[1] || '0', 10);
+
+  // Validate ranges
+  return (
+    feetNum >= 3 &&
+    feetNum <= 8 &&
+    (parts.length === 1 || (inchesNum >= 0 && inchesNum < 12))
+  );
+};
+
+// Initialize form with lead data
+const initializeForm = () => {
+  const lead = props.lead;
+  const leadData: FormData = {
+    first_name: lead.first_name || null,
+    last_name: lead.last_name || null,
+    email: lead.email || '',
+    phone: lead.phone || null,
+    date_of_birth: lead.date_of_birth || null,
+    sex: lead.sex || null,
+    city: lead.city || null,
+    state: lead.state || null,
+    height: lead.height?.toString() || null,
+    weight: lead.weight?.toString() || null,
+    coverage_type: lead.coverage_type || null,
+    loan_amount: lead.loan_amount || null,
+    status: 'new', // Default status if not specified
+    health_conditions: lead.health_conditions || null,
+    current_medications: '', // Default empty string
+    agent_notes: lead.agent_notes || null,
+    email_marketing_consent: false, // Default false
+    compliance_review_status: null, // Default null
+    form_version: '1.0', // Default version
+  };
+  form.value = { ...leadData };
+  originalData.value = { ...leadData };
+};
+
+// Initialize form when component mounts
+onMounted(() => {
+  initializeForm();
+});
+
+// Watch for prop changes
+watch(
+  () => props.lead,
+  () => {
+    initializeForm();
+  },
+  { deep: true }
+);
+
+// Debounced validation for all form fields
+// This watches the entire form object and validates changed fields
+watchDebounced(
+  form,
+  (newForm, oldForm) => {
+    if (!oldForm) return; // Skip initial load
+
+    // Check which fields have changed and validate them
+    const changedFields: string[] = [];
+
+    Object.keys(newForm).forEach((key) => {
+      if (newForm[key as keyof FormData] !== oldForm[key as keyof FormData]) {
+        changedFields.push(key);
+      }
+    });
+
+    // Validate only the changed fields
+    changedFields.forEach((fieldName) => {
+      validateFieldDebounced(fieldName);
+    });
+  },
+  { debounce: 300, maxWait: 1000, deep: true }
+);
+
+// Computed properties
+const isDirty = computed(() => {
+  return Object.keys(form.value).some((key) => {
+    const formValue = form.value[key as keyof typeof form.value];
+    const originalValue =
+      originalData.value[key as keyof typeof originalData.value];
+    return formValue !== originalValue;
+  });
+});
+
+const isFormValid = computed(() => {
+  return Object.values(errors.value).every((error) => !error);
+});
+
+// Form options
+const sexOptions = [
+  { label: 'Male', value: 'male' },
+  { label: 'Female', value: 'female' },
+  { label: 'Other', value: 'other' },
+];
+
+const statusOptions = [
+  { label: 'New', value: 'new' },
+  { label: 'In Progress', value: 'in_progress' },
+  { label: 'Contacted', value: 'contacted' },
+  { label: 'Closed', value: 'closed' },
+];
+
+const coverageTypeOptions = [
+  { label: 'Term Life Insurance', value: 'term-life' },
+  { label: 'Whole Life Insurance', value: 'whole-life' },
+  { label: 'Universal Life Insurance', value: 'universal-life' },
+  { label: 'Final Expense Insurance', value: 'final-expense' },
+  { label: 'Disability Insurance', value: 'disability' },
+  { label: 'Other', value: 'other' },
+];
+
+// Use the states data composable for state options
+const { states } = useStatesData();
+const stateOptions = computed(() =>
+  states.map((state) => ({ label: state.displayName, value: state.code }))
+);
+
+// Date constraints
+const today = new Date();
+const maxDate = new Date(
+  today.getFullYear() - 18,
+  today.getMonth(),
+  today.getDate()
+)
+  .toISOString()
+  .split('T')[0];
+
+// Validation state interface
+interface ValidationState {
+  isValidating: boolean;
+  errors: Record<keyof FormData, string>;
+}
+
+// Create validation state
+const validationState = reactive<ValidationState>({
+  isValidating: false,
+  errors: {
+    id: '',
+    created_at: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    date_of_birth: '',
+    sex: '',
+    city: '',
+    state: '',
+    height: '',
+    weight: '',
+    coverage_type: '',
+    loan_amount: '',
+    status: '',
+    health_conditions: '',
+    current_medications: '',
+    medications: '',
+    agent_notes: '',
+    email_marketing_consent: '',
+    compliance_review_status: '',
+    form_version: '',
+    message: '',
+  },
+});
+
+// Field validation function
+const validateField = (fieldName: keyof FormData): string => {
+  const value = form.value[fieldName];
+
+  if (fieldName === 'id' || fieldName === 'created_at') {
+    return ''; // No validation needed for these fields
+  }
+
+  // Required fields check first
+  if (
+    [
+      'first_name',
+      'last_name',
+      'email',
+      'phone',
+      'date_of_birth',
+      'sex',
+      'city',
+      'state',
+      'coverage_type',
+      'status',
+    ].includes(fieldName)
+  ) {
+    if (!value) {
+      return `${fieldName
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')} is required`;
+    }
+  }
+
+  switch (fieldName) {
+    case 'email':
+      return emailRegex.test(value as string) ? '' : 'Invalid email format';
+
+    case 'phone':
+      return phoneRegex.test(value as string)
+        ? ''
+        : 'Invalid phone format (XXX-XXX-XXXX)';
+
+    case 'height': {
+      if (!value) return '';
+      const heightNum = Number(value);
+      if (Number.isNaN(heightNum)) return 'Please enter a valid number';
+      if (heightNum < 3.0 || heightNum > 8.0) {
+        return 'Height must be between 3.0 and 8.0';
+      }
+      return '';
+    }
+
+    case 'weight': {
+      if (!value) return '';
+      const weightNum = Number(value);
+      if (Number.isNaN(weightNum)) return 'Please enter a valid number';
+      if (weightNum < 50 || weightNum > 500) {
+        return 'Weight must be between 50 and 500 pounds';
+      }
+      return '';
+    }
+
+    case 'loan_amount': {
+      if (!value) return '';
+      const amount = Number(value);
+      if (Number.isNaN(amount)) return 'Please enter a valid number';
+      if (amount < 0) return 'Loan amount cannot be negative';
+      return '';
+    }
+
+    case 'date_of_birth': {
+      if (!value) return '';
+      const dobDate = new Date(value as string);
+      if (isNaN(dobDate.getTime())) return 'Invalid date';
+      if (dobDate > new Date(maxDate)) return 'Date cannot be in the future';
+      return '';
+    }
+
+    case 'health_conditions':
+    case 'current_medications':
+    case 'medications':
+    case 'agent_notes':
+    case 'message':
+      if (value && typeof value === 'string' && value.length > 500) {
+        return 'Maximum 500 characters allowed';
+      }
+      return '';
+
+    case 'email_marketing_consent':
+      return typeof value === 'boolean' ? '' : 'Invalid value';
+
+    case 'compliance_review_status':
+    case 'form_version':
+      return ''; // No specific validation needed
+
+    default:
+      return '';
+  }
+};
+
+// Immediate validation function (for blur events)
+const validateFieldImmediate = (fieldName: string) => {
+  const value = form.value[fieldName as keyof typeof form.value];
+  let error = '';
+
+  switch (fieldName) {
+    case 'first_name':
+      error = validateRequired(value as string, 'First name');
+      break;
+    case 'last_name':
+      error = validateRequired(value as string, 'Last name');
+      break;
+    case 'email':
+      error = validateEmail(value as string);
+      break;
+    case 'phone':
+      error = validatePhone(value as string);
+      break;
+    case 'date_of_birth':
+      error = validateRequired(value as string, 'Date of birth');
+      break;
+    case 'sex':
+      if (!value) {
+        error = 'Sex is required';
+      } else if (
+        !['male', 'female', 'other'].includes(String(value).toLowerCase())
+      ) {
+        error = 'Please select a valid option';
+      }
+      break;
+    case 'city':
+      error = validateRequired(value as string, 'City');
+      break;
+    case 'state':
+      error = validateRequired(value as string, 'State');
+      break;
+    case 'height':
+      error = validateHeight(value as string);
+      break;
+    case 'weight':
+      error = validateWeight(value as string);
+      break;
+    case 'coverage_type':
+      error = validateRequired(value as string, 'Coverage type');
+      break;
+    case 'status':
+      error = validateRequired(value as string, 'Status');
+      break;
+    case 'loan_amount':
+      if (value === null || value === undefined || value === '') {
+        // Allow empty values
+        break;
+      }
+      const numValue = typeof value === 'string' ? parseFloat(value) : value;
+      if (isNaN(numValue) || numValue < 0) {
+        error = 'Loan amount must be a positive number';
+      }
+      break;
+  }
+
+  errors.value = { ...errors.value, [fieldName]: error };
+};
+
+// Debounced validation function (300ms delay) with loading state
+const validateFieldDebounced = useDebounceFn((fieldName: string) => {
+  isValidating.value = true;
+  validateFieldImmediate(fieldName);
+  // Clear validation state after a short delay
+  setTimeout(() => {
+    isValidating.value = false;
+  }, 50);
+}, 300);
+
+// Main validation function that uses immediate validation
+const validateField = validateFieldImmediate;
+
+// Validate all fields
+const validateAllFields = () => {
+  const fieldsToValidate = [
+    'first_name',
+    'last_name',
+    'email',
+    'phone',
+    'date_of_birth',
+    'sex',
+    'city',
+    'state',
+    'height',
+    'weight',
+    'coverage_type',
+    'status',
+  ];
+
+  fieldsToValidate.forEach((field) => validateField(field));
+
+  // Also validate loan_amount if it has a value
+  if (form.value.loan_amount !== null && form.value.loan_amount !== undefined) {
+    validateField('loan_amount');
+  }
+};
+
+// Reset form to original values
+const resetForm = () => {
+  form.value = { ...originalData.value };
+  errors.value = {};
+  submitStatus.value = 'idle';
+  submitError.value = null;
+};
+
+// Handle form submission
+const handleSubmit = async () => {
+  if (isSubmitting.value || !isDirty.value) return;
+
+  // Validate all fields before submission
+  validateAllFields();
+
+  if (!isFormValid.value) {
+    submitStatus.value = 'error';
+    submitError.value = 'Please fix the validation errors before submitting.';
+    return;
+  }
+
+  try {
+    isSubmitting.value = true;
+    submitStatus.value = 'idle';
+    submitError.value = null;
+
+    // Convert form data to database format
+    const formData = form.value;
+    const updateData = {
+      // String fields
+      first_name: formData.first_name || undefined,
+      last_name: formData.last_name || undefined,
+      email: formData.email || undefined,
+      phone: formData.phone || undefined,
+      city: formData.city || undefined,
+      coverage_type: formData.coverage_type || undefined,
+      current_medications: formData.current_medications || undefined,
+      health_conditions: formData.health_conditions || undefined,
+      agent_notes: formData.agent_notes || undefined,
+      date_of_birth: formData.date_of_birth || undefined,
+      sex: formData.sex || undefined,
+      status: formData.status || undefined,
+
+      // Number fields - convert strings to numbers
+      height: formData.height ? parseFloat(formData.height) : undefined,
+      weight: formData.weight ? parseFloat(formData.weight) : undefined,
+      loan_amount: formData.loan_amount
+        ? typeof formData.loan_amount === 'string'
+          ? parseFloat(formData.loan_amount)
+          : formData.loan_amount
+        : undefined,
+
+      // Boolean fields
+      email_marketing_consent: formData.email_marketing_consent,
+
+      // Other fields
+      compliance_review_status: formData.compliance_review_status || undefined,
+      form_version: formData.form_version || undefined,
+    };
+
+    const response = await fetch(`/api/leads/${props.lead.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    const result = (await response.json()) as {
+      success: boolean;
+      data: Lead;
+      message?: string;
+    };
+
+    if (result.success) {
+      submitStatus.value = 'success';
+      originalData.value = { ...form.value };
+
+      // Emit success event with updated lead data
+      emit('success', result.data);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        if (submitStatus.value === 'success') {
+          submitStatus.value = 'idle';
+        }
+      }, 3000);
+    } else {
+      throw new Error(result.message || 'Failed to update lead');
+    }
+  } catch (error) {
+    console.error('Error updating lead:', error);
+    submitStatus.value = 'error';
+    submitError.value =
+      error instanceof Error
+        ? error.message
+        : 'Failed to update lead information';
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+</script>

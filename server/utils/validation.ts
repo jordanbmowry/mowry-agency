@@ -57,8 +57,8 @@ export const quoteValidationSchema = Joi.object({
       'date.age': 'Age must be between 18 and 85 years old',
     }),
 
-  sex: Joi.string().required().valid('male', 'female', 'other').messages({
-    'string.empty': 'Sex is required',
+  sex: Joi.string().required().valid('male', 'female').messages({
+    'any.required': 'Sex is required',
     'any.only': 'Please select a valid option',
   }),
 
@@ -110,11 +110,10 @@ export const quoteValidationSchema = Joi.object({
     .valid(
       'term-life',
       'whole-life',
-      'universal-life',
+      'iul',
+      'mortgage-protection',
       'final-expense',
-      'disability',
-      'not-sure',
-      'other'
+      'not-sure'
     )
     .messages({
       'string.empty': 'Coverage type is required',
@@ -193,7 +192,7 @@ export const leadUpdateValidationSchema = Joi.object({
       'date.age': 'Age must be between 18 and 85 years old',
     }),
 
-  sex: Joi.string().optional().valid('male', 'female', 'other').messages({
+  sex: Joi.string().optional().valid('male', 'female').messages({
     'any.only': 'Please select a valid option',
   }),
 
@@ -241,11 +240,10 @@ export const leadUpdateValidationSchema = Joi.object({
     .valid(
       'term-life',
       'whole-life',
-      'universal-life',
+      'iul',
+      'mortgage-protection',
       'final-expense',
-      'disability',
-      'not-sure',
-      'other'
+      'not-sure'
     )
     .messages({
       'any.only': 'Please select a valid coverage type',
@@ -283,12 +281,12 @@ export const leadUpdateValidationSchema = Joi.object({
 
 // Type definitions
 export interface QuoteValidationData {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
-  date_of_birth: string;
-  sex: 'male' | 'female' | 'other';
+  dateOfBirth: string;
+  sex: 'male' | 'female';
   city: string;
   state: string;
   height: number;
@@ -296,11 +294,10 @@ export interface QuoteValidationData {
   coverage_type:
     | 'term-life'
     | 'whole-life'
-    | 'universal-life'
+    | 'iul'
+    | 'mortgage-protection'
     | 'final-expense'
-    | 'disability'
-    | 'not-sure'
-    | 'other';
+    | 'not-sure';
   health_conditions: string;
   current_medications: string;
   tcpa_consent: boolean;
@@ -308,12 +305,12 @@ export interface QuoteValidationData {
 }
 
 export interface LeadUpdateValidationData {
-  first_name?: string;
-  last_name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   phone?: string;
-  date_of_birth?: string;
-  sex?: 'male' | 'female' | 'other';
+  dateOfBirth?: string;
+  sex?: 'male' | 'female';
   city?: string;
   state?: string;
   height?: number;
@@ -321,11 +318,10 @@ export interface LeadUpdateValidationData {
   coverage_type?:
     | 'term-life'
     | 'whole-life'
-    | 'universal-life'
+    | 'iul'
+    | 'mortgage-protection'
     | 'final-expense'
-    | 'disability'
-    | 'not-sure'
-    | 'other';
+    | 'not-sure';
   status?: 'new' | 'in_progress' | 'contacted' | 'quoted' | 'closed';
   health_conditions?: string;
   current_medications?: string;
