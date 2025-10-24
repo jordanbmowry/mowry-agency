@@ -54,7 +54,11 @@
     </div>
 
     <!-- Leads Table -->
-    <LeadsTable :leads="leads" :is-filtering="filters.isFiltering.value" />
+    <LeadsTable
+      :leads="leads"
+      :is-filtering="filters.isFiltering.value"
+      :loading="loading"
+    />
 
     <!-- Loading State -->
     <div

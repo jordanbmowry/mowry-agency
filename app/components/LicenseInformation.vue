@@ -1,57 +1,14 @@
 <template>
-  <div :class="containerClasses" ref="licenseParent">
+  <div :class="containerClasses">
     <!-- Business Name and Ownership -->
     <p :class="textClasses">
       {{ BUSINESS_INFO.businessName }} is owned and operated by
       {{ BUSINESS_INFO.ownerEntity }}.
     </p>
 
-    <!-- Licensed States -->
-    <div
-      class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 border border-zinc-100 dark:border-zinc-700/50 transition-all duration-300 hover:shadow-md hover:border-zinc-200 dark:hover:border-zinc-600"
-    >
-      <button
-        @click="toggleStates"
-        :class="[
-          textClasses,
-          'w-full inline-flex items-center justify-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all duration-300 cursor-pointer font-medium group',
-        ]"
-      >
-        We are licensed to sell life insurance in the following states:
-        <Icon
-          :name="showStates ? 'heroicons:chevron-up' : 'heroicons:chevron-down'"
-          :class="[
-            'h-3 w-3 flex-shrink-0 text-zinc-400 dark:text-zinc-500 transition-all duration-300',
-            showStates ? 'rotate-180' : 'rotate-0',
-            'group-hover:text-zinc-600 dark:group-hover:text-zinc-300',
-          ]"
-        />
-      </button>
-
-      <div ref="statesContentParent" class="overflow-hidden">
-        <Transition
-          enter-active-class="transition-all duration-500 ease-out"
-          enter-from-class="opacity-0 transform -translate-y-2 scale-95"
-          enter-to-class="opacity-100 transform translate-y-0 scale-100"
-          leave-active-class="transition-all duration-300 ease-in"
-          leave-from-class="opacity-100 transform translate-y-0 scale-100"
-          leave-to-class="opacity-0 transform -translate-y-2 scale-95"
-        >
-          <div
-            v-if="showStates"
-            class="border-t border-zinc-200 dark:border-zinc-600 mt-3 pt-3 animate-in slide-in-from-top duration-500"
-          >
-            <p
-              :class="[
-                textClasses,
-                'font-mono text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 text-center transition-all duration-300',
-              ]"
-            >
-              {{ formatLicenseDisplay(displayFormat) }}
-            </p>
-          </div>
-        </Transition>
-      </div>
+    <!-- Licensed States Accordion -->
+    <div class="my-4 accordion-centered">
+      <UAccordion :items="accordionItems" />
     </div>
 
     <!-- NPN Information -->
@@ -133,4 +90,96 @@ const textClasses = computed(() => {
       return `${base} text-sm`;
   }
 });
+
+// Accordion items
+const accordionItems = computed(() => [
+  {
+    key: 'licensed-states',
+    label: 'We are licensed to sell life insurance in the following states:',
+    content: formatLicenseDisplay(props.displayFormat),
+  },
+]);
 </script>
+
+<style scoped>
+.accordion-centered {
+  text-align: center !important;
+}
+
+.accordion-centered :deep(*) {
+  text-align: center !important;
+}
+
+/* Target the specific button classes that UAccordion uses */
+.accordion-centered :deep(.text-start) {
+  text-align: center !important;
+}
+
+.accordion-centered :deep(.break-words) {
+  text-align: center !important;
+}
+
+/* Force center all UAccordion content */
+.accordion-centered :deep(.divide-y) {
+  text-align: center !important;
+}
+
+.accordion-centered :deep(.divide-y > div) {
+  text-align: center !important;
+}
+
+.accordion-centered :deep(.divide-y > div > div) {
+  text-align: center !important;
+}
+
+.accordion-centered :deep(button) {
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+.accordion-centered :deep(button span) {
+  text-align: center !important;
+  flex: 1 !important;
+  display: block !important;
+}
+
+/* Center the text by making the first span take full width and centering it */
+.accordion-centered :deep(button span:first-child) {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* Keep the chevron on the right */
+.accordion-centered :deep(button span:last-child) {
+  position: relative !important;
+  margin-left: auto !important;
+  flex: none !important;
+}
+
+.accordion-centered :deep([role='region']) {
+  text-align: center !important;
+}
+
+.accordion-centered :deep([role='region'] > div) {
+  text-align: center !important;
+}
+
+.accordion-centered :deep(p) {
+  text-align: center !important;
+}
+
+/* Specific targeting for the accordion button content */
+.accordion-centered :deep(.flex-1) {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.accordion-centered :deep(.items-center) {
+  justify-content: center !important;
+}
+</style>

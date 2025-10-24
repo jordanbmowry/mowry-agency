@@ -180,14 +180,17 @@
     </div>
 
     <div>
-      <Button
+      <UButton
         type="submit"
         :disabled="isSubmitting"
         class="w-full justify-center"
+        color="primary"
+        variant="solid"
+        size="md"
       >
         <span v-if="isSubmitting">Submitting Application...</span>
         <span v-else>Submit Application</span>
-      </Button>
+      </UButton>
     </div>
 
     <!-- Success/Error Messages -->

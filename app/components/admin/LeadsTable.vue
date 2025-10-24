@@ -94,7 +94,7 @@
 
       <!-- Empty State -->
       <div
-        v-if="leads.length === 0"
+        v-if="leads.length === 0 && !loading"
         class="text-center py-12 text-zinc-500 dark:text-zinc-400"
       >
         <svg
@@ -134,6 +134,7 @@ type Lead = Database['public']['Tables']['leads']['Row'];
 interface LeadsTableProps {
   leads: Lead[];
   isFiltering?: boolean;
+  loading?: boolean;
 }
 
 defineProps<LeadsTableProps>();

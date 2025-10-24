@@ -1,98 +1,210 @@
 <template>
   <div class="space-y-8">
-    <!-- Form -->
+    <!-- Form Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          Edit Lead Information
+        </h3>
+        <p
+          class="mt-1 text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2"
+        >
+          Update the lead's personal and insurance information.
+          <span
+            v-if="isValidating"
+            class="inline-flex items-center text-xs text-blue-600 dark:text-blue-400"
+          >
+            <svg
+              class="animate-spin -ml-1 mr-1 h-3 w-3"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Validating...
+          </span>
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <UButton
+          v-if="isDirty"
+          variant="outline"
+          size="sm"
+          @click="resetForm"
+          :disabled="isSubmitting"
+        >
+          Reset Changes
+        </UButton>
+        <UButton
+          variant="soft"
+          size="sm"
+          @click="$emit('cancel')"
+          :disabled="isSubmitting"
+        >
+          Cancel
+        </UButton>
+        <UButton
+          type="submit"
+          size="sm"
+          @click="handleSubmit"
+          :loading="isSubmitting"
+          :disabled="!isDirty || !isFormValid"
+        >
+          Save Changes
+        </UButton>
+      </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div v-if="submitStatus === 'success'" class="mb-6">
+      <div class="rounded-md bg-green-50 p-4 dark:bg-green-900/20">
+        <div class="flex">
+          <div class="shrink-0">
+            <svg
+              class="h-5 w-5 text-green-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-green-800 dark:text-green-200">
+              Lead information updated successfully!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="submitStatus === 'error'" class="mb-6">
+      <div class="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+        <div class="flex">
+          <div class="shrink-0">
+            <svg
+              class="h-5 w-5 text-red-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-red-800 dark:text-red-200">
+              {{
+                submitError ||
+                'Failed to update lead information. Please try again.'
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Fields -->
     <form @submit.prevent="handleSubmit" class="space-y-8">
       <!-- Personal Information Section -->
-      <div class="space-y-6">
-        <h4
-          class="text-base font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
-        >
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
           Personal Information
         </h4>
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <!-- First Name -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormInput
             id="first_name"
             label="First Name"
-            type="text"
-            v-model="formData.first_name"
-            :error="getFieldError('first_name')"
+            v-model="form.first_name"
+            :error="errors.first_name"
             :required="true"
-            autocomplete="given-name"
             @blur="validateField('first_name')"
           />
 
-          <!-- Last Name -->
           <FormInput
             id="last_name"
             label="Last Name"
-            type="text"
-            v-model="formData.last_name"
-            :error="getFieldError('last_name')"
+            v-model="form.last_name"
+            :error="errors.last_name"
             :required="true"
-            autocomplete="family-name"
             @blur="validateField('last_name')"
           />
 
-          <!-- Email -->
           <FormInput
             id="email"
             label="Email Address"
             type="email"
-            v-model="formData.email"
-            :error="getFieldError('email')"
+            v-model="form.email"
+            :error="errors.email"
             :required="true"
             autocomplete="email"
             @blur="validateField('email')"
           />
 
-          <!-- Phone -->
           <FormInput
             id="phone"
             label="Phone Number"
             type="tel"
-            v-model="formData.phone"
-            :error="getFieldError('phone')"
+            v-model="form.phone"
+            :error="errors.phone"
             :required="true"
+            placeholder="555-123-4567"
             autocomplete="tel"
-            placeholder="(555) 123-4567"
-            help-text="Enter 10-digit phone number"
             @blur="validateField('phone')"
           />
 
-          <!-- Date of Birth -->
           <FormInput
             id="date_of_birth"
             label="Date of Birth"
             type="date"
-            v-model="formData.date_of_birth"
-            :error="getFieldError('date_of_birth')"
+            v-model="form.date_of_birth"
+            :error="errors.date_of_birth"
             :required="true"
             :max="maxDate"
             @blur="validateField('date_of_birth')"
           />
 
-          <!-- Sex -->
           <FormSelect
             id="sex"
             label="Sex"
-            v-model="formData.sex"
+            v-model="form.sex"
             :options="sexOptions"
-            :error="getFieldError('sex')"
+            :error="errors.sex"
             :required="true"
             @blur="validateField('sex')"
           />
         </div>
+      </div>
 
-        <!-- Location -->
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Location Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Location Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormInput
             id="city"
             label="City"
-            type="text"
-            v-model="formData.city"
-            :error="getFieldError('city')"
+            v-model="form.city"
+            :error="errors.city"
             :required="true"
             @blur="validateField('city')"
           />
@@ -100,27 +212,33 @@
           <FormSelect
             id="state"
             label="State"
-            v-model="formData.state"
+            v-model="form.state"
             :options="stateOptions"
-            :error="getFieldError('state')"
+            :error="errors.state"
             :required="true"
             @blur="validateField('state')"
           />
         </div>
+      </div>
 
-        <!-- Physical Information -->
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Physical Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Physical Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormInput
             id="height"
-            label="Height"
+            label="Height (feet.inches)"
             type="number"
+            v-model="form.height"
+            :error="errors.height"
+            :required="true"
             step="0.1"
             min="3.0"
             max="8.0"
-            v-model="formData.height"
-            :error="getFieldError('height')"
-            :required="true"
-            help-text="Enter in feet.decimal format (e.g., 5.8 for 5 feet 8 inches)"
+            placeholder="5.8"
+            help-text="e.g., 5.8 for 5'8&quot;"
             @blur="validateField('height')"
           />
 
@@ -128,31 +246,29 @@
             id="weight"
             label="Weight (lbs)"
             type="number"
-            min="50"
-            max="500"
-            v-model="formData.weight"
-            :error="getFieldError('weight')"
+            v-model="form.weight"
+            :error="errors.weight"
             :required="true"
+            :min="50"
+            :max="500"
+            placeholder="180"
             @blur="validateField('weight')"
           />
         </div>
       </div>
 
-      <!-- Insurance Information Section -->
-      <div class="space-y-6">
-        <h4
-          class="text-base font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
-        >
+      <!-- Insurance Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
           Insurance Information
         </h4>
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormSelect
             id="coverage_type"
             label="Coverage Type"
-            v-model="formData.coverage_type"
+            v-model="form.coverage_type"
             :options="coverageTypeOptions"
-            :error="getFieldError('coverage_type')"
+            :error="errors.coverage_type"
             :required="true"
             @blur="validateField('coverage_type')"
           />
@@ -161,137 +277,70 @@
             id="loan_amount"
             label="Loan Amount"
             type="number"
-            min="0"
-            step="1000"
-            :model-value="formData.loan_amount || ''"
+            :model-value="form.loan_amount === null ? '' : form.loan_amount"
             @update:model-value="
-              (value) => (formData.loan_amount = value || '')
+              (value: string | number) =>
+                (form.loan_amount = !value ? null : parseFloat(String(value)))
             "
-            :error="getFieldError('loan_amount')"
-            help-text="Optional - existing loan amount"
+            :error="errors.loan_amount"
+            :min="0"
+            step="1000"
+            placeholder="100000"
             @blur="validateField('loan_amount')"
           />
 
-          <!-- Health Information Textareas - Span Full Width -->
-          <div class="lg:col-span-2 space-y-6">
-            <FormTextarea
-              id="health_conditions"
-              label="Health Conditions"
-              v-model="formData.health_conditions"
-              :error="getFieldError('health_conditions')"
-              :rows="6"
-              size="xl"
-              help-text="List any relevant health conditions"
-              @blur="validateField('health_conditions')"
-            />
-
-            <FormTextarea
-              id="medications"
-              label="Medications"
-              v-model="formData.medications"
-              :error="getFieldError('medications')"
-              :rows="6"
-              size="xl"
-              help-text="List any current medications"
-              @blur="validateField('medications')"
-            />
-
-            <FormTextarea
-              id="message"
-              label="Message"
-              v-model="formData.message"
-              :error="getFieldError('message')"
-              :rows="6"
-              size="xl"
-              help-text="Additional message from the customer"
-              @blur="validateField('message')"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Admin Information Section -->
-      <div class="space-y-6">
-        <h4
-          class="text-base font-medium text-zinc-900 dark:text-zinc-100 border-b border-zinc-200 dark:border-zinc-700 pb-2"
-        >
-          Admin Information
-        </h4>
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <FormSelect
             id="status"
-            label="Status"
-            v-model="formData.status"
+            label="Lead Status"
+            v-model="form.status"
             :options="statusOptions"
-            :error="getFieldError('status')"
+            :error="errors.status"
             :required="true"
             @blur="validateField('status')"
           />
         </div>
       </div>
 
-      <!-- Form Actions -->
-      <div
-        class="flex items-center justify-between pt-6 border-t border-zinc-200 dark:border-zinc-700"
-      >
-        <div class="flex items-center gap-4">
-          <div
-            v-if="submitStatus === 'success'"
-            class="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-          >
-            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Lead updated successfully!
-          </div>
+      <!-- Health Information -->
+      <div>
+        <h4 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Health Information
+        </h4>
+        <div class="space-y-6">
+          <FormTextarea
+            id="health_conditions"
+            label="Health Conditions"
+            v-model="form.health_conditions"
+            :error="errors.health_conditions"
+            :rows="3"
+            :maxlength="500"
+            help-text="List any current health conditions or concerns"
+            @blur="validateField('health_conditions')"
+          />
 
-          <div
-            v-if="submitStatus === 'error'"
-            class="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
-          >
-            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            {{ submitError || 'An error occurred while updating the lead.' }}
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <UButton
-            type="submit"
-            :disabled="isSubmitting || !isDirty || hasErrors"
-            :loading="isSubmitting"
-            color="neutral"
-          >
-            {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
-          </UButton>
+          <FormTextarea
+            id="current_medications"
+            label="Current Medications"
+            v-model="form.current_medications"
+            :error="errors.current_medications"
+            :rows="3"
+            :maxlength="500"
+            help-text="List any medications currently being taken"
+            @blur="validateField('current_medications')"
+          />
         </div>
       </div>
+
+      <!-- Hidden submit button for form validation -->
+      <button type="submit" class="hidden" />
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useDebounceFn, watchDebounced } from '@vueuse/core';
-import {
-  useJoiValidation,
-  type LeadFormData,
-} from '~/composables/useJoiValidation';
 import type { Database } from '~/types/database.types';
-import FormInput from '~/components/form/FormInput.vue';
-import FormSelect from '~/components/form/FormSelect.vue';
-import FormTextarea from '~/components/form/FormTextarea.vue';
 import { useStatesData } from '~/composables/useCitiesData';
+import { useDebounceFn, watchDebounced } from '@vueuse/core';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
@@ -307,45 +356,166 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-// Height conversion utilities
-const inchesToFeetDecimal = (height: string | number | null): string => {
-  if (height === null || height === undefined) return '';
-  return String(height);
-};
+// Form state - create explicit interface for form data
+interface FormData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  date_of_birth: string;
+  sex: string;
+  city: string;
+  state: string;
+  height: string;
+  weight: string;
+  coverage_type: string;
+  loan_amount: string | number | null;
+  status: string;
+  health_conditions: string;
+  current_medications: string;
+}
 
-// Initialize Joi validation
-const {
-  errors,
-  isValidating,
-  validateField: joiValidateField,
-  validateForm,
-  clearErrors,
-  getFieldError,
-  hasErrors,
-} = useJoiValidation();
-
-// Form state with reactive data
-const formData = ref<LeadFormData>({
+const form = ref<FormData>({
   first_name: '',
   last_name: '',
   email: '',
   phone: '',
   date_of_birth: '',
-  sex: 'male',
+  sex: '',
   city: '',
   state: '',
   height: '',
   weight: '',
   coverage_type: '',
+  loan_amount: null,
   status: 'new',
   health_conditions: '',
-  medications: '',
-  loan_amount: '',
-  message: '',
+  current_medications: '',
 });
 
-// Track original values for dirty checking
-const originalData = ref<LeadFormData>({ ...formData.value });
+const originalData = ref<FormData>({
+  first_name: '',
+  last_name: '',
+  email: '',
+  phone: '',
+  date_of_birth: '',
+  sex: '',
+  city: '',
+  state: '',
+  height: '',
+  weight: '',
+  coverage_type: '',
+  loan_amount: null,
+  status: 'new',
+  health_conditions: '',
+  current_medications: '',
+});
+
+const errors = ref<Record<string, string>>({});
+const isSubmitting = ref(false);
+const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
+const submitError = ref<string | null>(null);
+const isValidating = ref(false);
+
+// Height conversion utilities
+const inchesToFeetDecimal = (totalInches: string | number | null): string => {
+  if (!totalInches) return '';
+  const inches =
+    typeof totalInches === 'string' ? parseFloat(totalInches) : totalInches;
+  if (isNaN(inches)) return '';
+
+  const feet = Math.floor(inches / 12);
+  const remainingInches = inches % 12;
+  // Convert remaining inches to decimal (0-11 inches becomes 0.0-0.11)
+  const decimal = Math.round(remainingInches);
+  return `${feet}.${decimal}`;
+};
+
+const feetDecimalToInches = (feetDecimal: string): number => {
+  if (!feetDecimal) return 0;
+  const num = parseFloat(feetDecimal);
+  if (isNaN(num)) return 0;
+
+  const feet = Math.floor(num);
+  const inches = Math.round((num - feet) * 10); // Get decimal part as inches (0.8 = 8 inches)
+  return feet * 12 + inches;
+};
+
+// Initialize form with lead data
+const initializeForm = () => {
+  const leadData: FormData = {
+    first_name: props.lead.first_name || '',
+    last_name: props.lead.last_name || '',
+    email: props.lead.email || '',
+    phone: props.lead.phone || '',
+    date_of_birth: props.lead.date_of_birth || '',
+    sex: props.lead.sex || '',
+    city: props.lead.city || '',
+    state: props.lead.state || '',
+    height: inchesToFeetDecimal(props.lead.height),
+    weight: String(props.lead.weight || ''),
+    coverage_type: props.lead.coverage_type || '',
+    loan_amount: props.lead.loan_amount || null,
+    status: props.lead.status || 'new',
+    health_conditions: props.lead.health_conditions || '',
+    current_medications: (props.lead as any).current_medications || '',
+  };
+
+  form.value = { ...leadData };
+  originalData.value = { ...leadData };
+};
+
+// Initialize form when component mounts
+onMounted(() => {
+  initializeForm();
+});
+
+// Watch for prop changes
+watch(
+  () => props.lead,
+  () => {
+    initializeForm();
+  },
+  { deep: true }
+);
+
+// Debounced validation for all form fields
+// This watches the entire form object and validates changed fields
+watchDebounced(
+  form,
+  (newForm, oldForm) => {
+    if (!oldForm) return; // Skip initial load
+
+    // Check which fields have changed and validate them
+    const changedFields: string[] = [];
+
+    Object.keys(newForm).forEach((key) => {
+      if (newForm[key as keyof FormData] !== oldForm[key as keyof FormData]) {
+        changedFields.push(key);
+      }
+    });
+
+    // Validate only the changed fields
+    changedFields.forEach((fieldName) => {
+      validateFieldDebounced(fieldName);
+    });
+  },
+  { debounce: 300, maxWait: 1000, deep: true }
+);
+
+// Computed properties
+const isDirty = computed(() => {
+  return Object.keys(form.value).some((key) => {
+    const formValue = form.value[key as keyof typeof form.value];
+    const originalValue =
+      originalData.value[key as keyof typeof originalData.value];
+    return formValue !== originalValue;
+  });
+});
+
+const isFormValid = computed(() => {
+  return Object.values(errors.value).every((error) => !error);
+});
 
 // Form options
 const sexOptions = [
@@ -358,7 +528,6 @@ const statusOptions = [
   { label: 'New', value: 'new' },
   { label: 'In Progress', value: 'in_progress' },
   { label: 'Contacted', value: 'contacted' },
-  { label: 'Quoted', value: 'quoted' },
   { label: 'Closed', value: 'closed' },
 ];
 
@@ -368,7 +537,6 @@ const coverageTypeOptions = [
   { label: 'Universal Life Insurance', value: 'universal-life' },
   { label: 'Final Expense Insurance', value: 'final-expense' },
   { label: 'Disability Insurance', value: 'disability' },
-  { label: 'Not Sure', value: 'not-sure' },
   { label: 'Other', value: 'other' },
 ];
 
@@ -388,121 +556,161 @@ const maxDate = new Date(
   .toISOString()
   .split('T')[0];
 
-// Function to sanitize lead data
-const sanitizeLeadData = (lead: Lead): LeadFormData => {
-  const validStatuses = statusOptions.map((opt) => opt.value);
-  const validCoverageTypes = coverageTypeOptions.map((opt) => opt.value);
-  const validSexOptions = sexOptions.map((opt) => opt.value);
-
-  return {
-    first_name: lead.first_name || '',
-    last_name: lead.last_name || '',
-    email: lead.email || '',
-    phone: lead.phone || '',
-    date_of_birth: lead.date_of_birth || '',
-    sex: validSexOptions.includes(lead.sex as string)
-      ? (lead.sex as 'male' | 'female' | 'other')
-      : 'male',
-    city: lead.city || '',
-    state: lead.state || '',
-    height: inchesToFeetDecimal(lead.height),
-    weight: lead.weight?.toString() || '',
-    coverage_type: validCoverageTypes.includes(lead.coverage_type as string)
-      ? lead.coverage_type || ''
-      : '',
-    loan_amount: lead.loan_amount?.toString() || '',
-    status: validStatuses.includes(lead.status as string)
-      ? (lead.status as
-          | 'new'
-          | 'in_progress'
-          | 'contacted'
-          | 'quoted'
-          | 'closed')
-      : 'new',
-    health_conditions: lead.health_conditions || '',
-    medications: (lead as any).current_medications || '',
-    message: lead.message || '',
-  };
-};
-
-const isSubmitting = ref(false);
-const submitStatus = ref<'idle' | 'success' | 'error'>('idle');
-const submitError = ref<string | null>(null);
-
-// Initialize form with lead data
-const initializeForm = () => {
-  const sanitizedData = sanitizeLeadData(props.lead);
-  formData.value = { ...sanitizedData };
-  originalData.value = { ...sanitizedData };
-  clearErrors();
-};
-
-// Initialize form when component mounts
-onMounted(() => {
-  initializeForm();
-});
-
-// Watch for prop changes
-watch(
-  () => props.lead,
-  () => {
-    initializeForm();
-  },
-  { deep: true }
-);
-
-// Debounced validation function
-const validateFieldDebounced = useDebounceFn(async (fieldName: string) => {
-  if (fieldName !== 'changed') {
-    joiValidateField(
-      fieldName,
-      formData.value[fieldName as keyof LeadFormData]
-    );
+// Simple validation functions
+const validateRequired = (
+  value: string | null | undefined,
+  fieldName: string
+): string => {
+  if (!value || value.trim() === '') {
+    return `${fieldName} is required`;
   }
+  return '';
+};
+
+const validateEmail = (email: string): string => {
+  if (!email) return 'Email is required';
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return 'Please enter a valid email address';
+  }
+  return '';
+};
+
+const validatePhone = (phone: string): string => {
+  if (!phone) return 'Phone number is required';
+  const phoneRegex = /^[\d\s()+-]+$/;
+  const digitsOnly = phone.replace(/\D/g, '');
+  if (!phoneRegex.test(phone) || digitsOnly.length < 10) {
+    return 'Please enter a valid phone number';
+  }
+  return '';
+};
+
+const validateHeight = (height: string): string => {
+  if (!height) return 'Height is required';
+  const num = parseFloat(height);
+  if (isNaN(num)) return 'Please enter a valid height';
+
+  // Convert feet.inches format to total inches
+  // e.g., 5.8 = 5 feet 8 inches = 68 inches
+  const feet = Math.floor(num);
+  const inches = Math.round((num - feet) * 10); // Get decimal part as inches
+  const totalInches = feet * 12 + inches;
+
+  if (totalInches < 36 || totalInches > 96) {
+    return 'Height must be between 3.0 and 8.0 (3\'0" to 8\'0")';
+  }
+  return '';
+};
+
+const validateWeight = (weight: string): string => {
+  if (!weight) return 'Weight is required';
+  const num = parseFloat(weight);
+  if (isNaN(num) || num < 50 || num > 500) {
+    return 'Weight must be between 50 and 500 pounds';
+  }
+  return '';
+};
+
+// Immediate validation function (for blur events)
+const validateFieldImmediate = (fieldName: string) => {
+  const value = form.value[fieldName as keyof typeof form.value];
+  let error = '';
+
+  switch (fieldName) {
+    case 'first_name':
+      error = validateRequired(value as string, 'First name');
+      break;
+    case 'last_name':
+      error = validateRequired(value as string, 'Last name');
+      break;
+    case 'email':
+      error = validateEmail(value as string);
+      break;
+    case 'phone':
+      error = validatePhone(value as string);
+      break;
+    case 'date_of_birth':
+      error = validateRequired(value as string, 'Date of birth');
+      break;
+    case 'sex':
+      error = validateRequired(value as string, 'Sex');
+      break;
+    case 'city':
+      error = validateRequired(value as string, 'City');
+      break;
+    case 'state':
+      error = validateRequired(value as string, 'State');
+      break;
+    case 'height':
+      error = validateHeight(value as string);
+      break;
+    case 'weight':
+      error = validateWeight(value as string);
+      break;
+    case 'coverage_type':
+      error = validateRequired(value as string, 'Coverage type');
+      break;
+    case 'status':
+      error = validateRequired(value as string, 'Status');
+      break;
+    case 'loan_amount':
+      if (value === null || value === undefined || value === '') {
+        // Allow empty values
+        break;
+      }
+      const numValue = typeof value === 'string' ? parseFloat(value) : value;
+      if (isNaN(numValue) || numValue < 0) {
+        error = 'Loan amount must be a positive number';
+      }
+      break;
+  }
+
+  errors.value = { ...errors.value, [fieldName]: error };
+};
+
+// Debounced validation function (300ms delay) with loading state
+const validateFieldDebounced = useDebounceFn((fieldName: string) => {
+  isValidating.value = true;
+  validateFieldImmediate(fieldName);
+  // Clear validation state after a short delay
+  setTimeout(() => {
+    isValidating.value = false;
+  }, 50);
 }, 300);
 
-// Watch form values for validation
-watchDebounced(
-  formData,
-  async (newValues, oldValues) => {
-    if (!oldValues) return; // Skip initial load
+// Main validation function that uses immediate validation
+const validateField = validateFieldImmediate;
 
-    // Check which fields have changed
-    const changedFields: string[] = [];
-    Object.keys(newValues).forEach((key) => {
-      if (
-        newValues[key as keyof typeof newValues] !==
-        oldValues[key as keyof typeof oldValues]
-      ) {
-        changedFields.push(key);
-      }
-    });
+// Validate all fields
+const validateAllFields = () => {
+  const fieldsToValidate = [
+    'first_name',
+    'last_name',
+    'email',
+    'phone',
+    'date_of_birth',
+    'sex',
+    'city',
+    'state',
+    'height',
+    'weight',
+    'coverage_type',
+    'status',
+  ];
 
-    // Validate changed fields
-    if (changedFields.length > 0) {
-      changedFields.forEach((field) => {
-        joiValidateField(field, newValues[field as keyof LeadFormData]);
-      });
-    }
-  },
-  { debounce: 300, maxWait: 1000, deep: true }
-);
+  fieldsToValidate.forEach((field) => validateField(field));
 
-// Computed properties
-const isDirty = computed(() => {
-  return JSON.stringify(formData.value) !== JSON.stringify(originalData.value);
-});
-
-const isFormValid = computed(() => !hasErrors.value);
-
-// Validation function for blur events
-const validateField = async (fieldName: string) => {
-  joiValidateField(fieldName, formData.value[fieldName as keyof LeadFormData]);
+  // Also validate loan_amount if it has a value
+  if (form.value.loan_amount !== null && form.value.loan_amount !== undefined) {
+    validateField('loan_amount');
+  }
 };
 
 // Reset form to original values
-const resetFormToOriginal = () => {
-  initializeForm();
+const resetForm = () => {
+  form.value = { ...originalData.value };
+  errors.value = {};
   submitStatus.value = 'idle';
   submitError.value = null;
 };
@@ -512,9 +720,9 @@ const handleSubmit = async () => {
   if (isSubmitting.value || !isDirty.value) return;
 
   // Validate all fields before submission
-  const validationResult = validateForm(formData.value);
+  validateAllFields();
 
-  if (!validationResult.isValid) {
+  if (!isFormValid.value) {
     submitStatus.value = 'error';
     submitError.value = 'Please fix the validation errors before submitting.';
     return;
@@ -526,74 +734,55 @@ const handleSubmit = async () => {
     submitError.value = null;
 
     // Prepare the update data
-    const updateData = { ...formData.value };
+    const updateData = { ...form.value };
 
-    // Clean phone number - keep only digits for validation
-    if (updateData.phone) {
-      updateData.phone = updateData.phone.replace(/\D/g, '');
-    }
-
-    // Sex should already be lowercase from the form options, but ensure it's valid
-    if (
-      updateData.sex &&
-      !['male', 'female', 'other'].includes(updateData.sex)
-    ) {
-      updateData.sex = 'male'; // Default fallback
-    }
-
-    // Height is already in the correct feet.decimal format for the database
+    // Convert height from feet.inches format to total inches for database
     if (updateData.height) {
-      updateData.height = String(parseFloat(String(updateData.height)));
+      updateData.height = String(feetDecimalToInches(updateData.height));
     }
 
-    // Weight should be stored as string in database
-    if (updateData.weight) {
-      updateData.weight = String(updateData.weight);
+    // Convert string numbers to actual numbers where needed
+    if (updateData.loan_amount && typeof updateData.loan_amount === 'string') {
+      updateData.loan_amount = parseFloat(updateData.loan_amount);
     }
-
-    // Map form field names to database column names
-    const dbData = {
-      ...updateData,
-      current_medications: updateData.medications, // Map medications to current_medications
-    };
-
-    // Remove the form field name to avoid column conflicts
-    delete (dbData as any).medications;
 
     const response = await fetch(`/api/leads/${props.lead.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(dbData),
+      body: JSON.stringify(updateData),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update lead');
+    const result = (await response.json()) as {
+      success: boolean;
+      data: Lead;
+      message?: string;
+    };
+
+    if (result.success) {
+      submitStatus.value = 'success';
+      originalData.value = { ...form.value };
+
+      // Emit success event with updated lead data
+      emit('success', result.data);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        if (submitStatus.value === 'success') {
+          submitStatus.value = 'idle';
+        }
+      }, 3000);
+    } else {
+      throw new Error(result.message || 'Failed to update lead');
     }
-
-    const updatedLead = await response.json();
-
-    submitStatus.value = 'success';
-
-    // Update original data to reflect the saved state
-    originalData.value = { ...formData.value };
-
-    // Emit success event
-    emit('success', updatedLead);
-
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      if (submitStatus.value === 'success') {
-        submitStatus.value = 'idle';
-      }
-    }, 3000);
   } catch (error) {
     console.error('Error updating lead:', error);
     submitStatus.value = 'error';
     submitError.value =
-      error instanceof Error ? error.message : 'An unexpected error occurred';
+      error instanceof Error
+        ? error.message
+        : 'Failed to update lead information';
   } finally {
     isSubmitting.value = false;
   }

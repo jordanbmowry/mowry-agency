@@ -92,6 +92,20 @@ export const validators = {
     message,
   }),
 
+  number: (min?: number, max?: number, message?: string): ValidationRule => ({
+    validate: (value) => {
+      if (value === '' || value === null || value === undefined) return true; // Allow empty if not required
+      const num = Number(value);
+      if (isNaN(num)) return false;
+      if (min !== undefined && num < min) return false;
+      if (max !== undefined && num > max) return false;
+      return true;
+    },
+    message:
+      message ||
+      `Please enter a valid number${min !== undefined ? ` (min: ${min})` : ''}${max !== undefined ? ` (max: ${max})` : ''}`,
+  }),
+
   custom: (
     validator: (value: any) => boolean,
     message: string
