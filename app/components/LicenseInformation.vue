@@ -7,7 +7,9 @@
     </p>
 
     <!-- Licensed States Accordion -->
-    <div class="my-4 accordion-centered">
+    <div
+      class="my-4 accordion-centered bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4"
+    >
       <UAccordion :items="accordionItems" />
     </div>
 
@@ -133,32 +135,51 @@ const accordionItems = computed(() => [
 }
 
 .accordion-centered :deep(button) {
-  justify-content: center !important;
+  justify-content: space-between !important; /* Space between text and arrow */
   text-align: center !important;
   width: 100% !important;
   position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0.75rem 1rem !important; /* Add padding for better touch target */
+  cursor: pointer !important; /* Show pointer cursor */
+  transition: background-color 0.2s ease !important; /* Smooth hover transition */
+}
+
+/* Add hover effect to make it obvious it's clickable */
+.accordion-centered :deep(button:hover) {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.accordion-centered :deep(.dark button:hover) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 .accordion-centered :deep(button span) {
   text-align: center !important;
-  flex: 1 !important;
   display: block !important;
 }
 
-/* Center the text by making the first span take full width and centering it */
+/* Center the text */
 .accordion-centered :deep(button span:first-child) {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
+  flex: 1 !important;
   text-align: center !important;
-  width: 100% !important;
+  padding-right: 2rem !important; /* Add padding to prevent overlap with arrow */
 }
 
-/* Keep the chevron on the right */
+/* Keep the chevron on the right with proper spacing */
 .accordion-centered :deep(button span:last-child) {
-  position: relative !important;
-  margin-left: auto !important;
-  flex: none !important;
+  flex-shrink: 0 !important; /* Prevent arrow from shrinking */
+  margin-left: 1rem !important; /* Add spacing from text */
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Ensure the icon is visible and properly sized */
+.accordion-centered :deep(button svg) {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  flex-shrink: 0 !important;
 }
 
 .accordion-centered :deep([role='region']) {
