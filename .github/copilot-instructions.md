@@ -594,13 +594,53 @@ const query = supabase.from('leads').select('*');
 const filteredQuery = applyLeadsFilters(query, filters);
 ```
 
+### Error Handling Composable
+
+#### **useErrorHandler.ts** - Centralized error handling
+
+```typescript
+const { handleAsync, handleAsyncWithRetry } = useErrorHandler();
+
+// Basic error handling with auto-categorization
+const { data, error } = await handleAsync(
+  async () => await $fetch('/api/data'),
+  {
+    showNotification: true, // Show user-friendly toast
+    logToServer: true, // Log critical errors to server
+  },
+  {
+    operation: 'fetchData', // Debugging context
+    userId: user.id,
+  }
+);
+
+// With retry logic (exponential backoff)
+const { data, error } = await handleAsyncWithRetry(
+  async () => await saveData(),
+  {
+    maxRetries: 3,
+    retryDelay: 1000,
+    retryDelayMultiplier: 2,
+  }
+);
+```
+
+**Features**:
+
+- Automatic error categorization (validation, network, database, auth, etc.)
+- User-friendly message generation
+- Retry logic with exponential backoff
+- Server-side logging for critical errors
+- Rich context tracking for debugging
+
+See `ERROR_HANDLING_GUIDE.md` for complete documentation.
+
 ### Helper Composables
 
-- **useDatabase.ts** - Type-safe Supabase operations
-- **useApiClient.ts** - HTTP client with error handling
 - **useLeadsExport.ts** - CSV export with data transformation
 - **useCitiesData.ts** - Location/city data management
-- **useEmailTemplates.ts** - Email template rendering
+- **useFormatters.ts** - Human-friendly formatting for database values (snake_case to Title Case)
+- **useJoiValidation.ts** - Server-synchronized Joi validation schemas
 
 ## Development Guidelines
 

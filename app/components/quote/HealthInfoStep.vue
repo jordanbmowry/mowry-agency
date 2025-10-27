@@ -64,7 +64,7 @@
       <div class="flex items-start gap-3">
         <Icon
           name="heroicons:information-circle"
-          class="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
+          class="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5"
         />
         <div class="text-sm text-blue-800 dark:text-blue-200">
           <p class="font-semibold mb-1">Why do we need this information?</p>

@@ -1,4 +1,5 @@
-import { serverSupabaseServiceRole } from '#supabase/server';
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '~/types/database.types';
 
 export default defineEventHandler(async (event) => {
   const leadId = getRouterParam(event, 'id');
@@ -11,7 +12,11 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const supabase = await serverSupabaseServiceRole(event);
+    const config = useRuntimeConfig();
+    const supabase = createClient<Database>(
+      config.public.supabase.url,
+      config.supabase.serviceKey
+    );
 
     // First check if the lead exists
     const { data: existingLead, error: checkError } = await supabase
@@ -27,7 +32,24 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Delete the lead
+    // First, delete any associated compliance reports
+    // This must happen before deleting the lead due to foreign key constraints
+    // Note: Using 'as any' to bypass TypeScript issue with table recognition
+    const { error: complianceDeleteError } = await supabase
+      .from('leads_compliance_report' as any)
+      .delete()
+      .eq('lead_id', leadId);
+
+    if (complianceDeleteError) {
+      console.error(
+        'Error deleting compliance reports:',
+        complianceDeleteError
+      );
+      // Don't fail the entire operation if compliance report deletion fails
+      // The lead might not have a compliance report entry
+    }
+
+    // Now delete the lead
     const { error: deleteError } = await supabase
       .from('leads')
       .delete()

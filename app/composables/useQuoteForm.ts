@@ -8,10 +8,7 @@ import {
 } from '~/utils/dateUtils';
 
 // Import Joi validation for DRY principle and database consistency
-import {
-  useQuoteFormValidation,
-  type QuoteFormData as JoiQuoteFormData,
-} from '~/composables/useJoiValidation';
+import { useQuoteFormValidation } from '~/composables/useJoiValidation';
 
 // Types
 export interface QuoteFormData {

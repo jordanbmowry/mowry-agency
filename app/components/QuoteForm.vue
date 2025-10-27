@@ -27,18 +27,18 @@
         </h3>
         <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-2">
           <li class="flex items-start gap-2">
-            <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <Icon name="heroicons:check" class="h-5 w-5 shrink-0 mt-0.5" />
             <span>Our agents will review your information</span>
           </li>
           <li class="flex items-start gap-2">
-            <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <Icon name="heroicons:check" class="h-5 w-5 shrink-0 mt-0.5" />
             <span
               >We'll contact you with personalized quotes from top
               carriers</span
             >
           </li>
           <li class="flex items-start gap-2">
-            <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <Icon name="heroicons:check" class="h-5 w-5 shrink-0 mt-0.5" />
             <span
               >Compare options and choose the best coverage for your
               family</span
@@ -538,7 +538,7 @@
         }"
       >
         <div class="flex items-start space-x-3">
-          <div class="flex-shrink-0">
+          <div class="shrink-0">
             <Icon
               :name="
                 errorType === 'duplicate_email'
@@ -614,6 +614,7 @@ import { useLocalStorage } from '@vueuse/core';
 import MailIcon from './icons/MailIcon.vue';
 import MultiStepProgressBar from './MultiStepProgressBar.vue';
 import { useStatesData } from '~/composables/useCitiesData';
+import { useErrorHandler } from '~/composables/useErrorHandler';
 import {
   calculateAge,
   isValidAge,
@@ -651,6 +652,9 @@ const tcpaConsentText =
 
 // Form options for Nuxt UI components
 const { states } = useStatesData();
+
+// Error handler for graceful error handling
+const { handleAsync } = useErrorHandler();
 
 // Convert states to options format for FormSelect
 const stateOptions = computed(() =>
@@ -1069,84 +1073,100 @@ const handleSubmit = async () => {
   isSubmitting.value = true;
   error.value = false;
 
-  try {
-    // Send form data to our Nuxt API with enhanced TCPA compliance data
-    const response = await $fetch('/api/quote', {
-      method: 'POST',
-      body: {
-        firstName: form.firstName,
-        lastName: form.lastName,
+  const { data: response, error: submitError } = await handleAsync(
+    async () => {
+      // Send form data to our Nuxt API with enhanced TCPA compliance data
+      return await $fetch('/api/quote', {
+        method: 'POST',
+        body: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          dateOfBirth: form.dateOfBirth,
+          sex: form.sex,
+          height: form.height,
+          weight: form.weight,
+          city: form.city,
+          state: form.state,
+          healthConditions: form.healthConditions,
+          medications: form.medications,
+          coverageType: form.coverageType,
+          message: form.message,
+          tcpaConsent: form.tcpaConsent,
+          tcpaText: tcpaConsentText,
+          emailMarketingConsent: form.emailMarketingConsent,
+          formVersion: form.formVersion,
+        },
+      });
+    },
+    {
+      showNotification: true,
+      logToServer: true,
+    },
+    {
+      operation: 'submitQuoteForm',
+      formData: {
         email: form.email,
-        phone: form.phone,
-        dateOfBirth: form.dateOfBirth,
-        sex: form.sex,
-        height: form.height,
-        weight: form.weight,
+        coverageType: form.coverageType,
         city: form.city,
         state: form.state,
-        healthConditions: form.healthConditions,
-        medications: form.medications,
-        coverageType: form.coverageType,
-        message: form.message,
-        tcpaConsent: form.tcpaConsent,
-        tcpaText: tcpaConsentText,
-        emailMarketingConsent: form.emailMarketingConsent,
-        formVersion: form.formVersion,
       },
-    });
+    }
+  );
 
-    // Reset form and show success
-    Object.keys(form).forEach((key) => {
-      if (key === 'tcpaConsent' || key === 'emailMarketingConsent') {
-        (form as any)[key] = false;
-      } else if (key === 'formVersion') {
-        // Keep form version as is
-        return;
-      } else {
-        (form as any)[key] = '';
-      }
-    });
-
-    // Clear errors
-    Object.keys(errors).forEach((key) => {
-      errors[key as keyof typeof errors] = '';
-    });
-
-    // Store submission in localStorage and advance progress
-    quoteFormSubmitted.value = true;
-    submittedUserName.value = form.firstName;
-    currentStep.value = 4; // Mark step 3 as complete by advancing to step 4
-
-    submitted.value = true;
-
-    // Hide success message after 5 seconds
-    setTimeout(() => {
-      submitted.value = false;
-    }, 5000);
-  } catch (err: any) {
+  if (submitError) {
     error.value = true;
+    isSubmitting.value = false;
 
-    // Handle specific error types
-    if (err.statusCode === 409 && err.statusMessage === 'DUPLICATE_EMAIL') {
+    // Handle specific error types with user-friendly messages
+    if (submitError.statusCode === 409) {
       errorType.value = 'duplicate_email';
       errorMessage.value =
-        err.data?.message ||
+        submitError.userMessage ||
         'Great news! We already have your information and will be in touch soon.';
-    } else if (
-      err.statusCode === 500 &&
-      err.statusMessage === 'DATABASE_ERROR'
-    ) {
+    } else if (submitError.category === 'database') {
       errorType.value = 'database_error';
       errorMessage.value =
-        err.data?.message ||
+        submitError.userMessage ||
         'We encountered a technical issue processing your request.';
     } else {
       errorType.value = 'general_error';
       errorMessage.value =
+        submitError.userMessage ||
         'There was an error submitting your request. Please try calling us for immediate assistance.';
     }
-  } finally {
-    isSubmitting.value = false;
+    return;
   }
+
+  // Reset form and show success
+  Object.keys(form).forEach((key) => {
+    if (key === 'tcpaConsent' || key === 'emailMarketingConsent') {
+      (form as any)[key] = false;
+    } else if (key === 'formVersion') {
+      // Keep form version as is
+      return;
+    } else {
+      (form as any)[key] = '';
+    }
+  });
+
+  // Clear errors
+  Object.keys(errors).forEach((key) => {
+    errors[key as keyof typeof errors] = '';
+  });
+
+  // Store submission in localStorage and advance progress
+  quoteFormSubmitted.value = true;
+  submittedUserName.value = form.firstName;
+  currentStep.value = 4; // Mark step 3 as complete by advancing to step 4
+
+  submitted.value = true;
+  isSubmitting.value = false;
+
+  // Hide success message after 5 seconds
+  setTimeout(() => {
+    submitted.value = false;
+  }, 5000);
 };
 </script>

@@ -73,7 +73,7 @@
       <div class="flex items-start gap-3">
         <Icon
           name="heroicons:shield-check"
-          class="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"
+          class="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"
         />
         <p class="text-xs text-amber-900 dark:text-amber-100">
           {{ licensingDisclosure }}
@@ -92,28 +92,28 @@
         <li class="flex items-start gap-2">
           <Icon
             name="heroicons:check-circle"
-            class="h-5 w-5 flex-shrink-0 mt-0.5"
+            class="h-5 w-5 shrink-0 mt-0.5"
           />
           <span>Receive instant email confirmation</span>
         </li>
         <li class="flex items-start gap-2">
           <Icon
             name="heroicons:check-circle"
-            class="h-5 w-5 flex-shrink-0 mt-0.5"
+            class="h-5 w-5 shrink-0 mt-0.5"
           />
           <span>A licensed agent will contact you within 24 hours</span>
         </li>
         <li class="flex items-start gap-2">
           <Icon
             name="heroicons:check-circle"
-            class="h-5 w-5 flex-shrink-0 mt-0.5"
+            class="h-5 w-5 shrink-0 mt-0.5"
           />
           <span>Review personalized quotes from top carriers</span>
         </li>
         <li class="flex items-start gap-2">
           <Icon
             name="heroicons:check-circle"
-            class="h-5 w-5 flex-shrink-0 mt-0.5"
+            class="h-5 w-5 shrink-0 mt-0.5"
           />
           <span>Choose the best coverage for your family's needs</span>
         </li>

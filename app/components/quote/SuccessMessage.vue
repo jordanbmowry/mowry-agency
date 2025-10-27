@@ -24,17 +24,17 @@
       </h3>
       <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-2">
         <li class="flex items-start gap-2">
-          <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <Icon name="heroicons:check" class="h-5 w-5 shrink-0 mt-0.5" />
           <span>Our agents will review your information</span>
         </li>
         <li class="flex items-start gap-2">
-          <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <Icon name="heroicons:check" class="h-5 w-5 shrink-0 mt-0.5" />
           <span
             >We'll contact you with personalized quotes from top carriers</span
           >
         </li>
         <li class="flex items-start gap-2">
-          <Icon name="heroicons:check" class="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <Icon name="heroicons:check" class="h-5 w-5 shrink-0 mt-0.5" />
           <span
             >Compare options and choose the best coverage for your family</span
           >

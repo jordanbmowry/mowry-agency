@@ -38,7 +38,7 @@
           class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-8 dark:bg-amber-900/20 dark:border-amber-500"
         >
           <div class="flex">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon
                 name="heroicons:exclamation-triangle"
                 class="h-5 w-5 text-amber-400"

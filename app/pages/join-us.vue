@@ -41,7 +41,7 @@
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div class="space-y-6">
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon
                 name="heroicons:cog-6-tooth"
                 class="h-6 w-6 text-teal-500"
@@ -61,7 +61,7 @@
           </div>
 
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon
                 name="heroicons:academic-cap"
                 class="h-6 w-6 text-teal-500"
@@ -81,7 +81,7 @@
           </div>
 
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon name="heroicons:users" class="h-6 w-6 text-teal-500" />
             </div>
             <div>
@@ -100,7 +100,7 @@
 
         <div class="space-y-6">
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon name="heroicons:chart-bar" class="h-6 w-6 text-teal-500" />
             </div>
             <div>
@@ -117,7 +117,7 @@
           </div>
 
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon
                 name="heroicons:shield-check"
                 class="h-6 w-6 text-teal-500"
@@ -137,7 +137,7 @@
           </div>
 
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <Icon
                 name="heroicons:currency-dollar"
                 class="h-6 w-6 text-teal-500"

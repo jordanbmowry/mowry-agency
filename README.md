@@ -61,22 +61,23 @@ The project follows functional programming principles with pure, reusable compos
 
 #### **Form Management**
 
-- `useFormValidation.ts` - Pure validation functions with factory pattern
-- `useFormSubmission.ts` - Async form submission with state management
 - `useQuoteForm.ts` - Quote form specific logic with multi-step validation
+- `useJoiValidation.ts` - Server-synchronized validation using Joi schemas
+
+#### **Error Handling**
+
+- `useErrorHandler.ts` - Centralized error handling with categorization, user-friendly messages, retry logic, and server-side logging
 
 #### **Data Management**
 
 - `usePagination.ts` - Reusable pagination with computed properties
-- `useLeadsFilters.ts` - Debounced search and filtering
+- `useLeadsFilters.ts` - Debounced search and filtering with pure functions
 - `useLeadsExport.ts` - CSV export with type-safe data transformation
-- `useDatabase.ts` - Type-safe Supabase operations
+- `useFormatters.ts` - Human-friendly formatting for database values
 
 #### **UI Utilities**
 
 - `useCitiesData.ts` - Location data management
-- `useApiClient.ts` - HTTP client with error handling
-- `useEmailTemplates.ts` - Email template rendering
 
 ### Component Architecture
 
@@ -449,6 +450,66 @@ watch(debouncedSearch, () => {
   fetchLeads(); // Only called after 300ms pause
 });
 ```
+
+### Error Handling System
+
+The project uses a centralized error handling system for consistent, user-friendly error management:
+
+#### **Core Features**
+
+- **Automatic Categorization**: Errors are classified (validation, network, database, auth, etc.)
+- **User-Friendly Messages**: Technical errors converted to readable messages automatically
+- **Retry Logic**: Failed operations can retry with exponential backoff
+- **Server Logging**: Critical errors logged to server for debugging
+- **Context Tracking**: Rich debugging context with every error
+
+#### **Basic Usage**
+
+```typescript
+import { useErrorHandler } from '~/composables/useErrorHandler';
+
+const { handleAsync } = useErrorHandler();
+
+const fetchData = async () => {
+  const { data, error } = await handleAsync(
+    async () => await $fetch('/api/data'),
+    {
+      showNotification: true, // Show toast on error
+      logToServer: true, // Log critical errors
+    },
+    {
+      operation: 'fetchData', // Debugging context
+      userId: user.id,
+    }
+  );
+
+  if (error) {
+    // Error already handled with user-friendly message
+    return;
+  }
+
+  // Use data safely
+};
+```
+
+#### **With Retry Logic**
+
+```typescript
+const { handleAsyncWithRetry } = useErrorHandler();
+
+const { data, error } = await handleAsyncWithRetry(
+  async () => await saveToDatabase(),
+  {
+    maxRetries: 3, // Retry up to 3 times
+    retryDelay: 1000, // 1 second initial delay
+    retryDelayMultiplier: 2, // Exponential backoff
+    showNotification: true,
+    logToServer: true,
+  }
+);
+```
+
+See [ERROR_HANDLING_GUIDE.md](./ERROR_HANDLING_GUIDE.md) for complete documentation.
 
 #### **Lazy Loading**
 
