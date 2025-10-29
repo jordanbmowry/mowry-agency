@@ -206,36 +206,15 @@ export default defineNuxtConfig({
   },
   vite: {
     build: {
-      cssCodeSplit: true, // Split CSS per component for better caching
       rollupOptions: {
         external: [
           '/Users/jordanmowry/Desktop/spotlight-nuxt/node_modules/nuxt/dist/app/components/test-component-wrapper',
           'nuxt/dist/app/components/test-component-wrapper',
         ],
         output: {
-          manualChunks: (id) => {
-            // Create optimized chunks for better caching
-            if (id.includes('node_modules')) {
-              if (id.includes('vue') || id.includes('vue-router')) {
-                return 'vue-vendor';
-              }
-              if (id.includes('@nuxt/ui') || id.includes('@headlessui')) {
-                return 'ui-vendor';
-              }
-              if (id.includes('@vueuse')) {
-                return 'vueuse-vendor';
-              }
-              return 'vendor';
-            }
+          manualChunks: {
+            vendor: ['vue', 'vue-router'],
           },
-        },
-      },
-      // Optimize minification
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: true, // Remove console.log in production
-          drop_debugger: true,
         },
       },
     },
