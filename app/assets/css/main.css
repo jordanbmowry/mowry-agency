@@ -1,6 +1,15 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+/* Global font application */
+* {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+}
+
 /* Ensure body background extends properly */
 html {
   height: 100%;
@@ -10,6 +19,7 @@ html {
 body {
   height: 100%;
   background-color: rgb(250 250 249); /* zinc-50 */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .dark body {

@@ -12,6 +12,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
       fontSize: {
         xs: ['0.8125rem', { lineHeight: '1.5rem' }],
         sm: ['0.875rem', { lineHeight: '1.5rem' }],

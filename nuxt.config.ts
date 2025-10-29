@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: 'app/',
   modules: [
+    '@nuxt/fonts',
     '@nuxtjs/color-mode',
     '@nuxt/image',
     '@nuxt/icon',
@@ -41,6 +42,33 @@ export default defineNuxtConfig({
     '@formkit/auto-animate/nuxt',
   ],
   css: ['~/assets/css/main.css'],
+  fonts: {
+    families: [
+      // Professional fonts for a modern agency look
+      {
+        name: 'Inter',
+        provider: 'google',
+        weights: ['400', '500', '600', '700'],
+        subsets: ['latin', 'latin-ext'],
+        display: 'swap'
+      },
+      {
+        name: 'JetBrains Mono',
+        provider: 'google', 
+        weights: ['400', '500', '600'],
+        subsets: ['latin'],
+        display: 'swap'
+      }
+    ],
+    defaults: {
+      weights: ['400', '500', '600', '700'],
+      subsets: ['latin'],
+      fallbacks: {
+        'sans-serif': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        'monospace': ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+      }
+    }
+  },
   colorMode: {
     classSuffix: '',
     preference: 'system', // Default to system preference
@@ -81,6 +109,22 @@ export default defineNuxtConfig({
       bodyAttrs: {
         class: 'flex h-full bg-zinc-50 dark:bg-black',
       },
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon/favicon.svg' },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          sizes: '96x96',
+          href: '/favicon/favicon-96x96.png',
+        },
+        {
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          href: '/favicon/apple-touch-icon.png',
+        },
+        { rel: 'manifest', href: '/favicon/site.webmanifest' },
+      ],
     },
   },
   image: {

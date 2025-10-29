@@ -19,6 +19,7 @@
     "@internationalized/date": "^3.10.0",
     "@netlify/nuxt": "^0.1.19",
     "@nuxt/content": "^3.7.1",
+    "@nuxt/fonts": "^0.11.4",
     "@nuxt/icon": "^2.0.0",
     "@nuxt/image": "^1.11.0",
     "@nuxt/ui": "^4.0.1",
