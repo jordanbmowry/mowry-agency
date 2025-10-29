@@ -27,7 +27,10 @@
       :step="step"
       :autocomplete="autocomplete"
       :color="error ? 'error' : 'neutral'"
-      :class="inputClass"
+      :class="[inputClass, type === 'date' ? 'date-input-mobile' : '']"
+      :ui="{
+        base: type === 'date' ? 'min-h-[44px] text-base' : '',
+      }"
       @blur="handleBlur"
     />
 
@@ -96,3 +99,43 @@ const handleBlur = () => {
   emit('blur');
 };
 </script>
+
+<style scoped>
+/* Improve date input appearance on mobile */
+:deep(input[type='date']) {
+  min-height: 44px;
+  font-size: 16px; /* Prevents zoom on iOS */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Ensure calendar icon is visible and clickable */
+:deep(input[type='date']::-webkit-calendar-picker-indicator) {
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 1;
+  padding: 8px;
+  margin-left: 4px;
+}
+
+/* Firefox date input styling */
+:deep(input[type='date']::-moz-calendar-picker-indicator) {
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 1;
+}
+
+/* Improve touch target size on mobile */
+@media (max-width: 768px) {
+  :deep(input[type='date']) {
+    padding: 12px 14px;
+    min-height: 48px;
+  }
+
+  :deep(input[type='date']::-webkit-calendar-picker-indicator) {
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+</style>

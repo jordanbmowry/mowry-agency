@@ -59,7 +59,8 @@
       :required="true"
       :max="maxDate"
       autocomplete="bday"
-      help-text="Must be 18 years or older"
+      help-text="Required for accurate life insurance quotes"
+      input-class="text-base min-h-[44px]"
       @blur="emit('validate', 'dateOfBirth')"
     />
 
