@@ -135,16 +135,7 @@ export default defineNuxtConfig({
   },
   image: {
     // Enable optimized image loading
-    quality: 80,
-    format: ['webp', 'jpg'],
-    screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-      xxl: 1536,
-    },
+    provider: 'netlifyImageCdn',
   },
   runtimeConfig: {
     // Server-side environment variables
