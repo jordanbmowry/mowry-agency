@@ -50,24 +50,30 @@ export default defineNuxtConfig({
         provider: 'google',
         weights: ['400', '500', '600', '700'],
         subsets: ['latin', 'latin-ext'],
-        display: 'swap'
+        display: 'swap',
       },
       {
         name: 'JetBrains Mono',
-        provider: 'google', 
+        provider: 'google',
         weights: ['400', '500', '600'],
         subsets: ['latin'],
-        display: 'swap'
-      }
+        display: 'swap',
+      },
     ],
     defaults: {
       weights: ['400', '500', '600', '700'],
       subsets: ['latin'],
       fallbacks: {
         'sans-serif': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        'monospace': ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace']
-      }
-    }
+        monospace: [
+          'JetBrains Mono',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          'monospace',
+        ],
+      },
+    },
   },
   colorMode: {
     classSuffix: '',
