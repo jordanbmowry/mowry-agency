@@ -49,8 +49,10 @@ export default defineNuxtConfig({
         name: 'Inter',
         provider: 'google',
         weights: ['400', '500', '600', '700'],
-        subsets: ['latin', 'latin-ext'],
+        subsets: ['latin'],
         display: 'swap',
+        preload: true,
+        fallbacks: ['system-ui', '-apple-system', 'sans-serif'],
       },
       {
         name: 'JetBrains Mono',
@@ -58,6 +60,8 @@ export default defineNuxtConfig({
         weights: ['400', '500', '600'],
         subsets: ['latin'],
         display: 'swap',
+        preload: false, // Only preload primary font
+        fallbacks: ['Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
     ],
     defaults: {
@@ -116,6 +120,20 @@ export default defineNuxtConfig({
         class: 'flex h-full bg-zinc-50 dark:bg-black',
       },
       link: [
+        // Performance optimization: Resource hints for external resources
+        { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
+        { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.googleapis.com',
+          crossorigin: 'anonymous',
+        },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: 'anonymous',
+        },
+        // Favicons
         { rel: 'icon', type: 'image/x-icon', href: '/favicon/favicon.ico' },
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon/favicon.svg' },
         {
@@ -180,18 +198,44 @@ export default defineNuxtConfig({
     experimental: {
       openAPI: true,
     },
+    compressPublicAssets: {
+      gzip: true,
+      brotli: true,
+    },
+    minify: true,
   },
   vite: {
     build: {
+      cssCodeSplit: true, // Split CSS per component for better caching
       rollupOptions: {
         external: [
           '/Users/jordanmowry/Desktop/spotlight-nuxt/node_modules/nuxt/dist/app/components/test-component-wrapper',
           'nuxt/dist/app/components/test-component-wrapper',
         ],
         output: {
-          manualChunks: {
-            vendor: ['vue', 'vue-router'],
+          manualChunks: (id) => {
+            // Create optimized chunks for better caching
+            if (id.includes('node_modules')) {
+              if (id.includes('vue') || id.includes('vue-router')) {
+                return 'vue-vendor';
+              }
+              if (id.includes('@nuxt/ui') || id.includes('@headlessui')) {
+                return 'ui-vendor';
+              }
+              if (id.includes('@vueuse')) {
+                return 'vueuse-vendor';
+              }
+              return 'vendor';
+            }
           },
+        },
+      },
+      // Optimize minification
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true, // Remove console.log in production
+          drop_debugger: true,
         },
       },
     },
