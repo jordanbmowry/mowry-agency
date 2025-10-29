@@ -310,9 +310,9 @@
 </template>
 
 <script setup lang="ts">
-import Container from '~/components/Container.vue';
 import AboutSocialLink from '~/components/AboutSocialLink.vue';
 import Button from '~/components/Button.vue';
+import Container from '~/components/Container.vue';
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();
@@ -322,19 +322,19 @@ const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 
 // Set page metadata
 useSeoMeta({
-  title: 'About - Mowry Agency',
-  description:
-    "Learn about Mowry Agency's mission to provide comprehensive life insurance solutions for families. We believe every family deserves financial peace of mind.",
-  ogTitle: 'About - Mowry Agency',
-  ogDescription:
-    "Mowry Agency specializes in life insurance solutions including Term Life, Whole Life, Mortgage Protection, and Retirement Planning. Your family's security is our mission.",
-  ogType: 'website',
-  ogUrl: 'https://mowryagency.com/about',
-  ogImage: '/images/agency/ignite_image.jpg',
-  twitterTitle: 'About - Mowry Agency',
-  twitterDescription:
-    'Comprehensive life insurance solutions for families. We believe every family deserves financial peace of mind.',
-  twitterCard: 'summary_large_image',
-  twitterImage: '/images/agency/ignite_image.jpg',
+	title: 'About - Mowry Agency',
+	description:
+		"Learn about Mowry Agency's mission to provide comprehensive life insurance solutions for families. We believe every family deserves financial peace of mind.",
+	ogTitle: 'About - Mowry Agency',
+	ogDescription:
+		"Mowry Agency specializes in life insurance solutions including Term Life, Whole Life, Mortgage Protection, and Retirement Planning. Your family's security is our mission.",
+	ogType: 'website',
+	ogUrl: 'https://mowryagency.com/about',
+	ogImage: '/images/agency/ignite_image.jpg',
+	twitterTitle: 'About - Mowry Agency',
+	twitterDescription:
+		'Comprehensive life insurance solutions for families. We believe every family deserves financial peace of mind.',
+	twitterCard: 'summary_large_image',
+	twitterImage: '/images/agency/ignite_image.jpg',
 });
 </script>

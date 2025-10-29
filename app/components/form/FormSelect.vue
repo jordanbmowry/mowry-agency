@@ -37,43 +37,43 @@
 import { computed } from 'vue';
 
 interface SelectOption {
-  value: string;
-  label: string;
+	value: string;
+	label: string;
 }
 
 interface Props {
-  id: string;
-  label: string;
-  modelValue: string;
-  options: SelectOption[];
-  placeholder?: string;
-  required?: boolean;
-  disabled?: boolean;
-  error?: string;
-  helpText?: string;
-  selectClass?: string;
+	id: string;
+	label: string;
+	modelValue: string;
+	options: SelectOption[];
+	placeholder?: string;
+	required?: boolean;
+	disabled?: boolean;
+	error?: string;
+	helpText?: string;
+	selectClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: '',
-  required: false,
-  disabled: false,
-  error: '',
-  helpText: '',
-  selectClass: '',
+	placeholder: '',
+	required: false,
+	disabled: false,
+	error: '',
+	helpText: '',
+	selectClass: '',
 });
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-  (e: 'blur'): void;
+	(e: 'update:modelValue', value: string): void;
+	(e: 'blur'): void;
 }>();
 
 const selectValue = computed({
-  get: () => props.modelValue,
-  set: (value: string) => emit('update:modelValue', value),
+	get: () => props.modelValue,
+	set: (value: string) => emit('update:modelValue', value),
 });
 
 const handleBlur = () => {
-  emit('blur');
+	emit('blur');
 };
 </script>

@@ -413,29 +413,29 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from '~/types/database.types';
 import AdminLeadEditForm from '~/components/admin/AdminLeadEditForm.vue';
 import { useErrorHandler } from '~/composables/useErrorHandler';
+import type { Database } from '~/types/database.types';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
 definePageMeta({
-  middleware: ['admin'],
+	middleware: ['admin'],
 });
 
 // Import formatters
 const {
-  formatCoverageType,
-  formatStatus,
-  formatSex,
-  formatHealthConditions,
-  formatMedications,
-  formatDateTime,
-  formatHeight,
-  formatWeight,
-  formatCurrency,
-  formatPhone,
-  formatDate,
+	formatCoverageType,
+	formatStatus,
+	formatSex,
+	formatHealthConditions,
+	formatMedications,
+	formatDateTime,
+	formatHeight,
+	formatWeight,
+	formatCurrency,
+	formatPhone,
+	formatDate,
 } = useFormatters();
 
 // Initialize error handler
@@ -469,148 +469,148 @@ const deleteError = ref<string | null>(null);
 
 // Computed property to check if notes have changed
 const notesChanged = computed(() => {
-  return agentNotes.value !== originalNotes.value;
+	return agentNotes.value !== originalNotes.value;
 });
 
 // Computed property to check if deletion can proceed
 const canDelete = computed(() => {
-  return confirmEmailInput.value === data.value?.email;
+	return confirmEmailInput.value === data.value?.email;
 });
 
 // Fetch lead data
 onMounted(async () => {
-  pending.value = true;
+	pending.value = true;
 
-  const { data: leadData, error: leadError } = await handleAsync(
-    async () => {
-      const response = await supabase
-        .from('leads')
-        .select('*')
-        .eq('id', leadId)
-        .single();
+	const { data: leadData, error: leadError } = await handleAsync(
+		async () => {
+			const response = await supabase
+				.from('leads')
+				.select('*')
+				.eq('id', leadId)
+				.single();
 
-      if (response.error) {
-        throw response.error;
-      }
+			if (response.error) {
+				throw response.error;
+			}
 
-      return response.data;
-    },
-    { showNotification: true, logToConsole: true },
-    { operation: 'fetchLead', leadId }
-  );
+			return response.data;
+		},
+		{ showNotification: true, logToConsole: true },
+		{ operation: 'fetchLead', leadId },
+	);
 
-  if (leadError) {
-    error.value = leadError.userMessage;
-    pending.value = false;
-    return;
-  }
+	if (leadError) {
+		error.value = leadError.userMessage;
+		pending.value = false;
+		return;
+	}
 
-  if (leadData) {
-    data.value = leadData;
-    // Initialize agent notes
-    agentNotes.value = leadData.agent_notes || '';
-    originalNotes.value = leadData.agent_notes || '';
-  }
+	if (leadData) {
+		data.value = leadData;
+		// Initialize agent notes
+		agentNotes.value = leadData.agent_notes || '';
+		originalNotes.value = leadData.agent_notes || '';
+	}
 
-  pending.value = false;
+	pending.value = false;
 });
 
 // Save notes function
 const saveNotes = async () => {
-  if (!notesChanged.value || isSaving.value) return;
+	if (!notesChanged.value || isSaving.value) return;
 
-  isSaving.value = true;
-  saveStatus.value = 'saving';
+	isSaving.value = true;
+	saveStatus.value = 'saving';
 
-  const { data: response, error: saveError } = await handleAsync(
-    async () => {
-      return await $fetch(`/api/leads/${leadId}/notes`, {
-        method: 'PATCH',
-        body: {
-          agent_notes: agentNotes.value,
-        },
-      });
-    },
-    { showNotification: true, logToConsole: true },
-    { operation: 'saveNotes', leadId, notesLength: agentNotes.value.length }
-  );
+	const { data: response, error: saveError } = await handleAsync(
+		async () => {
+			return await $fetch(`/api/leads/${leadId}/notes`, {
+				method: 'PATCH',
+				body: {
+					agent_notes: agentNotes.value,
+				},
+			});
+		},
+		{ showNotification: true, logToConsole: true },
+		{ operation: 'saveNotes', leadId, notesLength: agentNotes.value.length },
+	);
 
-  isSaving.value = false;
+	isSaving.value = false;
 
-  if (saveError) {
-    saveStatus.value = 'error';
-    // Clear error message after 5 seconds
-    setTimeout(() => {
-      if (saveStatus.value === 'error') {
-        saveStatus.value = null;
-      }
-    }, 5000);
-    return;
-  }
+	if (saveError) {
+		saveStatus.value = 'error';
+		// Clear error message after 5 seconds
+		setTimeout(() => {
+			if (saveStatus.value === 'error') {
+				saveStatus.value = null;
+			}
+		}, 5000);
+		return;
+	}
 
-  if (response && response.success) {
-    // Update original notes to reflect saved state
-    originalNotes.value = agentNotes.value;
-    saveStatus.value = 'saved';
+	if (response && response.success) {
+		// Update original notes to reflect saved state
+		originalNotes.value = agentNotes.value;
+		saveStatus.value = 'saved';
 
-    // Clear saved message after 3 seconds
-    setTimeout(() => {
-      if (saveStatus.value === 'saved') {
-        saveStatus.value = null;
-      }
-    }, 3000);
-  }
+		// Clear saved message after 3 seconds
+		setTimeout(() => {
+			if (saveStatus.value === 'saved') {
+				saveStatus.value = null;
+			}
+		}, 3000);
+	}
 };
 
 // Edit mode functions
 const toggleEditMode = () => {
-  isEditMode.value = true;
+	isEditMode.value = true;
 };
 
 const cancelEdit = () => {
-  isEditMode.value = false;
+	isEditMode.value = false;
 };
 
 const handleEditSuccess = (updatedLead: Lead) => {
-  // Update the local data with the updated lead
-  data.value = updatedLead;
-  // Exit edit mode
-  isEditMode.value = false;
+	// Update the local data with the updated lead
+	data.value = updatedLead;
+	// Exit edit mode
+	isEditMode.value = false;
 };
 
 // Delete modal functions
 const closeDeleteModal = () => {
-  showDeleteModal.value = false;
-  confirmEmailInput.value = '';
-  deleteError.value = null;
+	showDeleteModal.value = false;
+	confirmEmailInput.value = '';
+	deleteError.value = null;
 };
 
 const deleteLead = async () => {
-  if (!canDelete.value || isDeleting.value) return;
+	if (!canDelete.value || isDeleting.value) return;
 
-  isDeleting.value = true;
-  deleteError.value = null;
+	isDeleting.value = true;
+	deleteError.value = null;
 
-  const { data: response, error: deleteErr } = await handleAsync(
-    async () => {
-      return await $fetch(`/api/leads/${leadId}`, {
-        method: 'DELETE',
-      });
-    },
-    { showNotification: true, logToConsole: true },
-    { operation: 'deleteLead', leadId, email: data.value?.email }
-  );
+	const { data: response, error: deleteErr } = await handleAsync(
+		async () => {
+			return await $fetch(`/api/leads/${leadId}`, {
+				method: 'DELETE',
+			});
+		},
+		{ showNotification: true, logToConsole: true },
+		{ operation: 'deleteLead', leadId, email: data.value?.email },
+	);
 
-  isDeleting.value = false;
+	isDeleting.value = false;
 
-  if (deleteErr) {
-    deleteError.value = deleteErr.userMessage;
-    return;
-  }
+	if (deleteErr) {
+		deleteError.value = deleteErr.userMessage;
+		return;
+	}
 
-  if (response && response.success) {
-    // Navigate back to admin dashboard after successful deletion
-    await navigateTo('/admin');
-  }
+	if (response && response.success) {
+		// Navigate back to admin dashboard after successful deletion
+		await navigateTo('/admin');
+	}
 };
 </script>

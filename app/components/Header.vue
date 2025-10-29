@@ -134,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 // Mobile menu state
 const showMobileMenu = ref(false);
@@ -149,60 +149,60 @@ const cleanPhone = agencyPhone.replace(/[^\d]/g, '');
 
 // Navigation items
 const navigationItems = [
-  { name: 'Home', href: '/', exact: true },
-  { name: 'About', href: '/about' },
-  { name: 'Articles', href: '/articles' },
-  { name: 'Carriers', href: '/carriers' },
-  { name: 'Get Quote', href: '/quote', isButton: true },
-  { name: 'Join Us', href: '/join-us' },
+	{ name: 'Home', href: '/', exact: true },
+	{ name: 'About', href: '/about' },
+	{ name: 'Articles', href: '/articles' },
+	{ name: 'Carriers', href: '/carriers' },
+	{ name: 'Get Quote', href: '/quote', isButton: true },
+	{ name: 'Join Us', href: '/join-us' },
 ];
 
 // Helper function to check if route is active
 const isActiveRoute = (item: { href: string; exact?: boolean }) => {
-  if (item.exact) {
-    return route.path === item.href;
-  }
-  return route.path.startsWith(item.href);
+	if (item.exact) {
+		return route.path === item.href;
+	}
+	return route.path.startsWith(item.href);
 };
 
 // Desktop navigation items (with active styling)
 const desktopNavItems = computed(() =>
-  navigationItems.map((item) => ({
-    ...item,
-    isActive: isActiveRoute(item),
-  }))
+	navigationItems.map((item) => ({
+		...item,
+		isActive: isActiveRoute(item),
+	})),
 );
 
 // Mobile navigation items (excluding current page)
 const mobileNavItems = computed(() =>
-  navigationItems.filter((item) => !isActiveRoute(item))
+	navigationItems.filter((item) => !isActiveRoute(item)),
 );
 
 // Get CSS classes for desktop navigation
 const getDesktopNavClasses = (item: {
-  isButton?: boolean;
-  isActive?: boolean;
+	isButton?: boolean;
+	isActive?: boolean;
 }) => {
-  if (item.isButton) {
-    return 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer';
-  }
+	if (item.isButton) {
+		return 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer';
+	}
 
-  const baseClasses =
-    'text-sm font-medium transition-all duration-200 relative group flex items-center gap-1 cursor-pointer';
-  const colorClasses =
-    'text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100';
-  const activeClasses = item.isActive
-    ? 'after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400 after:rounded-full'
-    : '';
+	const baseClasses =
+		'text-sm font-medium transition-all duration-200 relative group flex items-center gap-1 cursor-pointer';
+	const colorClasses =
+		'text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100';
+	const activeClasses = item.isActive
+		? 'after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400 after:rounded-full'
+		: '';
 
-  return `${baseClasses} ${colorClasses} ${activeClasses}`.trim();
+	return `${baseClasses} ${colorClasses} ${activeClasses}`.trim();
 };
 
 // Get CSS classes for mobile navigation
 const getMobileNavClasses = (item: { isButton?: boolean }) => {
-  if (item.isButton) {
-    return 'bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-base font-medium transition-colors text-center cursor-pointer';
-  }
-  return 'text-base font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 group flex items-center gap-2 cursor-pointer';
+	if (item.isButton) {
+		return 'bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-base font-medium transition-colors text-center cursor-pointer';
+	}
+	return 'text-base font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-200 group flex items-center gap-2 cursor-pointer';
 };
 </script>

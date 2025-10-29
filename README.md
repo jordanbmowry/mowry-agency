@@ -1,6 +1,10 @@
 # Spotlight Nuxt - Mowry Agency Website
 
 [![Deployed Project](https://img.shields.io/badge/Live%20Site-mowryagency.com-blue?style=for-the-badge)](https://mowryagency.com)
+[![CI](https://github.com/jordanbmowry/mowry-agency/actions/workflows/ci.yml/badge.svg)](https://github.com/jordanbmowry/mowry-agency/actions/workflows/ci.yml)
+[![Biome](https://github.com/jordanbmowry/mowry-agency/actions/workflows/biome.yml/badge.svg)](https://github.com/jordanbmowry/mowry-agency/actions/workflows/biome.yml)
+[![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat-square&logo=biome)](https://biomejs.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 
 A modern digital agency website built with Nuxt 3, featuring a pixel-perfect migration from the [Spotlight Template](https://spotlight.tailwindui.com/) by Tailwind UI. This project demonstrates advanced Nuxt.js capabilities with server-side rendering, composable-driven architecture, and functional programming patterns for optimal code reusability and maintainability.
 
@@ -49,9 +53,48 @@ A modern digital agency website built with Nuxt 3, featuring a pixel-perfect mig
 ### Development
 
 - **TypeScript**: Full type safety across the stack
+- **Code Quality**: Biome.js for linting and formatting
 - **Testing**: Vitest for unit tests, Playwright for E2E
+- **CI/CD**: GitHub Actions for automated testing and quality checks
 - **Deployment**: Netlify with SSR and edge functions
 - **Version Control**: Git with conventional commits
+
+### Code Quality & Standards
+
+This project uses [Biome.js](https://biomejs.dev/) for fast, consistent code formatting and linting:
+
+- **Lightning Fast**: Rust-based tooling for optimal performance (95% faster than ESLint)
+- **Zero Configuration**: Works out of the box with sensible defaults
+- **Comprehensive**: Handles both linting and formatting in one tool
+- **Vue Support**: Full support for Vue SFC files and TypeScript
+- **CI Optimized**: Uses `biome ci` command for better CI/CD integration
+
+#### Available Scripts
+
+```bash
+# Check for linting and formatting issues
+npm run lint
+
+# Check formatting only
+npm run format
+
+# Auto-fix linting issues (review changes first)
+npm run lint:fix
+
+# Auto-fix formatting issues
+npm run format:fix
+```
+
+#### CI/CD Integration
+
+The project includes automated checks via GitHub Actions:
+- **Biome Workflow**: Dedicated workflow using the official Biome action for maximum performance
+- **Linting**: Ensures code follows best practices and catches potential issues
+- **Formatting**: Maintains consistent code style across the entire codebase
+- **Testing**: Runs unit and E2E tests in parallel
+- **Build**: Verifies production build success
+
+The CI pipeline is optimized for speed by using the official `biomejs/setup-biome` action, which bypasses Node.js installation for linting/formatting checks.
 
 ## 🏗 Architecture
 
