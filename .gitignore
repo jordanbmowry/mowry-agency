@@ -30,3 +30,6 @@ clean-quote-schema.sql
 
 # Local Netlify folder
 .netlify
+
+# AI Agent Roadmap (contains business strategy)
+AI_AGENT_ROADMAP.md
