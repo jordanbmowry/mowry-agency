@@ -258,6 +258,7 @@ spotlight-nuxt/
 - npm, yarn, or pnpm package manager
 - Supabase account (for database and auth)
 - Resend account (for email notifications)
+- Access to [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository for database management
 
 ### Installation
 
@@ -278,13 +279,27 @@ yarn install
 pnpm install
 ```
 
-3. **Set up environment variables:**
+3. **Database Setup:**
+
+**Important**: This project uses a centralized database management system. The database schema and migrations are managed in the separate [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository.
+
+```bash
+# Database management commands (delegates to mowry_leads_database)
+npm run db:types    # Generate TypeScript types
+npm run db:migrate  # Apply database migrations
+npm run db:reset    # Reset database (development only)
+npm run db:start    # Start local Supabase instance
+npm run db:stop     # Stop local Supabase instance
+npm run db:status   # Check database status
+```
+
+4. **Set up environment variables:**
 
 ```bash
 cp .env.example .env
 ```
 
-4. **Configure your `.env` file:**
+5. **Configure your `.env` file:**
 
 ```env
 # Supabase Configuration
@@ -314,19 +329,62 @@ NUXT_PUBLIC_AGENCY_PHONE=(930) 322-1962
 NUXT_PUBLIC_AGENCY_EMAIL=your_agency_email@domain.com
 ```
 
-5. **Set up Supabase database:**
+6. **Set up Supabase database:**
 
-Run the migrations in the `supabase/migrations/` directory to create the necessary tables.
+**Database management is now centralized!** This project no longer manages database migrations directly. Instead, all database operations are delegated to the [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository.
 
-6. **Start the development server:**
+```bash
+# Start local database
+npm run db:start
+
+# Apply all migrations
+npm run db:migrate
+
+# Generate TypeScript types
+npm run db:types
+```
+
+7. **Start the development server:**
 
 ```bash
 npm run dev
 ```
 
-7. **Open your browser:**
+8. **Open your browser:**
 
 Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 🗄️ Database Management
+
+This project uses a **centralized database management system** via the [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository. This approach provides:
+
+### Benefits
+- ✅ **Single source of truth** for database schema
+- ✅ **Coordinated migrations** across multiple projects
+- ✅ **Consistent type generation** and syncing
+- ✅ **Automated testing** of database changes
+- ✅ **Production deployment safety**
+
+### Available Commands
+```bash
+npm run db:types     # Generate TypeScript types from database
+npm run db:migrate   # Apply pending migrations
+npm run db:reset     # Reset database (development only)
+npm run db:start     # Start local Supabase instance
+npm run db:stop      # Stop local Supabase instance
+npm run db:status    # Check database connection status
+```
+
+### Database Structure
+The database contains exactly **6 tables**:
+- `leads` - Primary leads management table with TCPA compliance
+- `profiles` - User profile management
+- `unsubscribes` - Email unsubscribe tracking
+- `leads_compliance_report` - TCPA compliance reporting
+- `leads_compliance_report_runs` - Compliance report execution history
+- `_owner_required_migrations` - Supabase internal migration tracking
+
+For detailed database documentation, migration guides, and setup instructions, see the [mowry_leads_database repository](https://github.com/jordanbmowry/mowry_leads_database).
 
 ## 📝 Available Scripts
 

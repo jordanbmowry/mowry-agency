@@ -9,7 +9,8 @@ This is a **modern digital agency website** built with Nuxt 3, featuring a pixel
 - **Framework**: Nuxt 3 with Vue 3 Composition API
 - **Styling**: Tailwind CSS v4 with custom design system
 - **UI Components**: Nuxt UI for consistent, accessible UI components
-- **Database**: Supabase (PostgreSQL) with Row Level Security
+- **Database**: Centralized management via [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository
+- **Database Engine**: Supabase (PostgreSQL) with Row Level Security
 - **Email**: Resend API for transactional email notifications
 - **UI Library**: Headless UI Vue for accessible components (legacy)
 - **Theme System**: Nuxt Color Mode for dark/light theme switching
@@ -18,7 +19,40 @@ This is a **modern digital agency website** built with Nuxt 3, featuring a pixel
 - **State Management**: VueUse utilities (@vueuse/core)
 - **Testing**: Vitest for unit tests, Playwright for e2e testing
 - **Deployment**: Netlify with SSR and custom domain configuration
-- **Type Safety**: Full TypeScript coverage with generated Supabase types
+- **Type Safety**: Full TypeScript coverage with auto-generated Supabase types
+
+## 🗄️ Centralized Database Management
+
+**IMPORTANT**: This project uses a **centralized database management system**. All database operations, migrations, and schema management are handled by the separate [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository.
+
+### Database Commands Available
+```bash
+# All database operations delegate to mowry_leads_database
+pnpm run db:types     # Generate TypeScript types from database
+pnpm run db:migrate   # Apply pending migrations
+pnpm run db:reset     # Reset database (development only)
+pnpm run db:start     # Start local Supabase instance
+pnpm run db:stop      # Stop local Supabase instance
+pnpm run db:status    # Check database connection status
+```
+
+### Database Structure (6 Tables)
+The system manages exactly **6 tables**:
+1. `leads` - Primary leads management with TCPA compliance
+2. `profiles` - User profile management  
+3. `unsubscribes` - Email unsubscribe tracking
+4. `leads_compliance_report` - TCPA compliance reporting
+5. `leads_compliance_report_runs` - Compliance execution history
+6. `_owner_required_migrations` - Supabase migration tracking
+
+### Key Benefits
+- ✅ **Single source of truth** for database schema
+- ✅ **Coordinated migrations** across multiple projects (mowry_agency + mowry-leads)
+- ✅ **Automated type generation** and syncing
+- ✅ **CI/CD validation** of database changes
+- ✅ **Production deployment safety**
+
+**For all database-related development, documentation, and migration management, refer to the [mowry_leads_database repository](https://github.com/jordanbmowry/mowry_leads_database).**
 
 ## Key Design Principles
 
@@ -705,6 +739,8 @@ onMounted(() => {
 ````typescript
 ### Database Patterns
 
+**IMPORTANT**: This project uses the [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database) repository for all database operations. Do NOT create migrations or modify database schema directly in this project.
+
 ```typescript
 // Use Supabase composables with type safety
 const supabase = useSupabaseClient<Database>();
@@ -721,10 +757,32 @@ const submitQuote = async (data: QuoteRequest) => {
   return result;
 };
 
-// Use generated types from Supabase
+// Use generated types from centralized database management
 import type { Database } from '~/types/database.types';
 type Lead = Database['public']['Tables']['leads']['Row'];
-````
+```
+
+#### **Database Management Guidelines**
+
+**DO ✅**
+- Use the generated TypeScript types from `~/types/database.types.ts`
+- Use database commands like `pnpm run db:types` to sync latest types
+- Follow the existing database schema and table structure
+- Use Supabase client for all database operations
+- Leverage Row Level Security policies that are pre-configured
+
+**DON'T ❌**
+- Create migrations in this project (use mowry_leads_database instead)
+- Modify database schema directly
+- Manually edit `database.types.ts` (it's auto-generated)
+- Create new tables without coordinating via mowry_leads_database
+- Bypass RLS policies or create direct SQL connections
+
+**For Database Changes**
+1. **Schema Changes**: Create migrations in [mowry_leads_database](https://github.com/jordanbmowry/mowry_leads_database)
+2. **Type Updates**: Run `pnpm run db:types` to sync latest types
+3. **Testing**: Use `pnpm run db:status` to verify database connectivity
+4. **Local Development**: Use `pnpm run db:start` to start local database`
 
 ### API Route Patterns
 
@@ -1347,7 +1405,7 @@ spotlight-nuxt/
 │   │   ├── usePagination.ts         # Pagination logic
 │   │   ├── useLeadsFilters.ts       # Admin filters
 │   │   ├── useLeadsExport.ts        # CSV export
-│   │   ├── useDatabase.ts           # Supabase operations
+│   │   ├── useDatabase.ts           # Supabase operations (delegates to mowry_leads_database)
 │   │   └── ...                      # Other composables
 │   ├── lib/                 # Utility functions
 │   │   └── utils.ts                # General utility functions
@@ -1361,7 +1419,7 @@ spotlight-nuxt/
 │   │   └── ...                     # Other pages
 │   ├── assets/css/          # Global styles
 │   ├── types/               # TypeScript definitions
-│   │   ├── database.types.ts      # Supabase generated types
+│   │   ├── database.types.ts      # Auto-generated from mowry_leads_database
 │   │   └── validation.ts          # Validation types
 │   └── utils/               # Utility functions
 ├── server/
@@ -1379,9 +1437,8 @@ spotlight-nuxt/
 │   ├── CustomerConfirmation.vue
 │   ├── AgencyNotification.vue
 │   └── tailwind.config.ts
-├── supabase/               # Database configuration
-│   ├── config.toml
-│   └── migrations/          # SQL migrations
+├── supabase/               # Local development configuration only
+│   └── config.toml         # (Schema managed in mowry_leads_database)
 ├── agency_assets/          # Agency-specific images
 ├── public/                 # Static assets
 │   └── images/
@@ -1390,6 +1447,7 @@ spotlight-nuxt/
 │   ├── composables/
 │   └── api/
 └── tests/                  # E2E tests
+    └── e2e/
     └── e2e/
 ```
 
