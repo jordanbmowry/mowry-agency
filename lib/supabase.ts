@@ -2,41 +2,19 @@
 // Note: With @nuxtjs/supabase module, use useSupabaseClient() composable instead of importing a client
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '../app/types/database.types';
+import type { Database } from '../types/database.types';
 
-export interface Lead {
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
-  name?: string;
-
-  // Quote form fields
-  first_name?: string;
-  last_name?: string;
-  email: string;
-  phone: string;
-  date_of_birth?: string;
-  coverage_type?: string;
-  health_conditions?: string;
-  current_medications?: string;
-  message?: string;
-
-  // Lead management
-  lead_type?: string;
-  lead_source?: string;
-  status: 'new' | 'contacted' | 'qualified' | 'closed' | 'not_interested';
-  agent_notes?: string;
-}
+// Use the generated database types instead of custom interface
+export type Lead = Database['public']['Tables']['leads']['Row'];
+export type LeadInsert = Database['public']['Tables']['leads']['Insert'];
+export type LeadUpdate = Database['public']['Tables']['leads']['Update'];
 
 // Helper functions for database operations using Nuxt Supabase composables
 // Usage: Import these functions and use them with useSupabaseClient() in your components
 
 export const supabaseOperations = {
   // Create a new lead
-  async createLead(
-    supabase: SupabaseClient<Database>,
-    leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>,
-  ) {
+  async createLead(supabase: SupabaseClient<Database>, leadData: LeadInsert) {
     const { data, error } = await supabase.from('leads').insert([leadData]).select();
 
     if (error) throw error;
@@ -61,7 +39,7 @@ export const supabaseOperations = {
     status: Lead['status'],
     notes?: string,
   ) {
-    const updateData: Partial<Lead> = { status };
+    const updateData: LeadUpdate = { status };
     if (notes) updateData.agent_notes = notes;
 
     const { data, error } = await supabase.from('leads').update(updateData).eq('id', id).select();

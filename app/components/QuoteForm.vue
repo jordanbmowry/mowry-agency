@@ -613,6 +613,7 @@ import { useLocalStorage } from '@vueuse/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useStatesData } from '~/composables/useCitiesData';
 import { useErrorHandler } from '~/composables/useErrorHandler';
+import type { Database } from '~/types/database.types';
 import {
   calculateAge,
   getMaxBirthDate,
@@ -622,6 +623,18 @@ import {
 } from '~/utils/dateUtils';
 import MailIcon from './icons/MailIcon.vue';
 import MultiStepProgressBar from './MultiStepProgressBar.vue';
+
+// Type for the lead data that will be inserted into the database
+type LeadInsert = Database['public']['Tables']['leads']['Insert'];
+
+// Type for the quote form submission response
+interface QuoteSubmissionResponse {
+  success: boolean;
+  leadId?: string;
+  message?: string;
+  isDuplicate?: boolean;
+  data?: LeadInsert;
+}
 
 // Auto-animate refs
 const [formParent] = useAutoAnimate();
@@ -1069,7 +1082,7 @@ const handleSubmit = async () => {
   const { data: response, error: submitError } = await handleAsync(
     async () => {
       // Send form data to our Nuxt API with enhanced TCPA compliance data
-      return await $fetch('/api/quote', {
+      return await $fetch<QuoteSubmissionResponse>('/api/quote', {
         method: 'POST',
         body: {
           firstName: form.firstName,
