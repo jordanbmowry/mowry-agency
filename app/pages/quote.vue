@@ -289,8 +289,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import SimpleLayout from '../components/SimpleLayout.vue';
 import QuoteForm from '../components/QuoteForm.vue';
+import SimpleLayout from '../components/SimpleLayout.vue';
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();

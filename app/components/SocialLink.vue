@@ -8,10 +8,12 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue';
+
 interface SocialLinkProps {
   href: string;
   ariaLabel: string;
-  icon: any;
+  icon: Component;
 }
 
 defineProps<SocialLinkProps>();

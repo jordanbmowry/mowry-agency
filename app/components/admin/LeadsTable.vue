@@ -126,8 +126,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from '~/types/database.types';
 import { getStatusBadgeClasses } from '~/composables/useLeadsFilters';
+import type { Database } from '~/types/database.types';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 

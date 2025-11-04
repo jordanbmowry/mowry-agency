@@ -1,7 +1,7 @@
 <script lang="ts">
-import { h } from 'vue'
+import { h } from 'vue';
 
-export function MailIcon(props: any) {
+export function MailIcon(props: Record<string, unknown>) {
   return h(
     'svg',
     {
@@ -23,10 +23,10 @@ export function MailIcon(props: any) {
         class: 'stroke-zinc-400 dark:stroke-zinc-500',
       }),
     ],
-  )
+  );
 }
 
-export function BriefcaseIcon(props: any) {
+export function BriefcaseIcon(props: Record<string, unknown>) {
   return h(
     'svg',
     {
@@ -48,10 +48,10 @@ export function BriefcaseIcon(props: any) {
         class: 'stroke-zinc-400 dark:stroke-zinc-500',
       }),
     ],
-  )
+  );
 }
 
-export function ArrowDownIcon(props: any) {
+export function ArrowDownIcon(props: Record<string, unknown>) {
   return h(
     'svg',
     {
@@ -66,6 +66,6 @@ export function ArrowDownIcon(props: any) {
       'stroke-linecap': 'round',
       'stroke-linejoin': 'round',
     }),
-  )
+  );
 }
 </script>

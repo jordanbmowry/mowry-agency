@@ -27,8 +27,7 @@ export default defineEventHandler(async (event) => {
   // Articles data - these should match your actual articles
   const articles = [
     {
-      title:
-        'Understanding Life Insurance: Term vs. Whole Life vs. Universal/IUL',
+      title: 'Understanding Life Insurance: Term vs. Whole Life vs. Universal/IUL',
       _path: '/articles/understanding-life-insurance-types',
       date: '2025-10-07',
       description:
@@ -55,9 +54,7 @@ export default defineEventHandler(async (event) => {
 
   for (const article of articles) {
     const slug =
-      article._path?.replace('/articles/', '') ||
-      article._path?.split('/').pop() ||
-      'article';
+      article._path?.replace('/articles/', '') || article._path?.split('/').pop() || 'article';
     const publicUrl = `${siteUrl}/articles/${slug}`;
 
     feed.addItem({

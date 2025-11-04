@@ -4,8 +4,8 @@
  * Using functional programming principles
  */
 
-import { ref, computed, watch } from 'vue';
 import { refDebounced } from '@vueuse/core';
+import { computed, ref, watch } from 'vue';
 
 export interface LeadsFilterState {
   searchTerm: string;
@@ -23,12 +23,7 @@ export interface LeadsFilterOptions {
  * Pure function to check if any filters are active
  */
 const hasActiveFilters = (state: LeadsFilterState): boolean => {
-  return !!(
-    state.searchTerm ||
-    state.statusFilter ||
-    state.dateFrom ||
-    state.dateTo
-  );
+  return !!(state.searchTerm || state.statusFilter || state.dateFrom || state.dateTo);
 };
 
 /**
@@ -41,7 +36,7 @@ export const applyLeadsFilters = (query: any, filters: LeadsFilterState) => {
   if (filters.searchTerm) {
     const searchValue = `%${filters.searchTerm}%`;
     filteredQuery = filteredQuery.or(
-      `first_name.ilike.${searchValue},last_name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue}`
+      `first_name.ilike.${searchValue},last_name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue}`,
     );
   }
 
@@ -52,16 +47,10 @@ export const applyLeadsFilters = (query: any, filters: LeadsFilterState) => {
 
   // Apply date range filter
   if (filters.dateFrom) {
-    filteredQuery = filteredQuery.gte(
-      'created_at',
-      `${filters.dateFrom}T00:00:00`
-    );
+    filteredQuery = filteredQuery.gte('created_at', `${filters.dateFrom}T00:00:00`);
   }
   if (filters.dateTo) {
-    filteredQuery = filteredQuery.lte(
-      'created_at',
-      `${filters.dateTo}T23:59:59`
-    );
+    filteredQuery = filteredQuery.lte('created_at', `${filters.dateTo}T23:59:59`);
   }
 
   return filteredQuery;
@@ -136,7 +125,7 @@ export const useLeadsFilters = (options: LeadsFilterOptions = {}) => {
       () => {
         onFilterChange();
       },
-      { deep: true }
+      { deep: true },
     );
   }
 
@@ -212,8 +201,7 @@ export const getStatusLabel = (status: string): string => {
  * Pure function to get status badge classes
  */
 export const getStatusBadgeClasses = (status: string): string => {
-  const baseClasses =
-    'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium';
+  const baseClasses = 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium';
 
   const statusClasses: Record<string, string> = {
     new: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400',

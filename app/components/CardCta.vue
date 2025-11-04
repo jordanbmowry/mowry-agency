@@ -9,10 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
+import { h } from 'vue';
 
 // ChevronRightIcon component
-function ChevronRightIcon(props: any) {
+function ChevronRightIcon(props: Record<string, unknown>) {
   return h(
     'svg',
     {
@@ -27,6 +27,6 @@ function ChevronRightIcon(props: any) {
       'stroke-linecap': 'round',
       'stroke-linejoin': 'round',
     }),
-  )
+  );
 }
 </script>

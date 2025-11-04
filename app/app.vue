@@ -43,8 +43,7 @@ useSchemaOrg([
     name: 'Mowry Agency',
     url: 'https://mowryagency.com',
     logo: 'https://mowryagency.com/images/logo.png',
-    description:
-      'Professional life insurance solutions and family financial protection services.',
+    description: 'Professional life insurance solutions and family financial protection services.',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
@@ -64,10 +63,7 @@ useHead({
   htmlAttrs: {
     lang: 'en',
   },
-  meta: [
-    { charset: 'utf-8' },
-    { name: 'format-detection', content: 'telephone=no' },
-  ],
+  meta: [{ charset: 'utf-8' }, { name: 'format-detection', content: 'telephone=no' }],
   link: [
     {
       rel: 'icon',

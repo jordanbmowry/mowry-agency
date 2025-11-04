@@ -82,8 +82,8 @@
 
 <script setup lang="ts">
 import SimpleLayout from '~/components/SimpleLayout.vue';
-import ToolsSection from '~/components/ToolsSection.vue';
 import Tool from '~/components/Tool.vue';
+import ToolsSection from '~/components/ToolsSection.vue';
 
 // Set up SEO meta
 useSeoMeta({

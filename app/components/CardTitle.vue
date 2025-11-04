@@ -8,14 +8,14 @@
 </template>
 
 <script setup lang="ts">
-import CardLink from './CardLink.vue'
+import CardLink from './CardLink.vue';
 
 interface CardTitleProps {
-  as?: string
-  href?: string
+  as?: string;
+  href?: string;
 }
 
 withDefaults(defineProps<CardTitleProps>(), {
   as: 'h2',
-})
+});
 </script>

@@ -24,13 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { useAutoAnimate } from '@formkit/auto-animate/vue';
-import {
-  BUSINESS_INFO,
-  COMPLIANCE_DISCLAIMERS,
-  formatLicenseDisplay,
-} from '~/constants/licenses';
+import { computed, ref } from 'vue';
+import { BUSINESS_INFO, COMPLIANCE_DISCLAIMERS, formatLicenseDisplay } from '~/constants/licenses';
 
 interface Props {
   displayFormat?: 'short' | 'full';
@@ -69,7 +65,6 @@ const containerClasses = computed(() => {
       return `${base} text-zinc-600`;
     case 'footer':
       return `${base} text-zinc-500 dark:text-zinc-400`;
-    case 'website':
     default:
       return `${base} text-zinc-600 dark:text-zinc-300`;
   }
@@ -87,7 +82,6 @@ const textClasses = computed(() => {
       return `${base} text-sm`;
     case 'footer':
       return `${base} text-xs`;
-    case 'website':
     default:
       return `${base} text-sm`;
   }

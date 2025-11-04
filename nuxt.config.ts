@@ -69,13 +69,7 @@ export default defineNuxtConfig({
       subsets: ['latin'],
       fallbacks: {
         'sans-serif': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        monospace: [
-          'JetBrains Mono',
-          'Menlo',
-          'Monaco',
-          'Consolas',
-          'monospace',
-        ],
+        monospace: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
     },
   },
@@ -163,9 +157,7 @@ export default defineNuxtConfig({
     smtpPass: process.env.SMTP_PASS,
     agencyEmail: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
     agencyPhone: process.env.AGENCY_PHONE || '(930) 322-1962',
-    agencyAddress:
-      process.env.AGENCY_ADDRESS ||
-      '1284 W Rangeview Cir, Bloomington, IN 47403',
+    agencyAddress: process.env.AGENCY_ADDRESS || '1284 W Rangeview Cir, Bloomington, IN 47403',
     agencyWebsite: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
     agencyNpn: process.env.AGENCY_NPN || '16357772',
     // Supabase server-side config (updated for new project)
@@ -176,9 +168,7 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_SITE_URL || 'https://mowryagency.com',
       agencyEmail: process.env.AGENCY_EMAIL || 'mowryagency@gmail.com',
       agencyPhone: process.env.AGENCY_PHONE || '(930) 322-1962',
-      agencyAddress:
-        process.env.AGENCY_ADDRESS ||
-        '1284 W Rangeview Cir, Bloomington, IN 47403',
+      agencyAddress: process.env.AGENCY_ADDRESS || '1284 W Rangeview Cir, Bloomington, IN 47403',
       agencyWebsite: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
       agencyNpn: process.env.AGENCY_NPN || '16357772',
     },

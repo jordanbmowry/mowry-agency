@@ -73,6 +73,6 @@ useSeoMeta({
 });
 
 const { data, pending, error } = await useAsyncData('privacy-policy', () =>
-  queryCollection('content').path('/privacy-policy').first()
+  queryCollection('content').path('/privacy-policy').first(),
 );
 </script>

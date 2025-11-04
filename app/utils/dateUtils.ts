@@ -1,19 +1,19 @@
 import {
+  addYears,
+  differenceInMonths,
+  differenceInYears,
+  endOfDay,
   format,
   formatISO,
-  parseISO,
-  differenceInYears,
-  differenceInMonths,
-  isValid,
-  startOfDay,
-  endOfDay,
-  addYears,
-  subYears,
   isAfter,
   isBefore,
+  isValid,
   parse,
+  parseISO,
+  startOfDay,
+  subYears,
 } from 'date-fns';
-import { formatInTimeZone, toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz';
 
 /**
  * Default timezone for the application
@@ -29,7 +29,7 @@ const DEFAULT_TIMEZONE = 'America/New_York';
 export function formatDate(
   dateString: string,
   pattern: string = 'MMMM d, yyyy',
-  timeZone: string = 'UTC'
+  timeZone: string = 'UTC',
 ): string {
   try {
     const date = parseISO(dateString);
@@ -54,11 +54,10 @@ export function formatDate(
  */
 export function formatSubmittedDate(
   timestamp: string | Date,
-  timeZone: string = DEFAULT_TIMEZONE
+  timeZone: string = DEFAULT_TIMEZONE,
 ): string {
   try {
-    const date =
-      typeof timestamp === 'string' ? parseISO(timestamp) : timestamp;
+    const date = typeof timestamp === 'string' ? parseISO(timestamp) : timestamp;
 
     if (!isValid(date)) {
       return 'Invalid Date';
@@ -75,15 +74,10 @@ export function formatSubmittedDate(
  * @param dateOfBirth - Date of birth as string (YYYY-MM-DD) or Date object
  * @param referenceDate - Optional reference date, defaults to today
  */
-export function calculateAge(
-  dateOfBirth: string | Date,
-  referenceDate?: Date
-): number {
+export function calculateAge(dateOfBirth: string | Date, referenceDate?: Date): number {
   try {
     const birthDate =
-      typeof dateOfBirth === 'string'
-        ? parse(dateOfBirth, 'yyyy-MM-dd', new Date())
-        : dateOfBirth;
+      typeof dateOfBirth === 'string' ? parse(dateOfBirth, 'yyyy-MM-dd', new Date()) : dateOfBirth;
 
     const refDate = referenceDate || new Date();
 
@@ -102,10 +96,7 @@ export function calculateAge(
  * @param dateOfBirth - Date of birth as string (YYYY-MM-DD)
  * @param minimumAge - Minimum required age
  */
-export function isValidAge(
-  dateOfBirth: string,
-  minimumAge: number = 18
-): boolean {
+export function isValidAge(dateOfBirth: string, minimumAge: number = 18): boolean {
   try {
     const age = calculateAge(dateOfBirth);
     return age >= minimumAge;
@@ -174,10 +165,7 @@ export function formatRSSDate(date: string | Date): string {
  * @param date - Date to convert
  * @param timeZone - Target timezone
  */
-export function convertToTimeZone(
-  date: Date,
-  timeZone: string = DEFAULT_TIMEZONE
-): Date {
+export function convertToTimeZone(date: Date, timeZone: string = DEFAULT_TIMEZONE): Date {
   try {
     return toZonedTime(date, timeZone);
   } catch {
@@ -190,10 +178,7 @@ export function convertToTimeZone(
  * @param date - Date in specific timezone
  * @param timeZone - Source timezone
  */
-export function convertToUTC(
-  date: Date,
-  timeZone: string = DEFAULT_TIMEZONE
-): Date {
+export function convertToUTC(date: Date, timeZone: string = DEFAULT_TIMEZONE): Date {
   try {
     return fromZonedTime(date, timeZone);
   } catch {
@@ -214,7 +199,7 @@ export function formatDateLocale(
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }
+  },
 ): string {
   try {
     const targetDate = typeof date === 'string' ? parseISO(date) : date;
@@ -236,7 +221,7 @@ export function formatDateLocale(
  */
 export function isValidDateString(
   dateString: string,
-  formatString: string = 'yyyy-MM-dd'
+  formatString: string = 'yyyy-MM-dd',
 ): boolean {
   try {
     const parsedDate = parse(dateString, formatString, new Date());

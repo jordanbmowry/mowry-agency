@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import {
-  Html,
-  Head,
   Body,
-  Container,
-  Section,
-  Text,
-  Heading,
   Button,
-  Img,
+  Container,
+  Head,
+  Heading,
   Hr,
+  Html,
+  Img,
+  Section,
   Tailwind,
+  Text,
 } from '@vue-email/components';
 import {
   BUSINESS_INFO,

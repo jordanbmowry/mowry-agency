@@ -10,8 +10,8 @@
 
 <script setup lang="ts">
 interface CardLinkProps {
-  href: string
+  href: string;
 }
 
-defineProps<CardLinkProps>()
+defineProps<CardLinkProps>();
 </script>

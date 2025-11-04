@@ -14,19 +14,12 @@ const validateEmail = (email: string): boolean => {
 
 // Pure function to extract client information
 const getClientInfo = (event: any) => ({
-  ip:
-    getHeaders(event)['x-forwarded-for'] ||
-    getHeaders(event)['x-real-ip'] ||
-    'unknown',
+  ip: getHeaders(event)['x-forwarded-for'] || getHeaders(event)['x-real-ip'] || 'unknown',
   userAgent: getHeader(event, 'user-agent') || '',
 });
 
 // Database operations
-const createUnsubscribeRecord = async (
-  supabase: any,
-  email: string,
-  clientInfo: any
-) => {
+const createUnsubscribeRecord = async (supabase: any, email: string, clientInfo: any) => {
   return await supabase.from('unsubscribes').upsert({
     email,
     ip_address: clientInfo.ip,
@@ -150,8 +143,7 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     throw createError({
       statusCode: 500,
-      statusMessage:
-        'An error occurred while processing your unsubscribe request',
+      statusMessage: 'An error occurred while processing your unsubscribe request',
     });
   }
 });

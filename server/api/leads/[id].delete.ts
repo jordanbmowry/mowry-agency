@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabaseServiceRole } from '#supabase/server';
 import type { Database } from '~/types/database.types';
 
 export default defineEventHandler(async (event) => {
@@ -12,11 +12,8 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const config = useRuntimeConfig();
-    const supabase = createClient<Database>(
-      config.public.supabase.url,
-      config.supabase.serviceKey
-    );
+    // Use Nuxt Supabase helper instead of createClient
+    const supabase = serverSupabaseServiceRole<Database>(event);
 
     // First check if the lead exists
     const { data: existingLead, error: checkError } = await supabase
@@ -34,26 +31,19 @@ export default defineEventHandler(async (event) => {
 
     // First, delete any associated compliance reports
     // This must happen before deleting the lead due to foreign key constraints
-    // Note: Using 'as any' to bypass TypeScript issue with table recognition
     const { error: complianceDeleteError } = await supabase
-      .from('leads_compliance_report' as any)
+      .from('leads_compliance_report')
       .delete()
       .eq('lead_id', leadId);
 
     if (complianceDeleteError) {
-      console.error(
-        'Error deleting compliance reports:',
-        complianceDeleteError
-      );
+      console.error('Error deleting compliance reports:', complianceDeleteError);
       // Don't fail the entire operation if compliance report deletion fails
       // The lead might not have a compliance report entry
     }
 
-    // Now delete the lead
-    const { error: deleteError } = await supabase
-      .from('leads')
-      .delete()
-      .eq('id', leadId);
+    // Delete the lead
+    const { error: deleteError } = await supabase.from('leads').delete().eq('id', leadId);
 
     if (deleteError) {
       console.error('Error deleting lead:', deleteError);

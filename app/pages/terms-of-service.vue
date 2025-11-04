@@ -65,6 +65,6 @@ useSeoMeta({
 });
 
 const { data, pending, error } = await useAsyncData('terms-of-service', () =>
-  queryCollection('content').path('/terms-of-service').first()
+  queryCollection('content').path('/terms-of-service').first(),
 );
 </script>

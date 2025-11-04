@@ -47,22 +47,18 @@ interface Props {
 const props = defineProps<Props>();
 
 const startLabel = computed(() =>
-  typeof props.role.start === 'string'
-    ? props.role.start
-    : props.role.start.label
+  typeof props.role.start === 'string' ? props.role.start : props.role.start.label,
 );
 
 const startDate = computed(() =>
-  typeof props.role.start === 'string'
-    ? props.role.start
-    : props.role.start.dateTime
+  typeof props.role.start === 'string' ? props.role.start : props.role.start.dateTime,
 );
 
 const endLabel = computed(() =>
-  typeof props.role.end === 'string' ? props.role.end : props.role.end.label
+  typeof props.role.end === 'string' ? props.role.end : props.role.end.label,
 );
 
 const endDate = computed(() =>
-  typeof props.role.end === 'string' ? props.role.end : props.role.end.dateTime
+  typeof props.role.end === 'string' ? props.role.end : props.role.end.dateTime,
 );
 </script>

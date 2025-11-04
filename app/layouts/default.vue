@@ -19,8 +19,8 @@
 </template>
 
 <script setup>
-import Header from '~/components/Header.vue';
 import Footer from '~/components/Footer.vue';
+import Header from '~/components/Header.vue';
 
 const route = useRoute();
 const isAdminRoute = computed(() => route.path.startsWith('/admin'));

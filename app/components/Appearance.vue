@@ -9,10 +9,10 @@
 
 <script setup>
 import Card from '~/components/Card.vue';
-import CardTitle from '~/components/CardTitle.vue';
-import CardEyebrow from '~/components/CardEyebrow.vue';
-import CardDescription from '~/components/CardDescription.vue';
 import CardCta from '~/components/CardCta.vue';
+import CardDescription from '~/components/CardDescription.vue';
+import CardEyebrow from '~/components/CardEyebrow.vue';
+import CardTitle from '~/components/CardTitle.vue';
 
 const props = defineProps({
   title: {

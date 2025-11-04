@@ -1,15 +1,11 @@
-import nodemailer from 'nodemailer';
 import { render } from '@vue-email/render';
-import {
-  createUnsubscribeLink,
-  type AsyncResult,
-  safeAsync,
-} from './form-utils';
+import nodemailer from 'nodemailer';
 import { createTimestamp } from '~/utils/dateUtils';
+import AgencyNotification from '../../emails/AgencyNotification.vue';
 
 // Import Vue Email templates
 import CustomerConfirmation from '../../emails/CustomerConfirmation.vue';
-import AgencyNotification from '../../emails/AgencyNotification.vue';
+import { type AsyncResult, createUnsubscribeLink, safeAsync } from './form-utils';
 
 // Email configuration type
 type EmailConfig = {
@@ -72,7 +68,7 @@ const createTransporter = (config: EmailConfig) => {
 
 // Render customer confirmation email using Vue Email
 const renderCustomerConfirmationEmail = async (
-  data: CustomerEmailData
+  data: CustomerEmailData,
 ): Promise<{ html: string; text: string }> => {
   const [html, text] = await Promise.all([
     render(
@@ -95,7 +91,7 @@ const renderCustomerConfirmationEmail = async (
       },
       {
         pretty: true,
-      }
+      },
     ),
     render(
       CustomerConfirmation,
@@ -117,7 +113,7 @@ const renderCustomerConfirmationEmail = async (
       },
       {
         plainText: true,
-      }
+      },
     ),
   ]);
 
@@ -126,7 +122,7 @@ const renderCustomerConfirmationEmail = async (
 
 // Render agency notification email using Vue Email
 const renderAgencyNotificationEmail = async (
-  data: AgencyEmailData
+  data: AgencyEmailData,
 ): Promise<{ html: string; text: string }> => {
   const [html, text] = await Promise.all([
     render(
@@ -136,7 +132,7 @@ const renderAgencyNotificationEmail = async (
       },
       {
         pretty: true,
-      }
+      },
     ),
     render(
       AgencyNotification,
@@ -145,7 +141,7 @@ const renderAgencyNotificationEmail = async (
       },
       {
         plainText: true,
-      }
+      },
     ),
   ]);
 
@@ -159,7 +155,7 @@ const sendSingleEmail = async (
   subject: string,
   html: string,
   text: string,
-  from: string = 'Mowry Agency <noreply@mowryagency.com>'
+  from: string = 'Mowry Agency <noreply@mowryagency.com>',
 ): Promise<AsyncResult<any>> => {
   return safeAsync(async () => {
     return await transporter.sendMail({
@@ -182,14 +178,11 @@ export const sendCustomerConfirmationEmail = async (
     address: string;
     website: string;
     npn: string;
-  }
+  },
 ): Promise<AsyncResult<any>> => {
   return safeAsync(async () => {
     const transporter = createTransporter(config);
-    const unsubscribeLink = createUnsubscribeLink(
-      leadData.email,
-      agencyInfo.website
-    );
+    const unsubscribeLink = createUnsubscribeLink(leadData.email, agencyInfo.website);
 
     const emailData: CustomerEmailData = {
       firstName: leadData.first_name,
@@ -213,7 +206,7 @@ export const sendCustomerConfirmationEmail = async (
       leadData.email,
       'Quote Request Confirmation - Mowry Agency',
       html,
-      text
+      text,
     );
   });
 };
@@ -222,7 +215,7 @@ export const sendCustomerConfirmationEmail = async (
 export const sendAgencyNotificationEmail = async (
   config: EmailConfig,
   leadData: any,
-  agencyEmail: string
+  agencyEmail: string,
 ): Promise<AsyncResult<any>> => {
   return safeAsync(async () => {
     const transporter = createTransporter(config);
@@ -239,7 +232,7 @@ export const sendAgencyNotificationEmail = async (
       agencyEmail,
       `🚨 New Quote Request from ${leadData.first_name} ${leadData.last_name}`,
       html,
-      text
+      text,
     );
   });
 };
@@ -254,7 +247,7 @@ export const sendQuoteEmails = async (
     address: string;
     website: string;
     npn: string;
-  }
+  },
 ): Promise<{
   customerResult: AsyncResult<any>;
   agencyResult: AsyncResult<any>;

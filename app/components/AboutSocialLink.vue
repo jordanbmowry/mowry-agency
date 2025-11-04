@@ -16,9 +16,11 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue';
+
 interface AboutSocialLinkProps {
   href: string;
-  icon: any;
+  icon: Component;
   className?: string;
 }
 

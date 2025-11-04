@@ -1,10 +1,6 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
-import {
-  transformLeadData,
-  isDuplicateEmailError,
-  extractClientInfo,
-} from '../utils/form-utils';
 import { sendQuoteEmails } from '../utils/email-service-vue';
+import { extractClientInfo, isDuplicateEmailError, transformLeadData } from '../utils/form-utils';
 import { quoteValidationSchema } from '../utils/validation';
 
 export default defineEventHandler(async (event) => {
@@ -25,10 +21,8 @@ export default defineEventHandler(async (event) => {
       sex: body.sex,
       city: body.city,
       state: body.state,
-      height:
-        typeof body.height === 'string' ? parseFloat(body.height) : body.height,
-      weight:
-        typeof body.weight === 'string' ? parseFloat(body.weight) : body.weight,
+      height: typeof body.height === 'string' ? parseFloat(body.height) : body.height,
+      weight: typeof body.weight === 'string' ? parseFloat(body.weight) : body.weight,
       coverage_type: body.coverageType,
       health_conditions: body.healthConditions,
       current_medications: body.medications || body.currentMedications,
@@ -37,11 +31,13 @@ export default defineEventHandler(async (event) => {
     };
 
     // Validate using Joi schema
-    const { error: validationError, value: validatedData } =
-      quoteValidationSchema.validate(transformedBody, {
+    const { error: validationError, value: validatedData } = quoteValidationSchema.validate(
+      transformedBody,
+      {
         abortEarly: false,
         stripUnknown: true,
-      });
+      },
+    );
 
     if (validationError) {
       console.error('Joi validation error:', validationError.details);
@@ -113,10 +109,7 @@ export default defineEventHandler(async (event) => {
     // Handle other database errors
     if (insertError) {
       console.error('Database insert error:', insertError);
-      console.error(
-        'Lead data being inserted:',
-        JSON.stringify(leadData, null, 2)
-      );
+      console.error('Lead data being inserted:', JSON.stringify(leadData, null, 2));
       throw createError({
         statusCode: 500,
         statusMessage:
@@ -144,8 +137,7 @@ export default defineEventHandler(async (event) => {
     // Return success response
     return {
       success: true,
-      message:
-        'Quote request submitted successfully! Check your email for confirmation.',
+      message: 'Quote request submitted successfully! Check your email for confirmation.',
       leadId: insertedLead.id,
       emailStatus: {
         customerEmail: emailResults.customerResult.success ? 'sent' : 'failed',

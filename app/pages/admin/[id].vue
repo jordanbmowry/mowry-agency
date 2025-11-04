@@ -72,7 +72,7 @@
               Full name
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.first_name }} {{ data.last_name }}
+              {{ data?.first_name }} {{ data?.last_name }}
             </dd>
           </div>
           <div
@@ -82,7 +82,7 @@
               Email address
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.email }}
+              {{ data?.email }}
             </dd>
           </div>
           <div
@@ -92,7 +92,7 @@
               Phone number
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatPhone(data.phone) }}
+              {{ formatPhone(data?.phone) }}
             </dd>
           </div>
           <div
@@ -102,7 +102,7 @@
               Date of birth
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatDate(data.date_of_birth) }}
+              {{ formatDate(data?.date_of_birth) }}
             </dd>
           </div>
           <div
@@ -112,7 +112,7 @@
               Location
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.city }}, {{ data.state }}
+              {{ data?.city }}, {{ data?.state }}
             </dd>
           </div>
           <div
@@ -122,7 +122,7 @@
               Sex
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatSex(data.sex) }}
+              {{ formatSex(data?.sex) }}
             </dd>
           </div>
           <div
@@ -132,7 +132,7 @@
               Height
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatHeight(data.height) }}
+              {{ formatHeight(data?.height) }}
             </dd>
           </div>
           <div
@@ -142,7 +142,7 @@
               Weight
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatWeight(data.weight) }}
+              {{ formatWeight(data?.weight) }}
             </dd>
           </div>
           <div
@@ -152,7 +152,7 @@
               Loan Amount
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatCurrency(data.loan_amount) }}
+              {{ formatCurrency(data?.loan_amount) }}
             </dd>
           </div>
           <div
@@ -162,7 +162,7 @@
               Coverage type
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatCoverageType(data.coverage_type) }}
+              {{ formatCoverageType(data?.coverage_type) }}
             </dd>
           </div>
           <div
@@ -172,7 +172,7 @@
               Health conditions
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatHealthConditions(data.health_conditions) }}
+              {{ formatHealthConditions(data?.health_conditions) }}
             </dd>
           </div>
           <div
@@ -182,7 +182,7 @@
               Current medications
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatMedications(data.medications) }}
+              {{ formatMedications(data?.current_medications) }}
             </dd>
           </div>
           <div
@@ -192,7 +192,7 @@
               Message
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ data.message || 'No message provided' }}
+              {{ data?.message || 'No message provided' }}
             </dd>
           </div>
           <div
@@ -205,18 +205,18 @@
               <span
                 :class="[
                   'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
-                  data.status === 'new'
+                  data?.status === 'new'
                     ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400'
-                    : data.status === 'in_progress'
+                    : data?.status === 'in_progress'
                       ? 'bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400'
-                      : data.status === 'contacted'
+                      : data?.status === 'contacted'
                         ? 'bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-600/20 dark:bg-purple-400/10 dark:text-purple-400'
-                        : data.status === 'closed'
+                        : data?.status === 'closed'
                           ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-400/10 dark:text-green-400'
                           : 'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-600/20 dark:bg-gray-400/10 dark:text-gray-400',
                 ]"
               >
-                {{ formatStatus(data.status) }}
+                {{ formatStatus(data?.status) }}
               </span>
             </dd>
           </div>
@@ -227,7 +227,7 @@
               Created at
             </dt>
             <dd class="mt-1 text-sm text-zinc-700 dark:text-zinc-400 sm:mt-2">
-              {{ formatDateTime(data.created_at) }}
+              {{ formatDateTime(data?.created_at) }}
             </dd>
           </div>
         </dl>
@@ -311,7 +311,7 @@
             <UButton
               color="error"
               variant="solid"
-              @click="showDeleteModal = true"
+              @click="() => { console.log('🔍 Delete button clicked!'); showDeleteModal = true; }"
               :disabled="isDeleting"
               class="cursor-pointer"
             >
@@ -329,113 +329,47 @@
   </SimpleLayout>
 
   <!-- Delete Confirmation Modal -->
-  <UModal
+  <DeleteLeadModal
     v-model:open="showDeleteModal"
-    :overlay="true"
-    :transition="true"
-    :dismissible="false"
-    title="Delete Lead"
-  >
-    <template #header>
-      <div class="flex items-center">
-        <Icon
-          name="heroicons:exclamation-triangle"
-          class="h-5 w-5 text-red-500"
-        />
-        <h3 class="ml-2 text-lg font-semibold text-gray-900 dark:text-white">
-          Delete Lead
-        </h3>
-      </div>
-    </template>
-
-    <template #body>
-      <div class="space-y-4">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
-          This action cannot be undone. This will permanently delete the lead
-          for
-          <strong>{{ data?.first_name }} {{ data?.last_name }}</strong>
-          and all associated data.
-        </p>
-
-        <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-          <p class="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-            To confirm deletion, please type the lead's email address below:
-          </p>
-          <p class="text-sm text-red-600 dark:text-red-400 mb-3">
-            <code
-              class="bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded text-xs"
-              >{{ data?.email }}</code
-            >
-          </p>
-          <UInput
-            v-model="confirmEmailInput"
-            placeholder="Enter lead email to confirm deletion"
-            :color="confirmEmailInput === data?.email ? 'success' : 'error'"
-            class="w-full"
-          />
-        </div>
-
-        <div
-          v-if="deleteError"
-          class="rounded-md bg-red-50 dark:bg-red-900/20 p-3"
-        >
-          <p class="text-sm text-red-600 dark:text-red-400">
-            {{ deleteError }}
-          </p>
-        </div>
-      </div>
-    </template>
-
-    <template #footer>
-      <div class="flex justify-end space-x-2">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          @click="closeDeleteModal"
-          :disabled="isDeleting"
-        >
-          Cancel
-        </UButton>
-        <UButton
-          color="error"
-          variant="solid"
-          @click="deleteLead"
-          :disabled="!canDelete || isDeleting"
-          :loading="isDeleting"
-          class="cursor-pointer"
-        >
-          <Icon v-if="!isDeleting" name="heroicons:trash" class="h-4 w-4" />
-          {{ isDeleting ? 'Deleting...' : 'Delete Lead' }}
-        </UButton>
-      </div>
-    </template>
-  </UModal>
+    :lead="data"
+    :is-deleting="isDeleting"
+    :error="deleteError"
+    @confirm="deleteLead"
+    @cancel="closeDeleteModal"
+  />
 </template>
 
 <script setup lang="ts">
 import AdminLeadEditForm from '~/components/admin/AdminLeadEditForm.vue';
+import DeleteLeadModal from '~/components/admin/DeleteLeadModal.vue';
 import { useErrorHandler } from '~/composables/useErrorHandler';
 import type { Database } from '~/types/database.types';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
+interface LeadApiResponse {
+  success: boolean;
+  data: Lead;
+  message?: string;
+}
+
 definePageMeta({
-	middleware: ['admin'],
+  middleware: ['admin'],
 });
 
 // Import formatters
 const {
-	formatCoverageType,
-	formatStatus,
-	formatSex,
-	formatHealthConditions,
-	formatMedications,
-	formatDateTime,
-	formatHeight,
-	formatWeight,
-	formatCurrency,
-	formatPhone,
-	formatDate,
+  formatCoverageType,
+  formatStatus,
+  formatSex,
+  formatHealthConditions,
+  formatMedications,
+  formatDateTime,
+  formatHeight,
+  formatWeight,
+  formatCurrency,
+  formatPhone,
+  formatDate,
 } = useFormatters();
 
 // Initialize error handler
@@ -447,10 +381,18 @@ const supabase = useSupabaseClient();
 // Get lead ID directly from route params
 const leadId = route.params.id as string;
 
-// Reactive state
-const data = ref<Lead | null>(null);
-const pending = ref(true);
-const error = ref<string | null>(null);
+// Use Nuxt's useFetch for SSR-safe data fetching following official Nuxt 4.x docs
+const {
+  data: leadApiResponse,
+  pending,
+  error: fetchError,
+  refresh,
+} = await useFetch<LeadApiResponse>(`/api/leads/${leadId}`, {
+  key: `lead-${leadId}`,
+});
+
+// Extract lead data from API response
+const data = computed(() => leadApiResponse.value?.data || null);
 
 // Agent notes state
 const agentNotes = ref<string>('');
@@ -463,154 +405,170 @@ const isEditMode = ref(false);
 
 // Delete modal state
 const showDeleteModal = ref(false);
-const confirmEmailInput = ref('');
 const isDeleting = ref(false);
 const deleteError = ref<string | null>(null);
 
-// Computed property to check if notes have changed
-const notesChanged = computed(() => {
-	return agentNotes.value !== originalNotes.value;
+// Initialize agent notes when data is available
+watch(
+  data,
+  (newData) => {
+    if (newData) {
+      agentNotes.value = newData.agent_notes || '';
+      originalNotes.value = newData.agent_notes || '';
+    }
+  },
+  { immediate: true },
+);
+
+// Convert fetchError to string for template
+const error = computed(() => {
+  if (fetchError.value) {
+    return typeof fetchError.value === 'string' ? fetchError.value : 'Failed to load lead';
+  }
+  return null;
 });
 
-// Computed property to check if deletion can proceed
-const canDelete = computed(() => {
-	return confirmEmailInput.value === data.value?.email;
+// Debug: Watch modal state
+watch(
+  showDeleteModal,
+  (newValue) => {
+    console.log('🔍 Admin page showDeleteModal changed:', newValue);
+  },
+  { immediate: true },
+);
+
+// Computed property to check if notes have changed
+const notesChanged = computed(() => {
+  return agentNotes.value !== originalNotes.value;
 });
 
 // Fetch lead data
-onMounted(async () => {
-	pending.value = true;
+// Data is automatically fetched by useLazyFetch
 
-	const { data: leadData, error: leadError } = await handleAsync(
-		async () => {
-			const response = await supabase
-				.from('leads')
-				.select('*')
-				.eq('id', leadId)
-				.single();
+interface FetchOptions {
+  method?: string;
+  body?: Record<string, unknown>;
+  headers?: Record<string, string>;
+}
 
-			if (response.error) {
-				throw response.error;
-			}
+interface ApiResponse {
+  success: boolean;
+  data?: Lead;
+  message?: string;
+}
 
-			return response.data;
-		},
-		{ showNotification: true, logToConsole: true },
-		{ operation: 'fetchLead', leadId },
-	);
+interface NotesUpdateResponse {
+  success: boolean;
+  data?: { agent_notes: string };
+  message?: string;
+}
 
-	if (leadError) {
-		error.value = leadError.userMessage;
-		pending.value = false;
-		return;
-	}
+interface DeleteResponse {
+  success: boolean;
+  message?: string;
+}
 
-	if (leadData) {
-		data.value = leadData;
-		// Initialize agent notes
-		agentNotes.value = leadData.agent_notes || '';
-		originalNotes.value = leadData.agent_notes || '';
-	}
-
-	pending.value = false;
-});
-
-// Save notes function
+// Save notes function using $fetch for client-side interaction (official Nuxt 4.x pattern)
 const saveNotes = async () => {
-	if (!notesChanged.value || isSaving.value) return;
+  if (!notesChanged.value || isSaving.value) return;
 
-	isSaving.value = true;
-	saveStatus.value = 'saving';
+  isSaving.value = true;
+  saveStatus.value = 'saving';
 
-	const { data: response, error: saveError } = await handleAsync(
-		async () => {
-			return await $fetch(`/api/leads/${leadId}/notes`, {
-				method: 'PATCH',
-				body: {
-					agent_notes: agentNotes.value,
-				},
-			});
-		},
-		{ showNotification: true, logToConsole: true },
-		{ operation: 'saveNotes', leadId, notesLength: agentNotes.value.length },
-	);
+  const { data: response, error: saveError } = await handleAsync(
+    async () => {
+      // Use $fetch for client-side interactions as recommended in Nuxt 4.x docs
+      return await (
+        $fetch as <T = NotesUpdateResponse>(url: string, options?: FetchOptions) => Promise<T>
+      )(`/api/leads/${leadId}/notes`, {
+        method: 'PATCH',
+        body: {
+          agent_notes: agentNotes.value,
+        },
+      });
+    },
+    { showNotification: true, logToConsole: true },
+    { operation: 'saveNotes', leadId, notesLength: agentNotes.value.length },
+  );
 
-	isSaving.value = false;
+  isSaving.value = false;
 
-	if (saveError) {
-		saveStatus.value = 'error';
-		// Clear error message after 5 seconds
-		setTimeout(() => {
-			if (saveStatus.value === 'error') {
-				saveStatus.value = null;
-			}
-		}, 5000);
-		return;
-	}
+  if (saveError) {
+    saveStatus.value = 'error';
+    // Clear error message after 5 seconds
+    setTimeout(() => {
+      if (saveStatus.value === 'error') {
+        saveStatus.value = null;
+      }
+    }, 5000);
+    return;
+  }
 
-	if (response && response.success) {
-		// Update original notes to reflect saved state
-		originalNotes.value = agentNotes.value;
-		saveStatus.value = 'saved';
+  if (response?.success) {
+    // Update original notes to reflect saved state
+    originalNotes.value = agentNotes.value;
+    saveStatus.value = 'saved';
 
-		// Clear saved message after 3 seconds
-		setTimeout(() => {
-			if (saveStatus.value === 'saved') {
-				saveStatus.value = null;
-			}
-		}, 3000);
-	}
+    // Clear saved message after 3 seconds
+    setTimeout(() => {
+      if (saveStatus.value === 'saved') {
+        saveStatus.value = null;
+      }
+    }, 3000);
+  }
 };
 
 // Edit mode functions
 const toggleEditMode = () => {
-	isEditMode.value = true;
+  isEditMode.value = true;
 };
 
 const cancelEdit = () => {
-	isEditMode.value = false;
+  isEditMode.value = false;
 };
 
-const handleEditSuccess = (updatedLead: Lead) => {
-	// Update the local data with the updated lead
-	data.value = updatedLead;
-	// Exit edit mode
-	isEditMode.value = false;
+const handleEditSuccess = () => {
+  // Refresh the data to get the updated lead
+  refresh();
+  // Exit edit mode
+  isEditMode.value = false;
 };
 
 // Delete modal functions
 const closeDeleteModal = () => {
-	showDeleteModal.value = false;
-	confirmEmailInput.value = '';
-	deleteError.value = null;
+  showDeleteModal.value = false;
+  deleteError.value = null;
 };
 
 const deleteLead = async () => {
-	if (!canDelete.value || isDeleting.value) return;
+  if (isDeleting.value) return;
 
-	isDeleting.value = true;
-	deleteError.value = null;
+  isDeleting.value = true;
+  deleteError.value = null;
 
-	const { data: response, error: deleteErr } = await handleAsync(
-		async () => {
-			return await $fetch(`/api/leads/${leadId}`, {
-				method: 'DELETE',
-			});
-		},
-		{ showNotification: true, logToConsole: true },
-		{ operation: 'deleteLead', leadId, email: data.value?.email },
-	);
+  const { data: response, error: deleteErr } = await handleAsync(
+    async () => {
+      // Use $fetch for client-side interactions as recommended in Nuxt 4.x docs
+      return await (
+        $fetch as <T = DeleteResponse>(url: string, options?: FetchOptions) => Promise<T>
+      )(`/api/leads/${leadId}`, {
+        method: 'DELETE',
+      });
+    },
+    { showNotification: true, logToConsole: true },
+    { operation: 'deleteLead', leadId, email: data.value?.email },
+  );
 
-	isDeleting.value = false;
+  isDeleting.value = false;
 
-	if (deleteErr) {
-		deleteError.value = deleteErr.userMessage;
-		return;
-	}
+  if (deleteErr) {
+    deleteError.value = deleteErr.userMessage;
+    return;
+  }
 
-	if (response && response.success) {
-		// Navigate back to admin dashboard after successful deletion
-		await navigateTo('/admin');
-	}
+  if (response?.success) {
+    // Navigate back to admin dashboard after successful deletion
+    await navigateTo('/admin');
+  }
 };
 </script>

@@ -3,7 +3,7 @@
  * Provides reusable pagination logic using functional programming principles
  */
 
-import { ref, computed, type Ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export interface PaginationConfig {
   initialPage?: number;
@@ -31,9 +31,7 @@ export const usePagination = (config: PaginationConfig = {}) => {
   const totalCount = ref(0);
 
   // Pure computed values
-  const totalPages = computed(() =>
-    Math.ceil(totalCount.value / itemsPerPage.value)
-  );
+  const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage.value));
 
   const offset = computed(() => (currentPage.value - 1) * itemsPerPage.value);
 
@@ -41,13 +39,9 @@ export const usePagination = (config: PaginationConfig = {}) => {
 
   const hasPreviousPage = computed(() => currentPage.value > 1);
 
-  const startIndex = computed(() =>
-    totalCount.value === 0 ? 0 : offset.value + 1
-  );
+  const startIndex = computed(() => (totalCount.value === 0 ? 0 : offset.value + 1));
 
-  const endIndex = computed(() =>
-    Math.min(offset.value + itemsPerPage.value, totalCount.value)
-  );
+  const endIndex = computed(() => Math.min(offset.value + itemsPerPage.value, totalCount.value));
 
   // State object
   const state = computed<PaginationState>(() => ({

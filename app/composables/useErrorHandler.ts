@@ -4,7 +4,7 @@
  * Using functional programming principles - pure functions and composability
  */
 
-import { ref, readonly } from 'vue';
+import { readonly, ref } from 'vue';
 
 /**
  * Error severity levels
@@ -42,7 +42,7 @@ export interface AppError {
   severity: ErrorSeverity;
   statusCode?: number;
   timestamp: Date;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   originalError?: Error;
   stack?: string;
 }
@@ -67,17 +67,26 @@ const generateErrorId = (): string => {
 /**
  * Pure function to extract status code from error
  */
-const extractStatusCode = (error: any): number | undefined => {
-  if (error?.statusCode) return error.statusCode;
-  if (error?.response?.status) return error.response.status;
-  if (error?.status) return error.status;
+const extractStatusCode = (error: unknown): number | undefined => {
+  if (error && typeof error === 'object' && 'statusCode' in error) {
+    return typeof error.statusCode === 'number' ? error.statusCode : undefined;
+  }
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = error.response;
+    if (response && typeof response === 'object' && 'status' in response) {
+      return typeof response.status === 'number' ? response.status : undefined;
+    }
+  }
+  if (error && typeof error === 'object' && 'status' in error) {
+    return typeof error.status === 'number' ? error.status : undefined;
+  }
   return undefined;
 };
 
 /**
  * Pure function to categorize error based on status code and message
  */
-const categorizeError = (error: any, statusCode?: number): ErrorCategory => {
+const categorizeError = (error: unknown, statusCode?: number): ErrorCategory => {
   // By status code
   if (statusCode) {
     if (statusCode === 400) return ErrorCategory.VALIDATION;
@@ -89,7 +98,10 @@ const categorizeError = (error: any, statusCode?: number): ErrorCategory => {
   }
 
   // By error message/type
-  const errorMessage = error?.message?.toLowerCase() || '';
+  const errorMessage =
+    error && typeof error === 'object' && 'message' in error && typeof error.message === 'string'
+      ? error.message.toLowerCase()
+      : '';
   if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
     return ErrorCategory.NETWORK;
   }
@@ -112,21 +124,12 @@ const categorizeError = (error: any, statusCode?: number): ErrorCategory => {
 /**
  * Pure function to determine severity based on category and status code
  */
-const determineSeverity = (
-  category: ErrorCategory,
-  statusCode?: number
-): ErrorSeverity => {
+const determineSeverity = (category: ErrorCategory, statusCode?: number): ErrorSeverity => {
   if (statusCode && statusCode >= 500) return ErrorSeverity.CRITICAL;
-  if (
-    category === ErrorCategory.DATABASE ||
-    category === ErrorCategory.SERVER
-  ) {
+  if (category === ErrorCategory.DATABASE || category === ErrorCategory.SERVER) {
     return ErrorSeverity.CRITICAL;
   }
-  if (
-    category === ErrorCategory.AUTHENTICATION ||
-    category === ErrorCategory.AUTHORIZATION
-  ) {
+  if (category === ErrorCategory.AUTHENTICATION || category === ErrorCategory.AUTHORIZATION) {
     return ErrorSeverity.ERROR;
   }
   if (category === ErrorCategory.VALIDATION) return ErrorSeverity.WARNING;
@@ -140,7 +143,7 @@ const determineSeverity = (
 const createUserMessage = (
   category: ErrorCategory,
   statusCode?: number,
-  originalMessage?: string
+  _originalMessage?: string,
 ): string => {
   const messages: Record<ErrorCategory, string> = {
     [ErrorCategory.VALIDATION]:
@@ -149,17 +152,13 @@ const createUserMessage = (
       'Unable to connect to the server. Please check your internet connection and try again.',
     [ErrorCategory.DATABASE]:
       'A database error occurred. Please try again or contact support if the problem persists.',
-    [ErrorCategory.AUTHENTICATION]:
-      'Authentication failed. Please log in again.',
-    [ErrorCategory.AUTHORIZATION]:
-      "You don't have permission to perform this action.",
+    [ErrorCategory.AUTHENTICATION]: 'Authentication failed. Please log in again.',
+    [ErrorCategory.AUTHORIZATION]: "You don't have permission to perform this action.",
     [ErrorCategory.NOT_FOUND]: 'The requested resource was not found.',
     [ErrorCategory.SERVER]:
       'A server error occurred. Our team has been notified. Please try again later.',
-    [ErrorCategory.CLIENT]:
-      'Something went wrong with your request. Please try again.',
-    [ErrorCategory.UNKNOWN]:
-      'An unexpected error occurred. Please try again or contact support.',
+    [ErrorCategory.CLIENT]: 'Something went wrong with your request. Please try again.',
+    [ErrorCategory.UNKNOWN]: 'An unexpected error occurred. Please try again or contact support.',
   };
 
   let baseMessage = messages[category];
@@ -169,8 +168,7 @@ const createUserMessage = (
     baseMessage = 'Too many requests. Please wait a moment and try again.';
   }
   if (statusCode === 503) {
-    baseMessage =
-      'The service is temporarily unavailable. Please try again in a few minutes.';
+    baseMessage = 'The service is temporarily unavailable. Please try again in a few minutes.';
   }
 
   return baseMessage;
@@ -179,21 +177,36 @@ const createUserMessage = (
 /**
  * Pure function to create structured AppError from any error
  */
-export const createAppError = (
-  error: any,
-  context?: Record<string, any>
-): AppError => {
+export const createAppError = (error: unknown, context?: Record<string, unknown>): AppError => {
   const statusCode = extractStatusCode(error);
   const category = categorizeError(error, statusCode);
   const severity = determineSeverity(category, statusCode);
 
-  const originalMessage =
-    error?.message ||
-    error?.data?.message ||
-    error?.statusMessage ||
-    'Unknown error';
+  // Extract error message with proper type checking
+  let originalMessage = 'Unknown error';
+  if (error && typeof error === 'object') {
+    if ('message' in error && typeof error.message === 'string') {
+      originalMessage = error.message;
+    } else if (
+      'data' in error &&
+      error.data &&
+      typeof error.data === 'object' &&
+      'message' in error.data &&
+      typeof error.data.message === 'string'
+    ) {
+      originalMessage = error.data.message;
+    } else if ('statusMessage' in error && typeof error.statusMessage === 'string') {
+      originalMessage = error.statusMessage;
+    }
+  }
 
   const userMessage = createUserMessage(category, statusCode, originalMessage);
+
+  // Extract stack trace safely
+  const stack =
+    error && typeof error === 'object' && 'stack' in error && typeof error.stack === 'string'
+      ? error.stack
+      : undefined;
 
   return {
     id: generateErrorId(),
@@ -205,7 +218,7 @@ export const createAppError = (
     timestamp: new Date(),
     context,
     originalError: error instanceof Error ? error : undefined,
-    stack: error?.stack,
+    stack,
   };
 };
 
@@ -255,15 +268,11 @@ export const useErrorHandler = () => {
    * Handle an error with options
    */
   const handleError = (
-    error: any,
+    error: unknown,
     options: ErrorHandlerOptions = {},
-    context?: Record<string, any>
+    context?: Record<string, unknown>,
   ): AppError => {
-    const {
-      showNotification = true,
-      logToConsole = true,
-      logToServer = false,
-    } = options;
+    const { showNotification = true, logToConsole = true, logToServer = false } = options;
 
     // Create structured error
     const appError = createAppError(error, context);
@@ -287,8 +296,7 @@ export const useErrorHandler = () => {
     // Log to server for critical errors
     if (
       logToServer &&
-      (appError.severity === ErrorSeverity.CRITICAL ||
-        appError.severity === ErrorSeverity.ERROR)
+      (appError.severity === ErrorSeverity.CRITICAL || appError.severity === ErrorSeverity.ERROR)
     ) {
       logErrorToServer(appError);
     }
@@ -302,7 +310,7 @@ export const useErrorHandler = () => {
   const handleAsync = async <T>(
     operation: () => Promise<T>,
     options: ErrorHandlerOptions = {},
-    context?: Record<string, any>
+    context?: Record<string, unknown>,
   ): Promise<{ data: T | null; error: AppError | null }> => {
     try {
       const data = await operation();
@@ -321,7 +329,7 @@ export const useErrorHandler = () => {
     maxRetries: number = 3,
     delayMs: number = 1000,
     options: ErrorHandlerOptions = {},
-    context?: Record<string, any>
+    context?: Record<string, unknown>,
   ): Promise<{ data: T | null; error: AppError | null }> => {
     let lastError: AppError | null = null;
 
@@ -339,7 +347,7 @@ export const useErrorHandler = () => {
         // Only retry if it's a retryable error and we have attempts left
         if (attempt < maxRetries && isRetryableError(lastError)) {
           // Exponential backoff
-          const delay = delayMs * Math.pow(2, attempt);
+          const delay = delayMs * 2 ** attempt;
           await new Promise((resolve) => setTimeout(resolve, delay));
           continue;
         }
@@ -435,8 +443,7 @@ const logErrorToServer = async (error: AppError) => {
           timestamp: error.timestamp,
           context: error.context,
           stack: error.stack,
-          userAgent:
-            typeof window !== 'undefined' ? window.navigator.userAgent : '',
+          userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : '',
           url: typeof window !== 'undefined' ? window.location.href : '',
         },
       });
@@ -452,7 +459,7 @@ const logErrorToServer = async (error: AppError) => {
  */
 export const createValidationError = (
   fields: Record<string, string>,
-  context?: Record<string, any>
+  context?: Record<string, unknown>,
 ): AppError => {
   return createAppError(
     {
@@ -462,7 +469,7 @@ export const createValidationError = (
     {
       ...context,
       validationErrors: fields,
-    }
+    },
   );
 };
 
@@ -471,14 +478,14 @@ export const createValidationError = (
  */
 export const createNetworkError = (
   message: string = 'Network request failed',
-  context?: Record<string, any>
+  context?: Record<string, unknown>,
 ): AppError => {
   return createAppError(
     {
       message,
       name: 'NetworkError',
     },
-    context
+    context,
   );
 };
 
@@ -487,13 +494,13 @@ export const createNetworkError = (
  */
 export const createDatabaseError = (
   message: string,
-  context?: Record<string, any>
+  context?: Record<string, unknown>,
 ): AppError => {
   return createAppError(
     {
       message: `Database error: ${message}`,
       statusCode: 500,
     },
-    context
+    context,
   );
 };

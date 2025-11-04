@@ -16,25 +16,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import clsx from 'clsx'
+import clsx from 'clsx';
+import { computed } from 'vue';
 
 interface CardEyebrowProps {
-  as?: string
-  decorate?: boolean
-  class?: string
+  as?: string;
+  decorate?: boolean;
+  class?: string;
 }
 
 const props = withDefaults(defineProps<CardEyebrowProps>(), {
   as: 'p',
   decorate: false,
-})
+});
 
 const eyebrowClasses = computed(() => {
   return clsx(
     props.class,
     'relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500',
     props.decorate && 'pl-3.5',
-  )
-})
+  );
+});
 </script>

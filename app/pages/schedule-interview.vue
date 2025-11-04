@@ -316,9 +316,7 @@ const videos = ref([
 ]);
 
 // Computed properties
-const watchedCount = computed(
-  () => videos.value.filter((v) => v.watched).length
-);
+const watchedCount = computed(() => videos.value.filter((v) => v.watched).length);
 const allVideosWatched = computed(() => videos.value.every((v) => v.watched));
 
 // Video tracking using Wistia API
@@ -333,14 +331,13 @@ onMounted(() => {
     // Track video completion
     videos.value.forEach((video, index) => {
       if (window.Wistia) {
-        window.Wistia.api(video.id, (videoApi: any) => {
+        window.Wistia.api(video.id, (videoApi: WistiaVideoApi) => {
           videoApi.bind('end', () => {
-            videos.value[index].watched = true;
-            // Save progress to localStorage
-            localStorage.setItem(
-              'sfg-training-progress',
-              JSON.stringify(videos.value)
-            );
+            if (videos.value[index]) {
+              videos.value[index].watched = true;
+              // Save progress to localStorage
+              localStorage.setItem('sfg-training-progress', JSON.stringify(videos.value));
+            }
           });
         });
       }
@@ -362,17 +359,22 @@ onMounted(() => {
 // Schedule interview function
 const scheduleInterview = () => {
   if (allVideosWatched.value) {
-    window.open(
-      'https://calendly.com/mowry-agency/symmetry-interview',
-      '_blank'
-    );
+    window.open('https://calendly.com/mowry-agency/symmetry-interview', '_blank');
   }
 };
 
 // Global type declaration for Wistia
+interface WistiaVideoApi {
+  bind(event: string, callback: () => void): void;
+}
+
+interface WistiaApi {
+  api(videoId: string, callback: (videoApi: WistiaVideoApi) => void): void;
+}
+
 declare global {
   interface Window {
-    Wistia: any;
+    Wistia: WistiaApi;
   }
 }
 </script>

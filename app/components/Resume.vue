@@ -17,10 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import BriefcaseIcon from './icons/BriefcaseIcon.vue';
-import ArrowDownIcon from './icons/ArrowDownIcon.vue';
-import Role from './Role.vue';
 import Button from './Button.vue';
+import ArrowDownIcon from './icons/ArrowDownIcon.vue';
+import BriefcaseIcon from './icons/BriefcaseIcon.vue';
+import Role from './Role.vue';
 
 const resume = [
   {

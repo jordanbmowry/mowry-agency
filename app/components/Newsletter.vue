@@ -26,6 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import MailIcon from './icons/MailIcon.vue';
 import Button from './Button.vue';
+import MailIcon from './icons/MailIcon.vue';
 </script>

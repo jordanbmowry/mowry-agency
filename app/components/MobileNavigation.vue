@@ -81,7 +81,7 @@ const [navListParent] = useAutoAnimate();
 
 <script lang="ts">
 // Icon components
-function CloseIcon(props: any) {
+function CloseIcon(props: Record<string, unknown>) {
   return h(
     'svg',
     {
@@ -102,7 +102,7 @@ function CloseIcon(props: any) {
   );
 }
 
-function ChevronDownIcon(props: any) {
+function ChevronDownIcon(props: Record<string, unknown>) {
   return h(
     'svg',
     {

@@ -24,13 +24,7 @@
 </template>
 
 <script setup lang="ts">
-const rotations = [
-  'rotate-2',
-  '-rotate-2',
-  'rotate-2',
-  'rotate-2',
-  '-rotate-2',
-];
+const rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2'];
 
 const images = [
   { src: '/images/photos/image-1.jpg', alt: 'Photo 1' },
@@ -40,7 +34,7 @@ const images = [
   { src: '/images/photos/image-5.jpg', alt: 'Photo 5' },
 ];
 
-const onImageError = (error: string | Event) => {
+const onImageError = (_error: string | Event) => {
   // Handle NuxtImg error - silently handle failed images
   // In production, this could be logged to an error tracking service
 };

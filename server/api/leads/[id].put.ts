@@ -41,21 +41,20 @@ export default defineEventHandler(async (event) => {
     if (transformedBody.weight && typeof transformedBody.weight === 'string') {
       transformedBody.weight = parseFloat(transformedBody.weight);
     }
-    if (
-      transformedBody.loan_amount &&
-      typeof transformedBody.loan_amount === 'string'
-    ) {
+    if (transformedBody.loan_amount && typeof transformedBody.loan_amount === 'string') {
       transformedBody.loan_amount = parseFloat(transformedBody.loan_amount);
     }
 
     // Validate the request body using Joi schema
     console.log('Validating data:', JSON.stringify(transformedBody, null, 2));
 
-    const { error: validationError, value: validatedData } =
-      leadUpdateValidationSchema.validate(transformedBody, {
+    const { error: validationError, value: validatedData } = leadUpdateValidationSchema.validate(
+      transformedBody,
+      {
         abortEarly: false,
         stripUnknown: true,
-      });
+      },
+    );
 
     if (validationError) {
       console.error('Joi validation error:', validationError.details);
@@ -89,10 +88,7 @@ export default defineEventHandler(async (event) => {
     if (updateError) {
       console.error('Error updating lead:', updateError);
       console.error('Detailed error:', JSON.stringify(updateError, null, 2));
-      console.error(
-        'Payload that caused error:',
-        JSON.stringify(validatedData, null, 2)
-      );
+      console.error('Payload that caused error:', JSON.stringify(validatedData, null, 2));
       throw createError({
         statusCode: 500,
         statusMessage: `Failed to update lead: ${updateError.message || updateError.details || 'Unknown error'}`,

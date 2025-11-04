@@ -608,20 +608,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
 import { useAutoAnimate } from '@formkit/auto-animate/vue';
 import { useLocalStorage } from '@vueuse/core';
-import MailIcon from './icons/MailIcon.vue';
-import MultiStepProgressBar from './MultiStepProgressBar.vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useStatesData } from '~/composables/useCitiesData';
 import { useErrorHandler } from '~/composables/useErrorHandler';
 import {
   calculateAge,
-  isValidAge,
-  getTodayInputFormat,
   getMaxBirthDate,
+  getTodayInputFormat,
+  isValidAge,
   isValidDateString,
 } from '~/utils/dateUtils';
+import MailIcon from './icons/MailIcon.vue';
+import MultiStepProgressBar from './MultiStepProgressBar.vue';
 
 // Auto-animate refs
 const [formParent] = useAutoAnimate();
@@ -661,7 +661,7 @@ const stateOptions = computed(() =>
   states.map((state) => ({
     label: state.displayName,
     value: state.code,
-  }))
+  })),
 );
 
 // Sex options for FormSelect
@@ -747,7 +747,7 @@ const isStep1Valid = computed(() => {
     'state',
   ];
   const hasRequiredFields = requiredFields.every(
-    (field) => (form[field as keyof typeof form] as string).trim() !== ''
+    (field) => (form[field as keyof typeof form] as string).trim() !== '',
   );
   const hasNoErrors = Object.entries(errors)
     .filter(([key]) =>
@@ -762,7 +762,7 @@ const isStep1Valid = computed(() => {
         'weight',
         'city',
         'state',
-      ].includes(key)
+      ].includes(key),
     )
     .every(([, error]) => error === '');
   return hasRequiredFields && hasNoErrors;
@@ -772,12 +772,10 @@ const isStep1Valid = computed(() => {
 const isStep2Valid = computed(() => {
   const hasHeightAndWeight = form.height !== '' && form.weight !== '';
   const hasHealthInfo = ['healthConditions', 'medications'].every(
-    (field) => (form[field as keyof typeof form] as string).trim() !== ''
+    (field) => (form[field as keyof typeof form] as string).trim() !== '',
   );
   const hasNoErrors = Object.entries(errors)
-    .filter(([key]) =>
-      ['height', 'weight', 'healthConditions', 'medications'].includes(key)
-    )
+    .filter(([key]) => ['height', 'weight', 'healthConditions', 'medications'].includes(key))
     .every(([, error]) => error === '');
   return hasHeightAndWeight && hasHealthInfo && hasNoErrors;
 });
@@ -814,17 +812,15 @@ const validateEmail = (email: string): string => {
 
 const validatePhone = (phone: string): string => {
   if (!phone.trim()) return 'Phone number is required';
-  const phoneRegex = /^[\+]?[1-9]?[\s\-\.\(\)]?[\d\s\-\.\(\)]{9,15}$/;
+  const phoneRegex = /^[+]?[1-9]?[\s\-.()]?[\d\s\-.()]{9,15}$/;
   if (!phoneRegex.test(phone)) return 'Please enter a valid phone number';
   return '';
 };
 
 const validateName = (name: string, fieldName: string): string => {
   if (!name.trim()) return `${fieldName} is required`;
-  if (name.trim().length < 2)
-    return `${fieldName} must be at least 2 characters`;
-  if (name.trim().length > 50)
-    return `${fieldName} must be less than 50 characters`;
+  if (name.trim().length < 2) return `${fieldName} must be at least 2 characters`;
+  if (name.trim().length > 50) return `${fieldName} must be less than 50 characters`;
   return '';
 };
 
@@ -874,8 +870,7 @@ const validateCoverageType = (coverageType: string): string => {
 const validateCity = (city: string): string => {
   if (!city.trim()) return 'City is required';
   if (city.trim().length < 2) return 'Please enter a valid city name';
-  if (city.trim().length > 50)
-    return 'City name must be less than 50 characters';
+  if (city.trim().length > 50) return 'City name must be less than 50 characters';
   return '';
 };
 
@@ -888,18 +883,16 @@ const validateSex = (sex: string): string => {
 const validateHeight = (height: string | number): string => {
   if (!height) return 'Height is required';
   const heightNum = typeof height === 'string' ? parseFloat(height) : height;
-  if (isNaN(heightNum)) return 'Please enter a valid height';
-  if (heightNum < 4.0 || heightNum > 7.0)
-    return 'Height must be between 4\'0" and 7\'0"';
+  if (Number.isNaN(heightNum)) return 'Please enter a valid height';
+  if (heightNum < 4.0 || heightNum > 7.0) return 'Height must be between 4\'0" and 7\'0"';
   return '';
 };
 
 const validateWeight = (weight: string | number): string => {
   if (!weight) return 'Weight is required';
   const weightNum = typeof weight === 'string' ? parseFloat(weight) : weight;
-  if (isNaN(weightNum)) return 'Please enter a valid weight';
-  if (weightNum < 50 || weightNum > 500)
-    return 'Weight must be between 50 and 500 pounds';
+  if (Number.isNaN(weightNum)) return 'Please enter a valid weight';
+  if (weightNum < 50 || weightNum > 500) return 'Weight must be between 50 and 500 pounds';
   return '';
 };
 
@@ -1013,7 +1006,9 @@ const validateAllFields = () => {
     'coverageType',
   ];
 
-  fieldsToValidate.forEach((field) => validateField(field));
+  fieldsToValidate.forEach((field) => {
+    validateField(field);
+  });
 
   return Object.values(errors).every((error) => error === '');
 };
@@ -1040,11 +1035,9 @@ const nextStep = () => {
           validateField(field as keyof typeof form);
         });
       } else if (currentStep.value === 2) {
-        ['height', 'weight', 'healthConditions', 'medications'].forEach(
-          (field) => {
-            validateField(field as keyof typeof form);
-          }
-        );
+        ['height', 'weight', 'healthConditions', 'medications'].forEach((field) => {
+          validateField(field as keyof typeof form);
+        });
       } else if (currentStep.value === 3) {
         ['coverageType'].forEach((field) => {
           validateField(field as keyof typeof form);
@@ -1112,7 +1105,7 @@ const handleSubmit = async () => {
         city: form.city,
         state: form.state,
       },
-    }
+    },
   );
 
   if (submitError) {
@@ -1128,8 +1121,7 @@ const handleSubmit = async () => {
     } else if (submitError.category === 'database') {
       errorType.value = 'database_error';
       errorMessage.value =
-        submitError.userMessage ||
-        'We encountered a technical issue processing your request.';
+        submitError.userMessage || 'We encountered a technical issue processing your request.';
     } else {
       errorType.value = 'general_error';
       errorMessage.value =
@@ -1141,13 +1133,14 @@ const handleSubmit = async () => {
 
   // Reset form and show success
   Object.keys(form).forEach((key) => {
+    const formKey = key as keyof typeof form;
     if (key === 'tcpaConsent' || key === 'emailMarketingConsent') {
-      (form as any)[key] = false;
+      (form[formKey] as boolean) = false;
     } else if (key === 'formVersion') {
       // Keep form version as is
       return;
     } else {
-      (form as any)[key] = '';
+      (form[formKey] as string) = '';
     }
   });
 

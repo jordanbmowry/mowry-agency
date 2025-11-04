@@ -12,12 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import Card from './Card.vue';
-import CardTitle from './CardTitle.vue';
-import CardEyebrow from './CardEyebrow.vue';
-import CardDescription from './CardDescription.vue';
-import CardCta from './CardCta.vue';
 import { formatDate } from '~/lib/formatDate';
+import Card from './Card.vue';
+import CardCta from './CardCta.vue';
+import CardDescription from './CardDescription.vue';
+import CardEyebrow from './CardEyebrow.vue';
+import CardTitle from './CardTitle.vue';
 
 interface Article {
   slug: string;

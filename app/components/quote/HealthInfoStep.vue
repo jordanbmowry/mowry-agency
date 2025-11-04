@@ -80,12 +80,9 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  QuoteFormData,
-  QuoteFormErrors,
-} from '~/composables/useQuoteForm';
 import FormInput from '~/components/form/FormInput.vue';
 import FormTextarea from '~/components/form/FormTextarea.vue';
+import type { QuoteFormData, QuoteFormErrors } from '~/composables/useQuoteForm';
 
 interface Props {
   form: QuoteFormData;
@@ -94,7 +91,5 @@ interface Props {
 
 defineProps<Props>();
 
-const emit = defineEmits<{
-  (e: 'validate', field: keyof QuoteFormErrors): void;
-}>();
+const emit = defineEmits<(e: 'validate', field: keyof QuoteFormErrors) => void>();
 </script>

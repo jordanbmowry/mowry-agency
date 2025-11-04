@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
+import clsx from 'clsx';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import clsx from 'clsx';
 
 interface Props {
   href: string;
@@ -29,7 +29,7 @@ const linkClasses = computed(() =>
     'relative block px-3 py-2 transition cursor-pointer',
     isActive.value
       ? 'text-teal-500 dark:text-teal-400'
-      : 'hover:text-teal-500 dark:hover:text-teal-400'
-  )
+      : 'hover:text-teal-500 dark:hover:text-teal-400',
+  ),
 );
 </script>

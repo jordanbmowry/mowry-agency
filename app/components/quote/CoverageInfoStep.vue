@@ -123,12 +123,9 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  QuoteFormData,
-  QuoteFormErrors,
-} from '~/composables/useQuoteForm';
 import FormSelect from '~/components/form/FormSelect.vue';
 import FormTextarea from '~/components/form/FormTextarea.vue';
+import type { QuoteFormData, QuoteFormErrors } from '~/composables/useQuoteForm';
 
 interface Props {
   form: QuoteFormData;
@@ -137,9 +134,7 @@ interface Props {
 
 defineProps<Props>();
 
-const emit = defineEmits<{
-  (e: 'validate', field: keyof QuoteFormErrors): void;
-}>();
+const emit = defineEmits<(e: 'validate', field: keyof QuoteFormErrors) => void>();
 
 const config = useRuntimeConfig();
 

@@ -38,10 +38,7 @@ export const quoteValidationSchema = Joi.object({
       const monthDiff = today.getMonth() - date.getMonth();
 
       let actualAge = age;
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < date.getDate())
-      ) {
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
         actualAge = age - 1;
       }
 
@@ -107,14 +104,7 @@ export const quoteValidationSchema = Joi.object({
 
   coverage_type: Joi.string()
     .required()
-    .valid(
-      'term-life',
-      'whole-life',
-      'iul',
-      'mortgage-protection',
-      'final-expense',
-      'not-sure'
-    )
+    .valid('term-life', 'whole-life', 'iul', 'mortgage-protection', 'final-expense', 'not-sure')
     .messages({
       'string.empty': 'Coverage type is required',
       'any.only': 'Please select a valid coverage type',
@@ -174,10 +164,7 @@ export const leadUpdateValidationSchema = Joi.object({
       const monthDiff = today.getMonth() - date.getMonth();
 
       let actualAge = age;
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < date.getDate())
-      ) {
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
         actualAge = age - 1;
       }
 
@@ -237,14 +224,7 @@ export const leadUpdateValidationSchema = Joi.object({
 
   coverage_type: Joi.string()
     .optional()
-    .valid(
-      'term-life',
-      'whole-life',
-      'iul',
-      'mortgage-protection',
-      'final-expense',
-      'not-sure'
-    )
+    .valid('term-life', 'whole-life', 'iul', 'mortgage-protection', 'final-expense', 'not-sure')
     .messages({
       'any.only': 'Please select a valid coverage type',
     }),
@@ -268,15 +248,10 @@ export const leadUpdateValidationSchema = Joi.object({
     'string.max': 'Message must be less than 1000 characters',
   }),
 
-  loan_amount: Joi.number()
-    .optional()
-    .allow(null)
-    .min(0)
-    .max(10000000)
-    .messages({
-      'number.min': 'Loan amount must be a positive number',
-      'number.max': 'Loan amount must be less than $10,000,000',
-    }),
+  loan_amount: Joi.number().optional().allow(null).min(0).max(10000000).messages({
+    'number.min': 'Loan amount must be a positive number',
+    'number.max': 'Loan amount must be less than $10,000,000',
+  }),
 });
 
 // Type definitions

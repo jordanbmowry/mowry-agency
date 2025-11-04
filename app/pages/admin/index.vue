@@ -106,23 +106,34 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from '~/types/database.types';
 import LeadsFilters from '~/components/admin/LeadsFilters.vue';
-import LeadsTable from '~/components/admin/LeadsTable.vue';
 import LeadsPagination from '~/components/admin/LeadsPagination.vue';
+import LeadsTable from '~/components/admin/LeadsTable.vue';
+import { useLeadsExport } from '~/composables/useLeadsExport';
 import { useLeadsFilters } from '~/composables/useLeadsFilters';
 import { usePagination } from '~/composables/usePagination';
-import { useLeadsExport } from '~/composables/useLeadsExport';
+import type { Database } from '~/types/database.types';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
+
+interface LeadsApiResponse {
+  success: boolean;
+  data: Lead[];
+  pagination: {
+    total: number;
+    totalPages: number;
+    currentPage: number;
+    itemsPerPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+  message?: string;
+}
 
 definePageMeta({
   middleware: ['admin'],
 });
 
-const supabase = useSupabaseClient();
-const leads = ref<Lead[]>([]);
-const loading = ref(true);
 const exporting = ref(false);
 const { exportLeadsToCSV } = useLeadsExport();
 
@@ -132,67 +143,65 @@ const pagination = usePagination({
   itemsPerPage: 10,
 });
 
-// Fetch leads with pagination and filters
-const fetchLeads = async () => {
-  try {
-    loading.value = true;
-
-    // Get total count with filters
-    let countQuery = supabase
-      .from('leads')
-      .select('*', { count: 'exact', head: true });
-    countQuery = filters.applyToQuery(countQuery);
-
-    const { count, error: countError } = await countQuery;
-    if (countError) {
-      throw countError;
-    }
-
-    pagination.setTotalCount(count || 0);
-
-    // Get paginated data with filters
-    let dataQuery = supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    dataQuery = filters.applyToQuery(dataQuery);
-
-    // Apply pagination
-    const { data, error } = await dataQuery.range(
-      pagination.offset.value,
-      pagination.offset.value + pagination.itemsPerPage.value - 1
-    );
-
-    if (error) {
-      throw error;
-    }
-
-    leads.value = data || [];
-  } catch (e) {
-    // Error handling - consider using a toast notification instead
-    throw e;
-  } finally {
-    loading.value = false;
-  }
-};
-
 // Initialize filters composable
 const filters = useLeadsFilters({
   onFilterChange: () => {
     // Reset to first page when filters change
     pagination.goToPage(1);
-    fetchLeads();
   },
 });
 
-// Watch pagination changes
+// Create reactive query parameters for the API
+const queryParams = computed(() => ({
+  page: pagination.currentPage.value,
+  limit: pagination.itemsPerPage.value,
+  search: filters.filterState.value.searchTerm,
+  status: filters.filterState.value.statusFilter,
+  dateFrom: filters.filterState.value.dateFrom,
+  dateTo: filters.filterState.value.dateTo,
+}));
+
+// Create reactive cache key for proper invalidation
+const cacheKey = computed(
+  () =>
+    `leads-${pagination.currentPage.value}-${filters.filterState.value.searchTerm}-${filters.filterState.value.statusFilter}-${filters.filterState.value.dateFrom}-${filters.filterState.value.dateTo}`,
+);
+
+// Use Nuxt 4.x useFetch for SSR-safe data fetching
+const {
+  data: leadsResponse,
+  pending: loading,
+  error: fetchError,
+  refresh: refreshLeads,
+} = await useFetch<LeadsApiResponse>('/api/leads', {
+  key: cacheKey,
+  query: queryParams,
+  server: true,
+  lazy: true,
+});
+
+// Extract leads and pagination info from API response
+const leads = computed(() => leadsResponse.value?.data || []);
+const apiPagination = computed(() => leadsResponse.value?.pagination);
+
+// Update local pagination when API pagination changes
+watch(
+  apiPagination,
+  (newPagination) => {
+    if (newPagination) {
+      pagination.setTotalCount(newPagination.total);
+    }
+  },
+  { immediate: true },
+);
+
+// Watch pagination changes to refresh data
 watch(
   () => pagination.currentPage.value,
-  (newPage, oldPage) => {
-    fetchLeads();
+  () => {
+    // Data will automatically refresh due to reactive query params
   },
-  { immediate: false }
+  { immediate: false },
 );
 
 // Clear filters handler
@@ -204,12 +213,13 @@ const handleClearFilters = () => {
 // Sign out handler
 const handleSignOut = async () => {
   try {
+    const supabase = useSupabaseClient();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     navigateTo('/admin/login');
   } catch (e) {
+    console.error('Sign out error:', e);
     // Error handling - consider using a toast notification
-    throw e;
   }
 };
 
@@ -220,17 +230,12 @@ const handleExportCSV = async () => {
     await exportLeadsToCSV(leads.value);
 
     // Refresh the leads to update exported_to_csv status
-    await fetchLeads();
+    await refreshLeads();
   } catch (e) {
+    console.error('Export error:', e);
     // Error handling - consider using a toast notification
-    throw e;
   } finally {
     exporting.value = false;
   }
 };
-
-// Fetch leads on mount
-onMounted(() => {
-  fetchLeads();
-});
 </script>

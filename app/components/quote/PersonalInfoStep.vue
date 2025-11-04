@@ -103,12 +103,9 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  QuoteFormData,
-  QuoteFormErrors,
-} from '~/composables/useQuoteForm';
 import FormInput from '~/components/form/FormInput.vue';
 import FormSelect from '~/components/form/FormSelect.vue';
+import type { QuoteFormData, QuoteFormErrors } from '~/composables/useQuoteForm';
 
 interface Props {
   form: QuoteFormData;
@@ -118,9 +115,7 @@ interface Props {
 
 defineProps<Props>();
 
-const emit = defineEmits<{
-  (e: 'validate', field: keyof QuoteFormErrors): void;
-}>();
+const emit = defineEmits<(e: 'validate', field: keyof QuoteFormErrors) => void>();
 
 const sexOptions = [
   { value: 'male', label: 'Male' },

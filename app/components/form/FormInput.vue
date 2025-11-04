@@ -47,56 +47,56 @@
 import { computed } from 'vue';
 
 interface Props {
-	id: string;
-	label: string;
-	modelValue: string | number;
-	type?:
-		| 'text'
-		| 'email'
-		| 'password'
-		| 'number'
-		| 'tel'
-		| 'url'
-		| 'search'
-		| 'date'
-		| 'time'
-		| 'datetime-local';
-	placeholder?: string;
-	required?: boolean;
-	disabled?: boolean;
-	readonly?: boolean;
-	error?: string;
-	helpText?: string;
-	min?: string | number;
-	max?: string | number;
-	step?: string | number;
-	autocomplete?: string;
-	inputClass?: string;
+  id: string;
+  label: string;
+  modelValue: string | number;
+  type?:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'tel'
+    | 'url'
+    | 'search'
+    | 'date'
+    | 'time'
+    | 'datetime-local';
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  error?: string;
+  helpText?: string;
+  min?: string | number;
+  max?: string | number;
+  step?: string | number;
+  autocomplete?: string;
+  inputClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	type: 'text',
-	placeholder: '',
-	required: false,
-	disabled: false,
-	readonly: false,
-	error: '',
-	helpText: '',
-	inputClass: '',
+  type: 'text',
+  placeholder: '',
+  required: false,
+  disabled: false,
+  readonly: false,
+  error: '',
+  helpText: '',
+  inputClass: '',
 });
 
 const emit = defineEmits<{
-	(e: 'update:modelValue', value: string | number): void;
-	(e: 'blur'): void;
+  (e: 'update:modelValue', value: string | number): void;
+  (e: 'blur'): void;
 }>();
 
 const inputValue = computed({
-	get: () => props.modelValue,
-	set: (value: string | number) => emit('update:modelValue', value),
+  get: () => props.modelValue,
+  set: (value: string | number) => emit('update:modelValue', value),
 });
 
 const handleBlur = () => {
-	emit('blur');
+  emit('blur');
 };
 </script>
 

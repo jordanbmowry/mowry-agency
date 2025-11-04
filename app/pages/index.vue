@@ -335,9 +335,9 @@
 
 <script setup lang="ts">
 import { useAutoAnimate } from '@formkit/auto-animate/vue';
-import Container from '~/components/Container.vue';
-import Button from '~/components/Button.vue';
 import Article from '~/components/Article.vue';
+import Button from '~/components/Button.vue';
+import Container from '~/components/Container.vue';
 import QuoteForm from '~/components/QuoteForm.vue';
 
 // Auto-animate refs
@@ -350,13 +350,10 @@ const [servicesGridParent] = useAutoAnimate();
 const { data: articles } = await useAsyncData('home-articles', async () => {
   try {
     // Query all articles and filter for insurance articles client-side
-    const result = await queryCollection('articles')
-      .order('date', 'DESC')
-      .all();
+    const result = await queryCollection('articles').order('date', 'DESC').all();
 
     // Filter to only show articles authored by Mowry Agency (insurance content)
-    const filtered =
-      result?.filter((article) => article.author === 'Mowry Agency') || [];
+    const filtered = result?.filter((article) => article.author === 'Mowry Agency') || [];
 
     // Limit to 4 articles for the home page
     return filtered.slice(0, 4);
@@ -388,8 +385,7 @@ useSchemaOrg([
     '@type': 'InsuranceAgency',
     name: 'Mowry Agency',
     url: 'https://mowryagency.com',
-    description:
-      'Comprehensive life insurance solutions and financial protection services',
+    description: 'Comprehensive life insurance solutions and financial protection services',
     serviceArea: 'United States',
     insurance: [
       'Life Insurance',

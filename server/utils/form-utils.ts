@@ -1,5 +1,5 @@
 // Pure utility functions for form validation and processing
-import { calculateAge, isValidAge, createTimestamp } from '~/utils/dateUtils';
+import { calculateAge, createTimestamp, isValidAge } from '~/utils/dateUtils';
 
 // Email validation
 export const validateEmail = (email: string): boolean => {
@@ -9,7 +9,7 @@ export const validateEmail = (email: string): boolean => {
 
 // Phone validation
 export const validatePhone = (phone: string): boolean => {
-  const phoneRegex = /^\+?[\d\s\-\(\)\.]{10,}$/;
+  const phoneRegex = /^\+?[\d\s\-().]{10,}$/;
   return phoneRegex.test(phone);
 };
 
@@ -49,10 +49,7 @@ export const decodeEmailToken = (token: string): string => {
 
 // Client information extraction for TCPA compliance
 export const extractClientInfo = (event: any) => ({
-  ip:
-    getHeaders(event)['x-forwarded-for'] ||
-    getHeaders(event)['x-real-ip'] ||
-    'unknown',
+  ip: getHeaders(event)['x-forwarded-for'] || getHeaders(event)['x-real-ip'] || 'unknown',
   userAgent: getHeader(event, 'user-agent') || '',
   timestamp: createTimestamp(),
 });
@@ -102,9 +99,7 @@ export type AsyncResult<T> = {
 };
 
 // Safe async wrapper
-export const safeAsync = async <T>(
-  operation: () => Promise<T>
-): Promise<AsyncResult<T>> => {
+export const safeAsync = async <T>(operation: () => Promise<T>): Promise<AsyncResult<T>> => {
   try {
     const data = await operation();
     return { success: true, data };
@@ -122,13 +117,9 @@ export const safeAsync = async <T>(
 export const transformLeadData = (formData: any, clientInfo?: any) => {
   // Convert height and weight from strings to numbers
   const height =
-    typeof formData.height === 'string'
-      ? parseFloat(formData.height)
-      : formData.height;
+    typeof formData.height === 'string' ? parseFloat(formData.height) : formData.height;
   const weight =
-    typeof formData.weight === 'string'
-      ? parseFloat(formData.weight)
-      : formData.weight;
+    typeof formData.weight === 'string' ? parseFloat(formData.weight) : formData.weight;
 
   return {
     first_name: formData.firstName,
@@ -159,10 +150,7 @@ export const transformLeadData = (formData: any, clientInfo?: any) => {
 };
 
 // Create unsubscribe link
-export const createUnsubscribeLink = (
-  email: string,
-  baseUrl: string
-): string => {
+export const createUnsubscribeLink = (email: string, baseUrl: string): string => {
   const token = encodeEmailToken(email);
   return `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`;
 };

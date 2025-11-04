@@ -266,14 +266,8 @@ const submitApplication = async () => {
 
     // Add form fields
     Object.keys(form.value).forEach((key) => {
-      if (
-        key !== 'resume' &&
-        form.value[key as keyof typeof form.value] !== null
-      ) {
-        formData.append(
-          key,
-          String(form.value[key as keyof typeof form.value])
-        );
+      if (key !== 'resume' && form.value[key as keyof typeof form.value] !== null) {
+        formData.append(key, String(form.value[key as keyof typeof form.value]));
       }
     });
 

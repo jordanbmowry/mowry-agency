@@ -165,12 +165,12 @@
 </template>
 
 <script setup lang="ts">
-import SimpleLayout from '~/components/SimpleLayout.vue';
-import Container from '~/components/Container.vue';
 import Button from '~/components/Button.vue';
-import SocialLink from '~/components/SocialLink.vue';
-import MailIcon from '~/components/icons/MailIcon.vue';
+import Container from '~/components/Container.vue';
 import LinkedInIcon from '~/components/icons/LinkedInIcon.vue';
+import MailIcon from '~/components/icons/MailIcon.vue';
+import SimpleLayout from '~/components/SimpleLayout.vue';
+import SocialLink from '~/components/SocialLink.vue';
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();

@@ -73,8 +73,7 @@ const getRuntimeBusinessInfo = (): BusinessInfo => {
       email: $config.public.agencyEmail || 'info@mowryagency.com',
       phone: $config.public.agencyPhone || '(930) 322-1962',
       website: $config.public.agencyWebsite || 'https://mowryagency.com',
-      address:
-        $config.public.agencyAddress || '[Your business or mailing address]',
+      address: $config.public.agencyAddress || '[Your business or mailing address]',
     };
   } else {
     // Server-side fallback - actual values will be provided by the server components
@@ -85,8 +84,7 @@ const getRuntimeBusinessInfo = (): BusinessInfo => {
       email: process.env.AGENCY_EMAIL || 'info@mowryagency.com',
       phone: process.env.AGENCY_PHONE || '(930) 322-1962',
       website: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
-      address:
-        process.env.AGENCY_ADDRESS || '[Your business or mailing address]',
+      address: process.env.AGENCY_ADDRESS || '[Your business or mailing address]',
     };
   }
 };
@@ -103,24 +101,22 @@ export const BUSINESS_INFO: BusinessInfo = {
 };
 
 // Helper functions for formatting license information
-export const formatLicenseDisplay = (
-  format: 'short' | 'full' = 'short'
-): string => {
+export const formatLicenseDisplay = (format: 'short' | 'full' = 'short'): string => {
   if (format === 'short') {
-    return STATE_LICENSES.map(
-      (license) => `${license.stateCode} (#${license.licenseNumber})`
-    ).join(', ');
+    return STATE_LICENSES.map((license) => `${license.stateCode} (#${license.licenseNumber})`).join(
+      ', ',
+    );
   } else {
-    return STATE_LICENSES.map(
-      (license) => `${license.state} (#${license.licenseNumber})`
-    ).join(', ');
+    return STATE_LICENSES.map((license) => `${license.state} (#${license.licenseNumber})`).join(
+      ', ',
+    );
   }
 };
 
 export const formatLicenseList = (): string => {
-  return STATE_LICENSES.map(
-    (license) => `${license.stateCode} (#${license.licenseNumber})`
-  ).join(', ');
+  return STATE_LICENSES.map((license) => `${license.stateCode} (#${license.licenseNumber})`).join(
+    ', ',
+  );
 };
 
 // Get licensed state codes only
@@ -131,7 +127,7 @@ export const getLicensedStateCodes = (): string[] => {
 // Check if licensed in a specific state
 export const isLicensedInState = (stateCode: string): boolean => {
   return STATE_LICENSES.some(
-    (license) => license.stateCode.toLowerCase() === stateCode.toLowerCase()
+    (license) => license.stateCode.toLowerCase() === stateCode.toLowerCase(),
   );
 };
 

@@ -108,9 +108,9 @@
 </template>
 
 <script setup lang="ts">
-import SimpleLayout from '~/components/SimpleLayout.vue';
-import Container from '~/components/Container.vue';
 import Button from '~/components/Button.vue';
+import Container from '~/components/Container.vue';
+import SimpleLayout from '~/components/SimpleLayout.vue';
 
 // Get runtime config for agency contact info
 const config = useRuntimeConfig();

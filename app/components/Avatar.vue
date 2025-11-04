@@ -37,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import clsx from 'clsx';
+import { computed } from 'vue';
 
 interface Props {
   large?: boolean;
@@ -50,14 +50,12 @@ const props = withDefaults(defineProps<Props>(), {
   className: '',
 });
 
-const avatarClasses = computed(() =>
-  clsx(props.className, 'pointer-events-auto cursor-pointer')
-);
+const avatarClasses = computed(() => clsx(props.className, 'pointer-events-auto cursor-pointer'));
 
 const imageClasses = computed(() =>
   clsx(
     'rounded-full bg-zinc-100 object-cover dark:bg-zinc-800',
-    props.large ? 'h-16 w-16' : 'h-9 w-9'
-  )
+    props.large ? 'h-16 w-16' : 'h-9 w-9',
+  ),
 );
 </script>

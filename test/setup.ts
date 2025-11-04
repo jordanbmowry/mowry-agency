@@ -1,5 +1,5 @@
-import { vi, beforeEach } from 'vitest';
 import { config } from '@vue/test-utils';
+import { beforeEach, vi } from 'vitest';
 import { ref } from 'vue';
 
 // Set test environment variables
@@ -15,16 +15,12 @@ vi.stubGlobal('$fetch', mockFetch);
 const mockSupabaseClient = {
   from: vi.fn(() => ({
     insert: vi.fn(() => ({
-      select: vi.fn(() =>
-        Promise.resolve({ data: { id: 'test-id' }, error: null })
-      ),
+      select: vi.fn(() => Promise.resolve({ data: { id: 'test-id' }, error: null })),
     })),
     select: vi.fn(() => Promise.resolve({ data: [], error: null })),
   })),
   auth: {
-    getUser: vi.fn(() =>
-      Promise.resolve({ data: { user: null }, error: null })
-    ),
+    getUser: vi.fn(() => Promise.resolve({ data: { user: null }, error: null })),
   },
 };
 
@@ -74,7 +70,7 @@ vi.mock('#app', () => ({
     isHydrating: false,
     runWithContext: vi.fn((fn) => fn()),
   })),
-  useState: vi.fn((key, init) => ref(init ? init() : undefined)),
+  useState: vi.fn((_key, init) => ref(init ? init() : undefined)),
   useCookie: vi.fn(() => ref(undefined)),
   useRequestHeaders: vi.fn(() => ({})),
   useRequestEvent: vi.fn(() => ({})),
@@ -100,12 +96,12 @@ vi.mock('#imports', () => ({
   useRouter: vi.fn(() => ({ push: vi.fn() })),
   useColorMode: vi.fn(() => ref('light')),
   useNuxtApp: vi.fn(() => ({ $colorMode: ref('light') })),
-  useState: vi.fn((key, init) => ref(init ? init() : undefined)),
+  useState: vi.fn((_key, init) => ref(init ? init() : undefined)),
   $fetch: mockFetch,
 }));
 
 // Suppress Vue warnings in tests
-const originalWarn = console.warn;
+const _originalWarn = console.warn;
 beforeEach(() => {
   console.warn = vi.fn();
 });

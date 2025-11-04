@@ -34,7 +34,7 @@
 const { $colorMode } = useNuxtApp();
 
 function toggleTheme() {
-	// Toggle between light and dark mode only
-	$colorMode.preference = $colorMode.value === 'dark' ? 'light' : 'dark';
+  // Toggle between light and dark mode only
+  $colorMode.preference = $colorMode.value === 'dark' ? 'light' : 'dark';
 }
 </script>

@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { ref, computed, readonly } from 'vue';
+import { computed, readonly, ref } from 'vue';
 import type { QuoteFormData } from './useQuoteForm';
 
 /**
@@ -64,10 +64,7 @@ const sharedValidators = {
       const monthDiff = today.getMonth() - date.getMonth();
 
       let actualAge = age;
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < date.getDate())
-      ) {
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
         actualAge = age - 1;
       }
 
@@ -140,39 +137,24 @@ const sharedValidators = {
   // Database: coverage_type: string | null
   coverageType: Joi.string()
     .required()
-    .valid(
-      'term-life',
-      'whole-life',
-      'iul',
-      'mortgage-protection',
-      'final-expense',
-      'not-sure'
-    )
+    .valid('term-life', 'whole-life', 'iul', 'mortgage-protection', 'final-expense', 'not-sure')
     .messages({
       'string.empty': 'Coverage type is required',
       'any.only': 'Please select a valid coverage type',
     }),
 
   // Database: loan_amount: number | null (optional)
-  loanAmount: Joi.number()
-    .optional()
-    .allow(null)
-    .min(0)
-    .max(10000000)
-    .messages({
-      'number.base': 'Loan amount must be a number',
-      'number.min': 'Loan amount cannot be negative',
-      'number.max': 'Loan amount must be less than $10,000,000',
-    }),
+  loanAmount: Joi.number().optional().allow(null).min(0).max(10000000).messages({
+    'number.base': 'Loan amount must be a number',
+    'number.min': 'Loan amount cannot be negative',
+    'number.max': 'Loan amount must be less than $10,000,000',
+  }),
 
   // Database: status: string (default 'new')
-  status: Joi.string()
-    .required()
-    .valid('new', 'in_progress', 'contacted', 'closed')
-    .messages({
-      'string.empty': 'Status is required',
-      'any.only': 'Please select a valid status',
-    }),
+  status: Joi.string().required().valid('new', 'in_progress', 'contacted', 'closed').messages({
+    'string.empty': 'Status is required',
+    'any.only': 'Please select a valid status',
+  }),
 
   // Database: tcpa_consent: boolean (required)
   tcpaConsent: Joi.boolean().valid(true).required().messages({
@@ -238,13 +220,9 @@ export const leadEditValidationSchema = Joi.object({
   health_conditions: Joi.string().optional().allow('', null).max(500).messages({
     'string.max': 'Health conditions must be less than 500 characters',
   }),
-  current_medications: Joi.string()
-    .optional()
-    .allow('', null)
-    .max(500)
-    .messages({
-      'string.max': 'Medications must be less than 500 characters',
-    }),
+  current_medications: Joi.string().optional().allow('', null).max(500).messages({
+    'string.max': 'Medications must be less than 500 characters',
+  }),
   loan_amount: sharedValidators.loanAmount,
   agent_notes: sharedValidators.agentNotes,
   message: sharedValidators.message,
@@ -301,9 +279,7 @@ export const useQuoteFormValidation = () => {
   };
 
   // Validate entire form
-  const validateForm = (
-    data: QuoteFormData
-  ): { isValid: boolean; errors: ValidationErrors } => {
+  const validateForm = (data: QuoteFormData): { isValid: boolean; errors: ValidationErrors } => {
     isValidating.value = true;
     const newErrors: ValidationErrors = {};
 
@@ -384,9 +360,7 @@ export const useLeadEditValidation = () => {
   };
 
   // Validate entire form
-  const validateForm = (
-    data: LeadEditFormData
-  ): { isValid: boolean; errors: ValidationErrors } => {
+  const validateForm = (data: LeadEditFormData): { isValid: boolean; errors: ValidationErrors } => {
     isValidating.value = true;
     const newErrors: ValidationErrors = {};
 

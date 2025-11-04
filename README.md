@@ -386,6 +386,116 @@ The database contains exactly **6 tables**:
 
 For detailed database documentation, migration guides, and setup instructions, see the [mowry_leads_database repository](https://github.com/jordanbmowry/mowry_leads_database).
 
+## 📡 Data Fetching Patterns
+
+This project implements **Nuxt 4.x best practices** for data fetching, combining SSR-optimized patterns with real-time capabilities.
+
+### Core Strategy
+
+**Two complementary patterns:**
+
+1. **Nuxt Native Patterns** (`useAsyncData`, `useLazyFetch`) - SSR-optimized, cached data fetching
+2. **Supabase Composables** (`useSupabaseClient`) - Complex real-time interactions
+
+### When to Use Each Pattern
+
+**✅ Nuxt Native Patterns:**
+- Simple CRUD operations with automatic caching
+- SSR/SEO important pages (landing pages, dashboards)
+- Automatic loading states and error handling
+- Pagination and filtering with reactive cache keys
+
+**✅ Supabase Direct:**
+- Complex filtering and real-time subscriptions
+- File uploads and transactions
+- Fine-grained control over data fetching
+
+### Implementation Examples
+
+#### SSR-Optimized Single Record Fetching
+
+```typescript
+// pages/admin/[id].vue
+const leadId = route.params.id as string;
+
+const {
+  data: leadResponse,
+  pending,
+  error: fetchError,
+  refresh,
+} = await useLazyFetch<LeadApiResponse>(`/api/leads/${leadId}`, {
+  key: `lead-${leadId}`,
+  server: true,
+});
+
+// Template-safe data with optional chaining
+const data = ref<Lead | null>(null);
+watch(leadResponse, (newResponse) => {
+  if (newResponse?.success && newResponse.data) {
+    data.value = newResponse.data;
+  }
+}, { immediate: true });
+```
+
+#### Reactive Cache Keys for Filtering
+
+```typescript
+// pages/admin/index.vue
+const cacheKey = computed(() => 
+  `leads-${filters.search}-${filters.status}-${currentPage.value}`
+);
+
+const {
+  data: apiResponse,
+  refresh
+} = await useLazyFetch<LeadsApiResponse>('/api/leads', {
+  key: cacheKey,           // Auto-invalidates when filters change
+  query: buildQueryParams, // Reactive query parameters
+  server: true,
+  lazy: true,
+});
+```
+
+#### Type-Safe API Responses
+
+```typescript
+// Always define proper interfaces
+interface LeadApiResponse {
+  success: boolean;
+  data: Lead;
+  message?: string;
+}
+
+interface LeadsApiResponse {
+  success: boolean;
+  data: Lead[];
+  pagination: {
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+}
+```
+
+### Best Practices
+
+**✅ DO:**
+- Use reactive cache keys for automatic invalidation
+- Define TypeScript interfaces for all API responses
+- Use optional chaining (`?.`) in templates for nullable data
+- Handle errors centrally with user-friendly messages
+- Debounce search inputs to prevent excessive API calls
+
+**❌ DON'T:**
+- Fetch data in `onMounted` when Nuxt composables can handle it
+- Use static cache keys that never invalidate
+- Access data properties directly without optional chaining
+- Ignore loading states and error handling
+- Make API calls on every keystroke without debouncing
+
+For complete data fetching patterns and advanced examples, see the [GitHub Copilot Instructions](.github/copilot-instructions.md#data-fetching-patterns).
+
 ## 📝 Available Scripts
 
 ```bash

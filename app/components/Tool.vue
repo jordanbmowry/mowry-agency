@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import Card from './Card.vue';
-import CardTitle from './CardTitle.vue';
 import CardDescription from './CardDescription.vue';
+import CardTitle from './CardTitle.vue';
 
 interface ToolProps {
   title: string;

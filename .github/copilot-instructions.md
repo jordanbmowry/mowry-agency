@@ -784,6 +784,271 @@ type Lead = Database['public']['Tables']['leads']['Row'];
 3. **Testing**: Use `pnpm run db:status` to verify database connectivity
 4. **Local Development**: Use `pnpm run db:start` to start local database`
 
+## Data Fetching Patterns
+
+### **Nuxt 4.x Best Practices**
+
+This project implements **Nuxt 4.x data fetching best practices** using a hybrid approach that combines Nuxt's built-in composables with the Supabase Nuxt module for optimal performance and developer experience.
+
+#### **Core Data Fetching Strategy**
+
+We use **two complementary patterns** based on the use case:
+
+1. **Nuxt Native Patterns** (`useAsyncData`, `useLazyFetch`) - For SSR-optimized, cached data fetching
+2. **Supabase Composables** (`useSupabaseClient`) - For complex real-time interactions
+
+#### **When to Use Each Pattern**
+
+**✅ Use Nuxt Native Patterns When:**
+- Simple data fetching with standard CRUD operations
+- SSR/Hydration is important for SEO and performance
+- Automatic caching benefits the user experience
+- Loading states need to be managed automatically
+- Server-side pre-rendering is required
+
+**✅ Use Supabase Composables When:**
+- Complex filtering and pagination logic is required
+- Real-time updates with Supabase subscriptions
+- File uploads or complex transactions are involved
+- Fine-grained control over data fetching is needed
+- Immediate user interactions require instant feedback
+
+#### **Nuxt Native Pattern - Single Record Fetching**
+
+```typescript
+// pages/admin/[id].vue - SSR-optimized single record fetching
+const leadId = route.params.id as string;
+
+// Use Nuxt's useLazyFetch for proper data fetching
+const {
+  data: leadResponse,
+  pending,
+  error: fetchError,
+  refresh,
+} = await useLazyFetch<LeadApiResponse>(`/api/leads/${leadId}`, {
+  key: `lead-${leadId}`,
+  server: true,
+});
+
+// Create a writable ref for lead data
+const data = ref<Lead | null>(null);
+
+// Watch for changes in the API response and update local data
+watch(
+  leadResponse,
+  (newResponse) => {
+    if (newResponse?.success && newResponse.data) {
+      data.value = newResponse.data;
+    }
+  },
+  { immediate: true },
+);
+
+// Convert fetchError to string for template
+const error = computed(() => {
+  if (fetchError.value) {
+    return typeof fetchError.value === 'string' ? fetchError.value : 'Failed to load lead';
+  }
+  return null;
+});
+```
+
+#### **Nuxt Native Pattern - Dashboard Statistics**
+
+```typescript
+// pages/index.vue - SSR-optimized dashboard
+interface DashboardApiResponse {
+  success: boolean;
+  data: DashboardStats;
+}
+
+const {
+  data: statsResponse,
+  error: statsError,
+  status: statsStatus,
+  refresh: refreshStats
+} = await useAsyncData<DashboardApiResponse>('dashboard-stats', async () => {
+  const response = await $fetch<DashboardApiResponse>('/api/dashboard/stats');
+  return response;
+});
+
+// Extract reactive data
+const stats = computed(() => statsResponse.value?.data || defaultStats);
+const loading = computed(() => statsStatus.value === 'pending');
+```
+
+#### **Nuxt Native Pattern - Paginated Data with Filters**
+
+```typescript
+// pages/admin/index.vue - Reactive cache keys for filtering
+const {
+  filters,
+  currentPage,
+  buildCacheKey,
+  buildQueryParams,
+} = useLeadManagementNuxt();
+
+const {
+  data: apiResponse,
+  error,
+  status: fetchStatus,
+  refresh
+} = await useLazyFetch<LeadsApiResponse>('/api/leads', {
+  key: buildCacheKey,           // Reactive cache key
+  query: buildQueryParams,      // Reactive query params
+  server: true,
+  lazy: true,
+  transform: (data: unknown): LeadsApiResponse => {
+    return data as LeadsApiResponse;
+  }
+});
+
+// Extract reactive data
+const leads = computed(() => apiResponse.value?.data || []);
+const loading = computed(() => fetchStatus.value === 'pending');
+```
+
+#### **Supabase Direct Pattern - Complex Operations**
+
+```typescript
+// composables/useLeadManagement.ts - Fine-grained control
+export const useLeadManagement = (): UseLeadManagementReturn => {
+  const supabase = useSupabaseClient<Database>();
+
+  // Reactive state management
+  const leads = ref<Lead[]>([]);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
+
+  const fetchLeads = async (): Promise<void> => {
+    try {
+      loading.value = true;
+      error.value = null;
+
+      // Complex query building with filters
+      let query = supabase.from('leads').select('*');
+      query = applyFiltersToQuery(query, filters);
+
+      const { data, error: fetchError } = await query;
+      if (fetchError) throw fetchError;
+
+      // Immutable state update
+      leads.value = data || [];
+    } catch (err) {
+      error.value = handleError(err);
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  // Real-time subscriptions
+  const setupRealtimeSubscription = () => {
+    return supabase
+      .channel('leads_changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'leads'
+      }, (payload) => {
+        handleRealtimeUpdate(payload);
+      })
+      .subscribe();
+  };
+
+  return {
+    // Read-only state
+    leads: readonly(leads),
+    loading: readonly(loading),
+    error: readonly(error),
+
+    // Methods
+    fetchLeads,
+    setupRealtimeSubscription,
+  };
+};
+```
+
+#### **Best Practices for Data Fetching**
+
+**✅ DO:**
+- Use reactive cache keys for automatic invalidation
+- Implement proper TypeScript interfaces for API responses
+- Use `useLazyFetch` for non-blocking data fetching
+- Debounce search inputs to prevent excessive API calls
+- Handle errors centrally with proper user feedback
+- Use `transform` option for type-safe data transformation
+
+**❌ DON'T:**
+- Use static cache keys that never invalidate
+- Fetch data in `onMounted` when Nuxt composables can handle it
+- Ignore loading states and error handling
+- Make API calls on every keystroke without debouncing
+- Use `any` types for API responses
+
+#### **API Response Type Safety**
+
+```typescript
+// Define comprehensive API response interfaces
+interface LeadApiResponse {
+  success: boolean;
+  data: Lead;
+  message?: string;
+}
+
+interface LeadsApiResponse {
+  success: boolean;
+  data: Lead[];
+  pagination: {
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+}
+
+interface DashboardApiResponse {
+  success: boolean;
+  data: DashboardStats;
+}
+
+// Use these types in data fetching patterns
+const { data } = await useLazyFetch<LeadApiResponse>(`/api/leads/${id}`);
+```
+
+#### **Error Handling in Data Fetching**
+
+```typescript
+// Convert fetch errors to user-friendly format
+const error = computed(() => {
+  if (fetchError.value) {
+    return typeof fetchError.value === 'string' 
+      ? fetchError.value 
+      : 'Failed to load data';
+  }
+  return null;
+});
+
+// Use error handler composable for consistent error management
+const { handleAsync } = useErrorHandler();
+
+const saveData = async () => {
+  const { data: response, error: saveError } = await handleAsync(
+    async () => {
+      const result = await fetch('/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData.value),
+      });
+      
+      if (!result.ok) throw new Error('Failed to save');
+      return await result.json();
+    },
+    { showNotification: true, logToConsole: true },
+    { operation: 'saveData' },
+  );
+};
+```
+
 ### API Route Patterns
 
 ```typescript
@@ -1573,6 +1838,10 @@ export const useLeadsFilters = () => {
 8. **Debounce User Input**: Prevent excessive API calls
 9. **Error Boundaries**: Handle errors at appropriate levels
 10. **TCPA Compliance**: Track all consent metadata
+11. **Use Nuxt 4.x Data Fetching**: Leverage `useAsyncData` and `useLazyFetch` for SSR-optimized data
+12. **Reactive Cache Keys**: Use computed cache keys for automatic invalidation
+13. **Type-Safe API Responses**: Always define proper interfaces for API data
+14. **Template Safety**: Use optional chaining (`?.`) for nullable data access
 
 ### DON'T ❌
 
@@ -1586,6 +1855,45 @@ export const useLeadsFilters = () => {
 8. **No Nested Ternaries**: Use computed properties or helper functions
 9. **No Large Components**: Break into smaller, focused components
 10. **No Unvalidated Input**: Always validate on client AND server
+11. **No onMounted Data Fetching**: Use Nuxt composables instead of manual `onMounted` calls
+12. **No Static Cache Keys**: Avoid cache keys that never invalidate
+13. **No Untyped API Responses**: Always define proper interfaces for API data
+14. **No Direct Property Access**: Use optional chaining for nullable template data
+
+### **Data Fetching Best Practices**
+
+```typescript
+// ✅ GOOD: Use Nuxt native patterns for simple data fetching
+const { data, error, status } = await useAsyncData('leads', () =>
+  $fetch('/api/leads')
+);
+
+// ✅ GOOD: Reactive cache keys for filtering
+const cacheKey = computed(() => `leads-${filters.search}-${filters.status}`);
+
+// ✅ GOOD: Type-safe API operations
+interface LeadApiResponse {
+  success: boolean;
+  data: Lead;
+  message?: string;
+}
+
+const { data } = await useLazyFetch<LeadApiResponse>(`/api/leads/${id}`);
+
+// ✅ GOOD: Template safety with optional chaining
+{{ data?.first_name }} {{ data?.last_name }}
+
+// ❌ BAD: Manual data fetching in onMounted
+onMounted(async () => {
+  const data = await $fetch('/api/leads'); // Use useAsyncData instead
+});
+
+// ❌ BAD: Unsafe template access
+{{ data.first_name }} // Use data?.first_name
+
+// ❌ BAD: Untyped API responses
+const data = await $fetch('/api/leads'); // Define proper interface
+```
 
 Remember: Every change should maintain professional agency standards, optimal performance, and seamless user experience while leveraging Nuxt.js best practices for full-stack development with functional programming paradigms.
 

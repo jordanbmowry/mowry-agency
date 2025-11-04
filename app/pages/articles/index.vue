@@ -33,8 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import SimpleLayout from '~/components/SimpleLayout.vue';
 import ArticleListItem from '~/components/ArticleListItem.vue';
+import SimpleLayout from '~/components/SimpleLayout.vue';
 
 // Set page metadata
 useSeoMeta({
@@ -61,8 +61,7 @@ useSchemaOrg([
   {
     '@type': 'Blog',
     name: 'Mowry Agency Insurance Education Center',
-    description:
-      'Educational articles about life insurance and family financial protection',
+    description: 'Educational articles about life insurance and family financial protection',
     url: 'https://mowryagency.com/articles',
     publisher: {
       '@type': 'Organization',
@@ -77,7 +76,5 @@ const {
   data: articles,
   pending,
   error,
-} = await useAsyncData('articles', () =>
-  queryCollection('articles').order('date', 'DESC').all()
-);
+} = await useAsyncData('articles', () => queryCollection('articles').order('date', 'DESC').all());
 </script>

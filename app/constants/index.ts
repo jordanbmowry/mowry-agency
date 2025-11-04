@@ -84,8 +84,7 @@ export const FORM_FIELDS = Object.freeze({
       "Please list all current medications including dosages if known. If none, please write 'None'.",
     required: true,
     rows: 3,
-    helpText:
-      'Include prescription medications, over-the-counter drugs, and supplements',
+    helpText: 'Include prescription medications, over-the-counter drugs, and supplements',
   },
   MESSAGE: {
     id: 'message',
@@ -104,13 +103,7 @@ export const FORM_FIELDS = Object.freeze({
 export const FORM_SECTIONS = Object.freeze({
   PERSONAL_INFO: {
     title: 'Personal Information',
-    fields: [
-      'FIRST_NAME',
-      'LAST_NAME',
-      'EMAIL',
-      'PHONE',
-      'DATE_OF_BIRTH',
-    ] as const,
+    fields: ['FIRST_NAME', 'LAST_NAME', 'EMAIL', 'PHONE', 'DATE_OF_BIRTH'] as const,
   },
   INSURANCE_INFO: {
     title: 'Insurance Information',
@@ -129,7 +122,7 @@ export const FORM_SECTIONS = Object.freeze({
 // Validation patterns
 export const VALIDATION_PATTERNS = Object.freeze({
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  PHONE: /^\+?[\d\s\-\(\)\.]+$/,
+  PHONE: /^\+?[\d\s\-().]+$/,
   NAME: /^[a-zA-Z\s\-']{2,}$/,
 } as const);
 
@@ -138,8 +131,7 @@ export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: (fieldName: string) => `${fieldName} is required`,
   EMAIL_INVALID: 'Please enter a valid email address',
   PHONE_INVALID: 'Please enter a valid phone number',
-  NAME_TOO_SHORT: (fieldName: string) =>
-    `${fieldName} must be at least 2 characters`,
+  NAME_TOO_SHORT: (fieldName: string) => `${fieldName} must be at least 2 characters`,
   AGE_REQUIREMENT: 'You must be at least 18 years old',
   INVALID_COVERAGE_TYPE: 'Please select a valid coverage type',
 } as const);
@@ -176,8 +168,7 @@ export const UI_CONFIG = Object.freeze({
 } as const);
 
 // Functional helper to get field configuration
-export const getFieldConfig = (fieldName: keyof typeof FORM_FIELDS) =>
-  FORM_FIELDS[fieldName];
+export const getFieldConfig = (fieldName: keyof typeof FORM_FIELDS) => FORM_FIELDS[fieldName];
 
 // Functional helper to get section fields
 export const getSectionFields = (sectionName: keyof typeof FORM_SECTIONS) =>

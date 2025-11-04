@@ -7,14 +7,9 @@ export const useLeadsExport = () => {
 
   const leadsToCSVRow = (lead: Lead): string[] => {
     // Function to format health conditions for specific fields
-    const hasHealthCondition = (
-      condition: string | null,
-      target: string
-    ): string => {
+    const _hasHealthCondition = (_condition: string | null, target: string): string => {
       if (!lead.health_conditions) return '';
-      return lead.health_conditions.toLowerCase().includes(target.toLowerCase())
-        ? '1'
-        : '0';
+      return lead.health_conditions.toLowerCase().includes(target.toLowerCase()) ? '1' : '0';
     };
 
     // Calculate age from date of birth
@@ -76,79 +71,68 @@ export const useLeadsExport = () => {
   };
 
   const exportLeadsToCSV = async (leads: Lead[]) => {
-    try {
-      // CSV header - matching the sample format with specific spacing
-      const headers = [
-        'Salutation',
-        'First Name',
-        'MI',
-        'Last Name',
-        'Street Address',
-        'City',
-        'State',
-        'County',
-        'Zip',
-        'Birth Date',
-        'Sex',
-        'Cell Phone',
-        'Home Phone',
-        'Work Phone',
-        'Email',
-        'Spouse',
-        'Form Filled By',
-        'Pref.Contact Method',
-        'Loan Amount',
-        'Height',
-        'Weight',
-        'High BP/Chol.?',
-        'Heart Problems?',
-        'Diabetes?',
-        'CO-Name',
-        'CO-Birth Date',
-        'CO-Age Years',
-        'Lender',
-        'Age_Years',
-      ];
+    // CSV header - matching the sample format with specific spacing
+    const headers = [
+      'Salutation',
+      'First Name',
+      'MI',
+      'Last Name',
+      'Street Address',
+      'City',
+      'State',
+      'County',
+      'Zip',
+      'Birth Date',
+      'Sex',
+      'Cell Phone',
+      'Home Phone',
+      'Work Phone',
+      'Email',
+      'Spouse',
+      'Form Filled By',
+      'Pref.Contact Method',
+      'Loan Amount',
+      'Height',
+      'Weight',
+      'High BP/Chol.?',
+      'Heart Problems?',
+      'Diabetes?',
+      'CO-Name',
+      'CO-Birth Date',
+      'CO-Age Years',
+      'Lender',
+      'Age_Years',
+    ];
 
-      // CSV rows - without quotes around values
-      const rows = leads.map((lead) => leadsToCSVRow(lead));
+    // CSV rows - without quotes around values
+    const rows = leads.map((lead) => leadsToCSVRow(lead));
 
-      // Combine headers and rows - using commas without spaces to match sample
-      const csvContent = [
-        headers.join(','),
-        ...rows.map((row) => row.join(',')),
-      ].join('\n');
+    // Combine headers and rows - using commas without spaces to match sample
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
 
-      // Create blob and download
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
 
-      link.setAttribute('href', url);
-      link.setAttribute(
-        'download',
-        `leads_${new Date().toISOString().split('T')[0]}.csv`
-      );
-      link.style.visibility = 'hidden';
+    link.setAttribute('href', url);
+    link.setAttribute('download', `leads_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
 
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-      // Mark leads as exported
-      const leadIds = leads.map((lead) => lead.id);
-      const { error } = await supabase
-        .from('leads')
-        .update({ exported_to_csv: true } as any)
-        .in('id', leadIds);
+    // Mark leads as exported
+    const leadIds = leads.map((lead) => lead.id);
+    const { error } = await supabase
+      .from('leads')
+      .update({ exported_to_csv: true })
+      .in('id', leadIds);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      return { success: true };
-    } catch (error) {
-      // Re-throw error for caller to handle
-      throw error;
-    }
+    return { success: true };
   };
 
   return {

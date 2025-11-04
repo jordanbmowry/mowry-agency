@@ -338,10 +338,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Database } from '~/types/database.types';
-import { useStatesData } from '~/composables/useCitiesData';
 import { useDebounceFn, watchDebounced } from '@vueuse/core';
+import { useStatesData } from '~/composables/useCitiesData';
 import { useLeadEditValidation } from '~/composables/useJoiValidation';
+import type { Database } from '~/types/database.types';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
@@ -426,7 +426,7 @@ const isValidating = ref(false);
 const feetDecimalToInches = (feetDecimal: string): number => {
   if (!feetDecimal) return 0;
   const num = parseFloat(feetDecimal);
-  if (isNaN(num)) return 0;
+  if (Number.isNaN(num)) return 0;
 
   const feet = Math.floor(num);
   const inches = Math.round((num - feet) * 10); // Get decimal part as inches (0.8 = 8 inches)
@@ -452,7 +452,7 @@ const initializeForm = () => {
     loan_amount: props.lead.loan_amount || null,
     status: props.lead.status || 'new',
     health_conditions: props.lead.health_conditions || '',
-    current_medications: (props.lead as any).current_medications || '',
+    current_medications: props.lead.current_medications || '',
   };
 
   form.value = { ...leadData };
@@ -470,7 +470,7 @@ watch(
   () => {
     initializeForm();
   },
-  { deep: true }
+  { deep: true },
 );
 
 // Debounced validation for all form fields
@@ -494,15 +494,14 @@ watchDebounced(
       validateFieldDebounced(fieldName);
     });
   },
-  { debounce: 300, maxWait: 1000, deep: true }
+  { debounce: 300, maxWait: 1000, deep: true },
 );
 
 // Computed properties
 const isDirty = computed(() => {
   return Object.keys(form.value).some((key) => {
     const formValue = form.value[key as keyof typeof form.value];
-    const originalValue =
-      originalData.value[key as keyof typeof originalData.value];
+    const originalValue = originalData.value[key as keyof typeof originalData.value];
     return formValue !== originalValue;
   });
 });
@@ -536,16 +535,12 @@ const coverageTypeOptions = [
 // Use the states data composable for state options
 const { states } = useStatesData();
 const stateOptions = computed(() =>
-  states.map((state) => ({ label: state.displayName, value: state.code }))
+  states.map((state) => ({ label: state.displayName, value: state.code })),
 );
 
 // Date constraints
 const today = new Date();
-const maxDate = new Date(
-  today.getFullYear() - 18,
-  today.getMonth(),
-  today.getDate()
-)
+const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
   .toISOString()
   .split('T')[0];
 
@@ -556,7 +551,7 @@ const validateFieldImmediate = (fieldName: string) => {
   const value = form.value[fieldName as keyof typeof form.value];
 
   // Prepare data for Joi validation (convert to proper types)
-  let dataToValidate: any = value;
+  let dataToValidate: string | number | null = value;
 
   if (fieldName === 'height' || fieldName === 'weight') {
     // Convert string to number for Joi validation
@@ -601,7 +596,9 @@ const validateAllFields = () => {
     'status',
   ];
 
-  fieldsToValidate.forEach((field) => validateField(field));
+  fieldsToValidate.forEach((field) => {
+    validateField(field);
+  });
 
   // Also validate loan_amount if it has a value
   if (form.value.loan_amount !== null && form.value.loan_amount !== undefined) {
@@ -636,7 +633,25 @@ const handleSubmit = async () => {
     submitError.value = null;
 
     // Prepare the update data - convert form data to database format
-    const updateData: any = {
+    interface UpdateData {
+      first_name: string;
+      last_name: string;
+      email: string;
+      phone: string;
+      date_of_birth: string;
+      sex: string;
+      city: string;
+      state: string;
+      height: number | null;
+      weight: number | null;
+      coverage_type: string;
+      health_conditions: string;
+      current_medications: string;
+      status: string;
+      loan_amount: number | null;
+    }
+
+    const updateData: UpdateData = {
       first_name: form.value.first_name,
       last_name: form.value.last_name,
       email: form.value.email,
@@ -651,9 +666,7 @@ const handleSubmit = async () => {
       health_conditions: form.value.health_conditions,
       current_medications: form.value.current_medications,
       status: form.value.status,
-      loan_amount: form.value.loan_amount
-        ? parseFloat(String(form.value.loan_amount))
-        : null,
+      loan_amount: form.value.loan_amount ? parseFloat(String(form.value.loan_amount)) : null,
     };
 
     const response = await fetch(`/api/leads/${props.lead.id}`, {
@@ -690,9 +703,7 @@ const handleSubmit = async () => {
     console.error('Error updating lead:', error);
     submitStatus.value = 'error';
     submitError.value =
-      error instanceof Error
-        ? error.message
-        : 'Failed to update lead information';
+      error instanceof Error ? error.message : 'Failed to update lead information';
   } finally {
     isSubmitting.value = false;
   }

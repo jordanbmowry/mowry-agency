@@ -48,19 +48,17 @@
 </template>
 
 <script setup>
+import Appearance from '~/components/Appearance.vue';
 import SimpleLayout from '~/components/SimpleLayout.vue';
 import SpeakingSection from '~/components/SpeakingSection.vue';
-import Appearance from '~/components/Appearance.vue';
 
 definePageMeta({
   title: 'Speaking',
-  description:
-    "I've spoken at events all around the world and been interviewed for many podcasts.",
+  description: "I've spoken at events all around the world and been interviewed for many podcasts.",
 });
 
 useSeoMeta({
   title: 'Speaking',
-  description:
-    "I've spoken at events all around the world and been interviewed for many podcasts.",
+  description: "I've spoken at events all around the world and been interviewed for many podcasts.",
 });
 </script>

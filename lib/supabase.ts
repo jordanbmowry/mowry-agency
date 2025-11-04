@@ -1,6 +1,9 @@
 // Database types for type safety
 // Note: With @nuxtjs/supabase module, use useSupabaseClient() composable instead of importing a client
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../app/types/database.types';
+
 export interface Lead {
   id?: string;
   created_at?: string;
@@ -31,20 +34,17 @@ export interface Lead {
 export const supabaseOperations = {
   // Create a new lead
   async createLead(
-    supabase: any,
-    leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>
+    supabase: SupabaseClient<Database>,
+    leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>,
   ) {
-    const { data, error } = await supabase
-      .from('leads')
-      .insert([leadData])
-      .select();
+    const { data, error } = await supabase.from('leads').insert([leadData]).select();
 
     if (error) throw error;
     return data[0];
   },
 
   // Get all leads
-  async getLeads(supabase: any) {
+  async getLeads(supabase: SupabaseClient<Database>) {
     const { data, error } = await supabase
       .from('leads')
       .select('*')
@@ -56,19 +56,15 @@ export const supabaseOperations = {
 
   // Update lead status
   async updateLeadStatus(
-    supabase: any,
+    supabase: SupabaseClient<Database>,
     id: string,
     status: Lead['status'],
-    notes?: string
+    notes?: string,
   ) {
     const updateData: Partial<Lead> = { status };
     if (notes) updateData.agent_notes = notes;
 
-    const { data, error } = await supabase
-      .from('leads')
-      .update(updateData)
-      .eq('id', id)
-      .select();
+    const { data, error } = await supabase.from('leads').update(updateData).eq('id', id).select();
 
     if (error) throw error;
     return data[0];

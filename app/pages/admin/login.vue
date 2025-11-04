@@ -63,7 +63,9 @@
 </template>
 
 <script setup lang="ts">
-const supabase = useSupabaseClient<any>();
+import type { Database } from '~/types/database.types';
+
+const supabase = useSupabaseClient<Database>();
 const router = useRouter();
 
 const email = ref('');
@@ -76,12 +78,10 @@ async function handleLogin() {
     loading.value = true;
     error.value = '';
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword(
-      {
-        email: email.value,
-        password: password.value,
-      }
-    );
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    });
 
     if (signInError) throw signInError;
 
@@ -98,8 +98,8 @@ async function handleLogin() {
 
     // Redirect to admin dashboard
     router.push('/admin');
-  } catch (e: any) {
-    error.value = e.message || 'An error occurred during sign in';
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : 'An error occurred during sign in';
   } finally {
     loading.value = false;
   }

@@ -21,7 +21,7 @@
     <USelect
       :model-value="modelValue.statusFilter"
       @update:model-value="
-        (value: any) => $emit('update:statusFilter', value || '')
+        (value: unknown) => $emit('update:statusFilter', (value as string) || '')
       "
       :options="statusOptions"
       color="neutral"

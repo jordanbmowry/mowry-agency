@@ -1,14 +1,8 @@
-import { reactive, computed, ref } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import {
-  calculateAge,
-  isValidAge,
-  getTodayInputFormat,
-  isValidDateString,
-} from '~/utils/dateUtils';
-
+import { computed, reactive, ref } from 'vue';
 // Import Joi validation for DRY principle and database consistency
 import { useQuoteFormValidation } from '~/composables/useJoiValidation';
+import { getTodayInputFormat } from '~/utils/dateUtils';
 
 // Types
 export interface QuoteFormData {
@@ -50,7 +44,7 @@ export interface QuoteFormErrors {
 // Pure function to check if required fields are filled for a step
 const hasRequiredFieldsForStep = (
   form: QuoteFormData,
-  fields: (keyof QuoteFormData)[]
+  fields: (keyof QuoteFormData)[],
 ): boolean => {
   return fields.every((field) => {
     const value = form[field];
@@ -62,7 +56,7 @@ const hasRequiredFieldsForStep = (
 // Pure function to check if errors exist for given fields
 const hasNoErrorsForFields = (
   errors: QuoteFormErrors,
-  fields: (keyof QuoteFormErrors)[]
+  fields: (keyof QuoteFormErrors)[],
 ): boolean => {
   return fields.every((field) => errors[field] === '');
 };
@@ -144,7 +138,7 @@ export const useQuoteForm = () => {
       hasRequiredFieldsForStep(form, step1Fields) &&
       hasNoErrorsForFields(
         errors,
-        step1Fields.filter((f) => f in errors) as (keyof QuoteFormErrors)[]
+        step1Fields.filter((f) => f in errors) as (keyof QuoteFormErrors)[],
       )
     );
   });
@@ -168,9 +162,7 @@ export const useQuoteForm = () => {
   const step3Fields: (keyof QuoteFormData)[] = ['coverageType', 'tcpaConsent'];
 
   const isStep3Valid = computed(() => {
-    return (
-      hasRequiredFieldsForStep(form, step3Fields) && errors.coverageType === ''
-    );
+    return hasRequiredFieldsForStep(form, step3Fields) && errors.coverageType === '';
   });
 
   // Current step validation
@@ -256,22 +248,39 @@ export const useQuoteForm = () => {
       submittedUserName.value = form.firstName;
 
       return { success: true, data: response };
-    } catch (err: any) {
+    } catch (err: unknown) {
       error.value = true;
       submitted.value = false;
 
+      // Type narrowing for error handling
+      const errorData = err && typeof err === 'object' && 'data' in err ? err.data : null;
+
       // Handle duplicate email gracefully
-      if (err.data?.isDuplicate) {
+      if (
+        errorData &&
+        typeof errorData === 'object' &&
+        'isDuplicate' in errorData &&
+        errorData.isDuplicate
+      ) {
         errorType.value = 'duplicate_email';
         errorMessage.value =
-          err.data.message || "We're Already Working on Your Quote!";
-        return { success: true, isDuplicate: true, data: err.data };
+          errorData &&
+          typeof errorData === 'object' &&
+          'message' in errorData &&
+          typeof errorData.message === 'string'
+            ? errorData.message
+            : "We're Already Working on Your Quote!";
+        return { success: true, isDuplicate: true, data: errorData };
       }
 
       errorType.value = 'submission_error';
       errorMessage.value =
-        err.data?.message ||
-        'There was an error submitting your request. Please try again or call us directly.';
+        errorData &&
+        typeof errorData === 'object' &&
+        'message' in errorData &&
+        typeof errorData.message === 'string'
+          ? errorData.message
+          : 'There was an error submitting your request. Please try again or call us directly.';
 
       return { success: false, error: errorMessage.value };
     } finally {
