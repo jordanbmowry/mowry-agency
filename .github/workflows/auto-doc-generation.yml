@@ -1,0 +1,269 @@
+name: Auto Documentation Generation
+
+# ============================================================================
+# AI-Powered Documentation Generation Workflow
+# ============================================================================
+#
+# This workflow uses the strategic-doc-writer-agent to automatically generate
+# JSDoc documentation for JavaScript, TypeScript, and Vue files in pull requests.
+#
+# Repository: https://github.com/jordanbmowry/strategic-doc-writer-agent
+# Documentation: docs/AUTO_DOC_GENERATION_SETUP.md
+#
+# Features:
+# - Functional programming-based agent using GPT-4o-mini (cost-optimized)
+# - Daily cost limit ($10/day) and per-document limit ($1/doc)
+# - Generates comprehensive JSDoc comments
+# - Auto-commits documentation changes to PR branch
+# - Skips draft PRs and dependabot updates
+#
+# Required Secrets:
+# - OPENAI_API_KEY: OpenAI API key for GPT models
+# - GITHUB_TOKEN: Automatically provided by GitHub Actions
+# ============================================================================
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**/*.ts'
+      - '**/*.vue'
+      - '**/*.js'
+      - 'app/**'
+      - 'server/**'
+      - 'composables/**'
+      # Exclude test files, config files, and generated types
+      - '!**/*.test.ts'
+      - '!**/*.test.js'
+      - '!**/*.spec.ts'
+      - '!**/*.spec.js'
+      - '!**/*.config.ts'
+      - '!**/*.config.js'
+      - '!**/database.types.ts'
+      - '!pnpm-lock.yaml'
+
+# Permissions needed for committing docs and PR comments
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  AGENT_VERSION: 'v2.0.0'
+
+jobs:
+  generate-docs:
+    name: Generate JSDoc Documentation
+    runs-on: ubuntu-latest
+
+    # Skip if PR is draft or from dependabot
+    if: |
+      github.event.pull_request.draft == false &&
+      github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Checkout Doc Writer Agent
+        uses: actions/checkout@v4
+        with:
+          repository: jordanbmowry/strategic-doc-writer-agent
+          ref: ${{ env.AGENT_VERSION }}
+          path: .doc-writer-agent
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Agent Dependencies
+        working-directory: .doc-writer-agent
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure Doc Writer Settings
+        working-directory: .doc-writer-agent
+        run: |
+          cat > .env << EOF
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          # Documentation settings - quick preset for CI/CD
+          DOC_PRESET=quick
+          DOC_MODEL=gpt-4o-mini
+          DOC_MAX_TOKENS=2000
+          DOC_TEMPERATURE=0.3
+
+          # Cost limits (conservative for CI/CD)
+          DOC_DAILY_COST_LIMIT=10.0
+          DOC_PER_DOC_COST_LIMIT=1.0
+          DOC_COST_WARNING_THRESHOLD=5.0
+          EOF
+
+      - name: Get Changed Files
+        id: changed-files
+        run: |
+          # Get list of changed JS/TS/Vue files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | \
+            grep -E '\.(js|ts|vue)$' | \
+            grep -v -E '\.(test|spec)\.(js|ts)$' | \
+            grep -v -E '\.(config)\.(js|ts)$' | \
+            grep -v 'database.types.ts' | \
+            grep -v 'node_modules' || true)
+
+          # Count files
+          FILE_COUNT=$(echo "$CHANGED_FILES" | grep -c . || echo "0")
+
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+
+          echo "📝 Found $FILE_COUNT files to document"
+
+      - name: Generate Documentation
+        if: steps.changed-files.outputs.file_count > 0
+        working-directory: .doc-writer-agent
+        env:
+          FILES_TO_DOCUMENT: ${{ steps.changed-files.outputs.changed_files }}
+        run: |
+          echo "🚀 Starting documentation generation..."
+          echo "📊 Files to process: ${{ steps.changed-files.outputs.file_count }}"
+
+          # Run the CI documentation generation
+          node src/ci-doc-writer.js
+
+          echo "✅ Documentation generation complete!"
+
+      - name: Configure Git
+        if: steps.changed-files.outputs.file_count > 0
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Commit Documentation Changes
+        if: steps.changed-files.outputs.file_count > 0
+        run: |
+          # Check if there are any changes to commit
+          if git diff --quiet; then
+            echo "ℹ️ No documentation changes to commit"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "📝 Committing documentation changes..."
+            git add -A
+            git commit -m "docs: 📝 Auto-generate JSDoc documentation [skip ci]
+
+            Generated by strategic-doc-writer-agent
+            Files processed: ${{ steps.changed-files.outputs.file_count }}
+            Preset: quick (gpt-4o-mini)
+
+            Co-authored-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Documentation committed and pushed!"
+          fi
+
+      - name: Post PR Comment
+        if: steps.changed-files.outputs.file_count > 0
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fileCount = ${{ steps.changed-files.outputs.file_count }};
+            const hasChanges = '${{ steps.commit-docs.outputs.has_changes }}' === 'true';
+
+            let body = `## 📝 Auto Documentation Generation\n\n`;
+            body += `**Files Analyzed:** ${fileCount}\n`;
+            body += `**Preset Used:** \`quick\` (gpt-4o-mini)\n`;
+            body += `**Status:** ${hasChanges ? '✅ Documentation generated and committed' : 'ℹ️ No changes needed'}\n\n`;
+
+            if (hasChanges) {
+              body += `### Changes Made\n\n`;
+              body += `JSDoc comments have been automatically generated for the following:\n`;
+              body += `- Functions and methods\n`;
+              body += `- Class declarations\n`;
+              body += `- Module exports\n`;
+              body += `- Type definitions\n\n`;
+              body += `### Next Steps\n\n`;
+              body += `1. Review the generated documentation\n`;
+              body += `2. Make manual adjustments if needed\n`;
+              body += `3. Commit any refinements\n\n`;
+            } else {
+              body += `All files already have adequate documentation or no documentation was needed.\n\n`;
+            }
+
+            body += `---\n`;
+            body += `*Generated by [strategic-doc-writer-agent](https://github.com/jordanbmowry/strategic-doc-writer-agent)*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Cost Summary
+        if: always()
+        working-directory: .doc-writer-agent
+        run: |
+          echo "💰 Cost Summary"
+          echo "=============="
+          echo "See agent logs above for detailed cost breakdown"
+          echo ""
+          echo "Cost limits configured:"
+          echo "  Daily limit: \$10.00"
+          echo "  Per-doc limit: \$1.00"
+
+  check-documentation-quality:
+    name: Check Documentation Quality
+    needs: generate-docs
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for undocumented exports
+        run: |
+          echo "🔍 Checking for undocumented exports..."
+
+          # Simple check for exported functions without JSDoc
+          UNDOCUMENTED=$(grep -r "export\s\+\(function\|const\|class\)" app server --include="*.ts" --include="*.js" --include="*.vue" | \
+            grep -v "\.test\." | \
+            grep -v "\.spec\." | \
+            grep -v "/\*\*" || true)
+
+          if [ -n "$UNDOCUMENTED" ]; then
+            echo "⚠️ Found potentially undocumented exports:"
+            echo "$UNDOCUMENTED"
+            echo ""
+            echo "ℹ️ Note: This is a basic check. Review the PR for full context."
+          else
+            echo "✅ No obviously undocumented exports found!"
+          fi
+
+      - name: Documentation Coverage Report
+        run: |
+          echo "📊 Documentation Coverage Summary"
+          echo "=================================="
+          echo ""
+          echo "Total JS/TS/Vue files: $(find app server -type f \( -name "*.js" -o -name "*.ts" -o -name "*.vue" \) | wc -l)"
+          echo "Files with JSDoc: $(grep -r "/\*\*" app server --include="*.ts" --include="*.js" --include="*.vue" | cut -d: -f1 | sort -u | wc -l)"
+          echo ""
+          echo "✅ Documentation quality check complete!"

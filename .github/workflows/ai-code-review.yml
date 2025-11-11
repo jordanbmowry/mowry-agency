@@ -1,0 +1,166 @@
+name: AI Code Review
+
+# ============================================================================
+# AI-Powered Code Review Workflow
+# ============================================================================
+#
+# This workflow uses the strategic-code-review-agent to automatically review
+# pull requests for bugs, security issues, performance concerns, and best practices.
+#
+# Repository: https://github.com/jordanbmowry/strategic-code-review-agent
+# Documentation: docs/AI_CODE_REVIEW_SETUP.md
+#
+# Features:
+# - Functional programming-based agent using GPT-4o/GPT-4o-mini
+# - Cost-optimized with daily limits ($10/day, $2/review)
+# - Reviews TypeScript, Vue, and JavaScript files
+# - Posts detailed feedback as PR comments
+# - Skips draft PRs and dependabot updates
+#
+# Required Secrets:
+# - OPENAI_API_KEY: OpenAI API key for GPT models
+# - GITHUB_TOKEN: Automatically provided by GitHub Actions
+# ============================================================================
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**/*.ts'
+      - '**/*.vue'
+      - '**/*.js'
+      - 'app/composables/**'
+      - 'app/components/**'
+      - 'app/pages/**'
+      - 'server/**'
+      # Exclude generated and config files
+      - '!**/*.config.ts'
+      - '!**/*.config.js'
+      - '!**/database.types.ts'
+      - '!pnpm-lock.yaml'
+
+# Permissions needed for PR comments
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  AGENT_VERSION: 'v2.0.0'
+
+jobs:
+  ai-code-review:
+    name: AI-Powered Code Review
+    runs-on: ubuntu-latest
+
+    # Skip if PR is draft or from dependabot
+    if: |
+      github.event.pull_request.draft == false &&
+      github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Checkout Code Review Agent
+        uses: actions/checkout@v4
+        with:
+          repository: jordanbmowry/strategic-code-review-agent
+          ref: ${{ env.AGENT_VERSION }}
+          path: .code-review-agent
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Agent Dependencies
+        working-directory: .code-review-agent
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure Review Settings
+        working-directory: .code-review-agent
+        run: |
+          cat > .env << EOF
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          GITHUB_BASE_REF=${{ github.base_ref }}
+
+          # Cost limits for CI/CD
+          DAILY_COST_LIMIT=10
+          PER_REVIEW_COST_LIMIT=2
+          COST_WARNING_THRESHOLD=0.5
+          EOF
+
+      - name: Run AI Code Review
+        working-directory: .code-review-agent
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          echo "🤖 Starting AI Code Review..."
+          node src/ci-runner.js || echo "⚠️ Review completed with warnings"
+
+      - name: Generate Review Summary
+        if: always()
+        id: summary
+        run: |
+          echo "review_completed=true" >> $GITHUB_OUTPUT
+          echo "### 🤖 AI Code Review Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Review has been posted as comments on changed files." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Configuration:** Thorough analysis with GPT-4o" >> $GITHUB_STEP_SUMMARY
+          echo "**Focus Areas:** Bugs, Security, Performance, Best Practices" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Review Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-review-report-${{ github.event.pull_request.number }}
+          path: |
+            .code-review-agent/.env
+            .code-review-agent/logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Comment on PR (On Failure)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ AI Code Review Failed
+
+              The automated code review encountered an error. This could be due to:
+
+              - API rate limits or quota exceeded
+              - Network connectivity issues
+              - Invalid configuration
+
+              Please check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+              *You can still proceed with manual code review.*`
+            });

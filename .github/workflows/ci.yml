@@ -1,0 +1,306 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Permissions needed for artifact upload and vulnerability scanning
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Quality Gates - Linting and Type Checking
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup environment variables for type checking
+        run: |
+          echo "SUPABASE_URL=https://placeholder.supabase.co" >> .env
+          echo "SUPABASE_KEY=placeholder-key" >> .env
+          echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
+
+      - name: Run Biome linting
+        run: pnpm run ci
+
+      - name: Run TypeScript type checking
+        run: pnpm run type-check
+
+  # Unit Tests
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: quality-checks
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup environment variables for testing
+        run: |
+          echo "SUPABASE_URL=https://placeholder.supabase.co" >> .env
+          echo "SUPABASE_KEY=placeholder-key" >> .env
+          echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
+
+      - name: Run unit tests with coverage
+        run: pnpm run test:ci
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  # Accessibility & E2E Tests
+  accessibility-tests:
+    name: Accessibility & E2E Tests
+    runs-on: ubuntu-latest
+    needs: quality-checks
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Setup environment variables for E2E tests
+        run: |
+          echo "SUPABASE_URL=https://placeholder.supabase.co" >> .env
+          echo "SUPABASE_KEY=placeholder-key" >> .env
+          echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
+          echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" >> .env
+
+      - name: Build application for E2E testing
+        run: pnpm run build
+
+      - name: Run accessibility and E2E tests
+        run: pnpm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ github.sha }}
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results-${{ github.sha }}
+          path: test-results/
+          retention-days: 7
+
+  # Build Application
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [quality-checks, unit-tests, accessibility-tests]
+    strategy:
+      matrix:
+        environment: [staging, production]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create environment file for ${{ matrix.environment }}
+        run: |
+          if [ "${{ matrix.environment }}" = "production" ]; then
+            echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+            echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env
+            echo "NUXT_PUBLIC_SITE_URL=https://mowryagency.com" >> .env
+            echo "NUXT_PUBLIC_API_URL=https://mowryagency.com" >> .env
+            echo "NODE_ENV=production" >> .env
+          elif [ "${{ matrix.environment }}" = "staging" ]; then
+            echo "SUPABASE_URL=${{ secrets.SUPABASE_URL_STAGING }}" >> .env
+            echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY_STAGING }}" >> .env
+            echo "NUXT_PUBLIC_SITE_URL=https://staging--mowry-agency.netlify.app" >> .env
+            echo "NUXT_PUBLIC_API_URL=https://staging--mowry-agency.netlify.app" >> .env
+            echo "NODE_ENV=staging" >> .env
+          fi
+
+      - name: Build application for ${{ matrix.environment }}
+        run: pnpm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.environment }}-${{ github.sha }}
+          path: |
+            .output/
+            dist/
+          retention-days: 7
+
+  # Security Scanning with Trivy
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: quality-checks
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        continue-on-error: true
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '0'
+
+      - name: Run Trivy vulnerability scanner (SARIF)
+        uses: aquasecurity/trivy-action@0.28.0
+        continue-on-error: true
+        if: github.event_name != 'pull_request'
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results as artifact
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: trivy-results-${{ github.sha }}
+          path: 'trivy-results.sarif'
+          retention-days: 7
+
+      - name: Security scan completion
+        run: |
+          echo "🔍 Security scan completed"
+          echo "📊 Trivy scanned for vulnerabilities in dependencies and filesystem"
+          echo "📁 Results uploaded as workflow artifact for review"
+          echo "Note: Security scanning is informational and does not block deployment"
+
+  # Deployment Status Check
+  deployment-check:
+    name: Deployment Readiness
+    runs-on: ubuntu-latest
+    needs: [quality-checks, unit-tests, accessibility-tests, build, security]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          # Core quality gates that must pass
+          if [ "${{ needs.quality-checks.result }}" != "success" ] || \
+             [ "${{ needs.unit-tests.result }}" != "success" ] || \
+             [ "${{ needs.accessibility-tests.result }}" != "success" ] || \
+             [ "${{ needs.build.result }}" != "success" ]; then
+            echo "❌ Critical quality gates failed. Deployment blocked."
+            echo "Quality Checks: ${{ needs.quality-checks.result }}"
+            echo "Unit Tests: ${{ needs.unit-tests.result }}"
+            echo "Accessibility Tests: ${{ needs.accessibility-tests.result }}"
+            echo "Build: ${{ needs.build.result }}"
+            exit 1
+          fi
+
+          # Security scan is informational - log but don't block
+          echo "✅ All critical quality gates passed. Ready for deployment."
+          echo "📊 Job Results Summary:"
+          echo "  Quality Checks: ${{ needs.quality-checks.result }}"
+          echo "  Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "  Accessibility Tests: ${{ needs.accessibility-tests.result }}"
+          echo "  Build: ${{ needs.build.result }}"
+          echo "  Security Scan: ${{ needs.security.result }} (informational)"
+
+          if [ "${{ needs.security.result }}" != "success" ]; then
+            echo "⚠️  Security scan had issues but deployment will proceed"
+            echo "   Check workflow artifacts for detailed vulnerability results"
+          fi
+
+      - name: Deploy to Staging (develop branch)
+        if: |
+          github.ref == 'refs/heads/develop' &&
+          needs.quality-checks.result == 'success' &&
+          needs.unit-tests.result == 'success' &&
+          needs.accessibility-tests.result == 'success' &&
+          needs.build.result == 'success'
+        run: |
+          echo "🚀 Deploying to staging environment"
+          echo "Netlify will automatically deploy the develop branch to staging"
+
+      - name: Deploy to Production (main branch)
+        if: |
+          github.ref == 'refs/heads/main' &&
+          needs.quality-checks.result == 'success' &&
+          needs.unit-tests.result == 'success' &&
+          needs.accessibility-tests.result == 'success' &&
+          needs.build.result == 'success'
+        run: |
+          echo "🚀 Deploying to production environment"
+          echo "Netlify will automatically deploy the main branch to production"

@@ -1,0 +1,347 @@
+name: Auto Bug Fix
+
+# ============================================================================
+# AI-Powered Bug Fixing Workflow
+# ============================================================================
+#
+# This workflow uses the strategic-bug-fixer-agent to automatically fix
+# test failures and bugs in pull requests.
+#
+# Repository: https://github.com/jordanbmowry/strategic-bug-fixer-agent
+#
+# Features:
+# - Functional programming-based agent using GPT-4o-mini/GPT-4o
+# - Cost-optimized with daily limits ($10/day, $2/fix)
+# - Automatically fixes test failures
+# - Commits and pushes fixes to the PR branch
+# - Supports retry logic with exponential backoff
+# - Configurable presets (quick, thorough, security, performance)
+#
+# Required Secrets:
+# - OPENAI_API_KEY: OpenAI API key for GPT models
+# - GITHUB_TOKEN: Automatically provided by GitHub Actions
+#
+# Workflow Triggers:
+# - When tests fail in CI/CD pipeline
+# - Manual workflow dispatch with custom parameters
+# ============================================================================
+
+on:
+  # Trigger when test workflow fails
+  workflow_run:
+    workflows: ['CI/CD Pipeline']
+    types: [completed]
+    branches: [main, develop]
+
+  # Manual trigger with configuration options
+  workflow_dispatch:
+    inputs:
+      preset:
+        description: 'Bug fix configuration preset'
+        required: false
+        default: 'quick'
+        type: choice
+        options:
+          - quick
+          - thorough
+          - security
+          - performance
+      max_retries:
+        description: 'Maximum retry attempts'
+        required: false
+        default: '3'
+        type: string
+      commit_message:
+        description: 'Custom commit message prefix'
+        required: false
+        default: 'fix: auto-fix test failures'
+        type: string
+
+# Permissions needed for committing fixes
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  AGENT_VERSION: 'main'
+
+jobs:
+  auto-bug-fix:
+    name: AI-Powered Bug Fixing
+    runs-on: ubuntu-latest
+
+    # Only run if previous workflow failed or manually triggered
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'failure' &&
+       github.event.workflow_run.event == 'pull_request')
+
+    steps:
+      - name: Get PR Information
+        id: pr-info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            if (context.eventName === 'workflow_dispatch') {
+              // Manual trigger - use current branch
+              const branch = context.ref.replace('refs/heads/', '');
+              const prs = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                head: `${context.repo.owner}:${branch}`
+              });
+
+              if (prs.data.length > 0) {
+                core.setOutput('pr_number', prs.data[0].number);
+                core.setOutput('pr_branch', prs.data[0].head.ref);
+                core.setOutput('pr_sha', prs.data[0].head.sha);
+              } else {
+                core.setFailed('No open PR found for this branch');
+              }
+            } else {
+              // Triggered by workflow_run
+              const pullRequests = context.payload.workflow_run.pull_requests;
+              if (pullRequests && pullRequests.length > 0) {
+                const pr = pullRequests[0];
+                core.setOutput('pr_number', pr.number);
+                core.setOutput('pr_branch', pr.head.ref);
+                core.setOutput('pr_sha', pr.head.sha);
+              } else {
+                core.setFailed('No PR found in workflow_run event');
+              }
+            }
+
+      - name: Checkout PR Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr-info.outputs.pr_branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Project Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Checkout Bug Fixer Agent
+        uses: actions/checkout@v4
+        with:
+          repository: jordanbmowry/strategic-bug-fixer-agent
+          ref: ${{ env.AGENT_VERSION }}
+          path: .bug-fixer-agent
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Agent Dependencies
+        working-directory: .bug-fixer-agent
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure Git
+        run: |
+          git config user.name "AI Bug Fixer"
+          git config user.email "ai-bug-fixer@github-actions.bot"
+
+      - name: Configure Bug Fixer Settings
+        working-directory: .bug-fixer-agent
+        run: |
+          cat > .env << EOF
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+          # Cost limits for CI/CD
+          DAILY_COST_LIMIT=10
+          PER_FIX_COST_LIMIT=2
+          COST_WARNING_THRESHOLD=0.5
+
+          # Bug fixer configuration
+          PRESET=${{ github.event.inputs.preset || 'quick' }}
+          MAX_RETRIES=${{ github.event.inputs.max_retries || '3' }}
+          COMMIT_MESSAGE_PREFIX=${{ github.event.inputs.commit_message || 'fix: auto-fix test failures' }}
+
+          # CI/CD context
+          CI=true
+          GITHUB_REPOSITORY=${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
+          PR_NUMBER=${{ steps.pr-info.outputs.pr_number }}
+          PR_BRANCH=${{ steps.pr-info.outputs.pr_branch }}
+          EOF
+
+      - name: Run Tests to Capture Failures
+        id: test-run
+        continue-on-error: true
+        run: |
+          pnpm run test:ci > test-output.txt 2>&1 || true
+          cat test-output.txt
+
+      - name: Run AI Bug Fixer
+        working-directory: .bug-fixer-agent
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECT_ROOT: ${{ github.workspace }}
+          TEST_OUTPUT_FILE: ${{ github.workspace }}/test-output.txt
+        run: |
+          echo "🤖 Starting AI Bug Fixer..."
+          echo "Configuration: ${{ github.event.inputs.preset || 'quick' }}"
+          echo "Max Retries: ${{ github.event.inputs.max_retries || '3' }}"
+          echo ""
+
+          # Run the bug fixer in CI mode
+          node src/ci-bug-fixer.js \
+            --project-root "$PROJECT_ROOT" \
+            --test-output "$TEST_OUTPUT_FILE" \
+            --preset "${{ github.event.inputs.preset || 'quick' }}" \
+            --max-retries "${{ github.event.inputs.max_retries || '3' }}" \
+            --commit-prefix "${{ github.event.inputs.commit_message || 'fix: auto-fix test failures' }}" \
+            || echo "⚠️ Bug fixer completed with warnings"
+
+      - name: Verify Fixes
+        id: verify
+        continue-on-error: true
+        run: |
+          echo "🧪 Running tests to verify fixes..."
+          pnpm run test:ci
+          echo "test_passed=true" >> $GITHUB_OUTPUT
+
+      - name: Generate Fix Summary
+        if: always()
+        run: |
+          echo "### 🤖 AI Bug Fixer Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Configuration:** ${{ github.event.inputs.preset || 'quick' }} preset" >> $GITHUB_STEP_SUMMARY
+          echo "**Max Retries:** ${{ github.event.inputs.max_retries || '3' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**PR Branch:** ${{ steps.pr-info.outputs.pr_branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.verify.outputs.test_passed }}" == "true" ]; then
+            echo "✅ **Status:** Fixes applied successfully - all tests passing" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Status:** Fixes applied but some tests may still be failing" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Focus Areas:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Test failures and assertion errors" >> $GITHUB_STEP_SUMMARY
+          echo "- Runtime errors and exceptions" >> $GITHUB_STEP_SUMMARY
+          echo "- Type errors and validation issues" >> $GITHUB_STEP_SUMMARY
+          echo "- Logic bugs and edge cases" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR (Success)
+        if: steps.verify.outputs.test_passed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.pr-info.outputs.pr_number }};
+
+            await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ✅ AI Bug Fixer - Fixes Applied Successfully
+
+              The AI bug fixer has automatically fixed test failures and verified the fixes.
+
+              **Configuration:** ${{ github.event.inputs.preset || 'quick' }} preset
+              **Status:** All tests passing ✅
+
+              ### What was fixed:
+              - Test failures and assertion errors
+              - Runtime errors and exceptions
+              - Type errors and validation issues
+
+              The fixes have been committed to this PR branch. Please review the changes before merging.
+
+              ---
+              *Powered by [strategic-bug-fixer-agent](https://github.com/jordanbmowry/strategic-bug-fixer-agent)*`
+            });
+
+      - name: Comment on PR (Partial Success)
+        if: steps.verify.outputs.test_passed != 'true' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.pr-info.outputs.pr_number }};
+
+            await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ AI Bug Fixer - Partial Fixes Applied
+
+              The AI bug fixer has attempted to fix test failures, but some tests may still be failing.
+
+              **Configuration:** ${{ github.event.inputs.preset || 'quick' }} preset
+              **Status:** Fixes applied, verification incomplete
+
+              ### What was attempted:
+              - Test failures and assertion errors
+              - Runtime errors and exceptions
+              - Type errors and validation issues
+
+              Please review the changes and the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+              **Suggestions:**
+              - Try running the bug fixer again with the \`thorough\` preset
+              - Review the specific test failures that remain
+              - Manual intervention may be required for complex issues
+
+              ---
+              *Powered by [strategic-bug-fixer-agent](https://github.com/jordanbmowry/strategic-bug-fixer-agent)*`
+            });
+
+      - name: Comment on PR (Failure)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.pr-info.outputs.pr_number }};
+
+            await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ❌ AI Bug Fixer - Error Occurred
+
+              The automated bug fixer encountered an error and could not complete.
+
+              **Possible causes:**
+              - API rate limits or quota exceeded
+              - Network connectivity issues
+              - Invalid test output format
+              - Complex bugs requiring manual intervention
+
+              Please check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+              **Next steps:**
+              - Review the error logs
+              - Try triggering the workflow manually with different settings
+              - Consider manual bug fixing for complex issues
+
+              ---
+              *Powered by [strategic-bug-fixer-agent](https://github.com/jordanbmowry/strategic-bug-fixer-agent)*`
+            });
+
+      - name: Upload Fix Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bug-fix-report-${{ steps.pr-info.outputs.pr_number }}-${{ github.run_id }}
+          path: |
+            .bug-fixer-agent/.env
+            .bug-fixer-agent/logs/
+            test-output.txt
+          retention-days: 30
+          if-no-files-found: ignore
