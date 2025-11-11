@@ -1,30 +1,10 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-          extensions?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '13.0.5';
   };
   public: {
     Tables: {
@@ -43,6 +23,225 @@ export type Database = {
           created_at?: string;
           note?: string | null;
           tag?: string;
+        };
+        Relationships: [];
+      };
+      google_ads_accounts: {
+        Row: {
+          account_id: string;
+          account_name: string;
+          created_at: string | null;
+          currency_code: string;
+          id: string;
+          time_zone: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          account_id: string;
+          account_name: string;
+          created_at?: string | null;
+          currency_code: string;
+          id?: string;
+          time_zone: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          account_id?: string;
+          account_name?: string;
+          created_at?: string | null;
+          currency_code?: string;
+          id?: string;
+          time_zone?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      google_ads_campaigns: {
+        Row: {
+          account_id: string;
+          budget_amount_micros: number | null;
+          campaign_id: string;
+          campaign_name: string;
+          campaign_status: string;
+          campaign_type: string;
+          created_at: string | null;
+          end_date: string | null;
+          id: string;
+          start_date: string | null;
+          target_cpa_micros: number | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          account_id: string;
+          budget_amount_micros?: number | null;
+          campaign_id: string;
+          campaign_name: string;
+          campaign_status: string;
+          campaign_type: string;
+          created_at?: string | null;
+          end_date?: string | null;
+          id?: string;
+          start_date?: string | null;
+          target_cpa_micros?: number | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          account_id?: string;
+          budget_amount_micros?: number | null;
+          campaign_id?: string;
+          campaign_name?: string;
+          campaign_status?: string;
+          campaign_type?: string;
+          created_at?: string | null;
+          end_date?: string | null;
+          id?: string;
+          start_date?: string | null;
+          target_cpa_micros?: number | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'google_ads_campaigns_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'google_ads_accounts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      google_ads_keywords: {
+        Row: {
+          campaign_id: string;
+          created_at: string | null;
+          first_page_cpc_micros: number | null;
+          id: string;
+          keyword_id: string;
+          keyword_text: string;
+          match_type: string;
+          quality_score: number | null;
+          status: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          campaign_id: string;
+          created_at?: string | null;
+          first_page_cpc_micros?: number | null;
+          id?: string;
+          keyword_id: string;
+          keyword_text: string;
+          match_type: string;
+          quality_score?: number | null;
+          status: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          campaign_id?: string;
+          created_at?: string | null;
+          first_page_cpc_micros?: number | null;
+          id?: string;
+          keyword_id?: string;
+          keyword_text?: string;
+          match_type?: string;
+          quality_score?: number | null;
+          status?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'google_ads_keywords_campaign_id_fkey';
+            columns: ['campaign_id'];
+            isOneToOne: false;
+            referencedRelation: 'google_ads_campaigns';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      google_ads_performance_daily: {
+        Row: {
+          average_cpc_micros: number | null;
+          campaign_id: string;
+          clicks: number | null;
+          conversion_value_micros: number | null;
+          conversions: number | null;
+          cost_micros: number | null;
+          cost_per_conversion_micros: number | null;
+          created_at: string | null;
+          ctr: number | null;
+          date: string;
+          id: string;
+          impressions: number | null;
+        };
+        Insert: {
+          average_cpc_micros?: number | null;
+          campaign_id: string;
+          clicks?: number | null;
+          conversion_value_micros?: number | null;
+          conversions?: number | null;
+          cost_micros?: number | null;
+          cost_per_conversion_micros?: number | null;
+          created_at?: string | null;
+          ctr?: number | null;
+          date: string;
+          id?: string;
+          impressions?: number | null;
+        };
+        Update: {
+          average_cpc_micros?: number | null;
+          campaign_id?: string;
+          clicks?: number | null;
+          conversion_value_micros?: number | null;
+          conversions?: number | null;
+          cost_micros?: number | null;
+          cost_per_conversion_micros?: number | null;
+          created_at?: string | null;
+          ctr?: number | null;
+          date?: string;
+          id?: string;
+          impressions?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'google_ads_performance_daily_campaign_id_fkey';
+            columns: ['campaign_id'];
+            isOneToOne: false;
+            referencedRelation: 'google_ads_campaigns';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      knowledge_embeddings: {
+        Row: {
+          category: Database['public']['Enums']['knowledge_category'];
+          content: string;
+          created_at: string | null;
+          embedding: string;
+          id: string;
+          metadata: Json | null;
+          source_id: string | null;
+          source_table: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          category: Database['public']['Enums']['knowledge_category'];
+          content: string;
+          created_at?: string | null;
+          embedding: string;
+          id?: string;
+          metadata?: Json | null;
+          source_id?: string | null;
+          source_table?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          category?: Database['public']['Enums']['knowledge_category'];
+          content?: string;
+          created_at?: string | null;
+          embedding?: string;
+          id?: string;
+          metadata?: Json | null;
+          source_id?: string | null;
+          source_table?: string | null;
+          updated_at?: string | null;
         };
         Relationships: [];
       };
@@ -234,21 +433,21 @@ export type Database = {
           {
             foreignKeyName: 'leads_compliance_report_lead_id_fkey';
             columns: ['lead_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'compliance_dashboard';
             referencedColumns: ['id'];
           },
           {
             foreignKeyName: 'leads_compliance_report_lead_id_fkey';
             columns: ['lead_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'leads';
             referencedColumns: ['id'];
           },
           {
             foreignKeyName: 'leads_compliance_report_lead_id_fkey';
             columns: ['lead_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'leads_audit_report';
             referencedColumns: ['id'];
           },
@@ -256,25 +455,28 @@ export type Database = {
       };
       leads_compliance_report_runs: {
         Row: {
-          created_at: string;
-          id: number;
-          result: Json;
+          id: string;
+          invoked_by: string | null;
+          result: Json | null;
           rows_inserted: number | null;
           rows_updated: number | null;
+          run_at: string;
         };
         Insert: {
-          created_at?: string;
-          id?: number;
-          result: Json;
+          id?: string;
+          invoked_by?: string | null;
+          result?: Json | null;
           rows_inserted?: number | null;
           rows_updated?: number | null;
+          run_at?: string;
         };
         Update: {
-          created_at?: string;
-          id?: number;
-          result?: Json;
+          id?: string;
+          invoked_by?: string | null;
+          result?: Json | null;
           rows_inserted?: number | null;
           rows_updated?: number | null;
+          run_at?: string;
         };
         Relationships: [];
       };
@@ -453,45 +655,50 @@ export type Database = {
       };
     };
     Functions: {
-      calculate_age: {
-        Args: {
-          birth_date: string;
-        };
-        Returns: number;
-      };
+      calculate_age: { Args: { birth_date: string }; Returns: number };
       calculate_compliance_score: {
         Args: {
+          p_days_since_consent: number;
+          p_ip_address: string;
           p_tcpa_consent: boolean;
           p_tcpa_text: string;
-          p_ip_address: string;
-          p_days_since_consent: number;
           p_unsubscribed_at: string;
         };
         Returns: number;
       };
-      create_admin_user: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
+      create_admin_user: { Args: never; Returns: undefined };
       generate_compliance_report: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
           report_summary: Json;
         }[];
       };
-      generate_weekly_leads_compliance_report: {
-        Args: Record<PropertyKey, never>;
-        Returns: Json;
-      };
-      update_form_version: {
+      generate_weekly_leads_compliance_report: { Args: never; Returns: Json };
+      match_embeddings: {
         Args: {
-          new_version: string;
+          category_filter?: Database['public']['Enums']['knowledge_category'];
+          match_count?: number;
+          match_threshold?: number;
+          query_embedding: string;
         };
-        Returns: string;
+        Returns: {
+          category: Database['public']['Enums']['knowledge_category'];
+          content: string;
+          created_at: string;
+          id: string;
+          metadata: Json;
+          similarity: number;
+        }[];
       };
+      update_form_version: { Args: { new_version: string }; Returns: string };
     };
     Enums: {
-      [_ in never]: never;
+      knowledge_category:
+        | 'campaign_performance'
+        | 'lead_patterns'
+        | 'compliance_rules'
+        | 'market_insights'
+        | 'optimization_results';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -499,25 +706,31 @@ export type Database = {
   };
 };
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>];
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R;
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] & PublicSchema['Views'])
-    ? (PublicSchema['Tables'] & PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -525,18 +738,24 @@ export type Tables<
     : never;
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends keyof PublicSchema['Tables'] | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I;
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I;
       }
       ? I
@@ -544,18 +763,24 @@ export type TablesInsert<
     : never;
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends keyof PublicSchema['Tables'] | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U;
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U;
       }
       ? U
@@ -563,27 +788,49 @@ export type TablesUpdate<
     : never;
 
 export type Enums<
-  PublicEnumNameOrOptions extends keyof PublicSchema['Enums'] | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema['Enums']
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema['CompositeTypes']
-    | { schema: keyof Database },
+    | keyof DefaultSchema['CompositeTypes']
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
-    ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never;
+
+export const Constants = {
+  public: {
+    Enums: {
+      knowledge_category: [
+        'campaign_performance',
+        'lead_patterns',
+        'compliance_rules',
+        'market_insights',
+        'optimization_results',
+      ],
+    },
+  },
+} as const;
