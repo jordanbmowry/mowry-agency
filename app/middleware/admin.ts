@@ -1,6 +1,8 @@
+import type { Database } from '~/types/database.types';
+
 export default defineNuxtRouteMiddleware(async () => {
   const user = useSupabaseUser();
-  const supabase = useSupabaseClient();
+  const supabase = useSupabaseClient<Database>();
 
   if (!user.value) {
     return navigateTo('/admin/login');
@@ -13,13 +15,13 @@ export default defineNuxtRouteMiddleware(async () => {
       error: userError,
     } = await supabase.auth.getUser();
 
-    if (userError) throw userError;
+    if (userError || !userDetails?.id) throw userError;
 
     // Get user profile with role
-    const { data: profile, error: profileError } = await (supabase as any)
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
-      .eq('id', userDetails?.id)
+      .eq('id', userDetails.id)
       .single();
 
     if (profileError) throw profileError;
@@ -28,7 +30,7 @@ export default defineNuxtRouteMiddleware(async () => {
       // If user is not an admin, redirect to home
       return navigateTo('/');
     }
-  } catch (error) {
+  } catch (_error) {
     // If there's any error, redirect to login
     return navigateTo('/admin/login');
   }

@@ -1,9 +1,5 @@
 import { serverSupabaseServiceRole } from '#supabase/server';
-import type { Database } from '~/types/database.types';
 import { leadUpdateValidationSchema } from '../../utils/validation';
-
-type Lead = Database['public']['Tables']['leads']['Row'];
-type LeadUpdate = Database['public']['Tables']['leads']['Update'];
 
 export default defineEventHandler(async (event) => {
   const leadId = getRouterParam(event, 'id');

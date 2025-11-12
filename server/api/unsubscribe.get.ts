@@ -1,5 +1,13 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { H3Event } from 'h3';
 import { serverSupabaseServiceRole } from '#supabase/server';
+import type { Database } from '~/types/database.types';
 import { createTimestamp } from '~/utils/dateUtils';
+
+interface ClientInfo {
+  ip: string;
+  userAgent: string;
+}
 
 // Pure function to decode unsubscribe token
 const decodeUnsubscribeToken = (token: string): string => {
@@ -13,13 +21,17 @@ const validateEmail = (email: string): boolean => {
 };
 
 // Pure function to extract client information
-const getClientInfo = (event: any) => ({
+const getClientInfo = (event: H3Event): ClientInfo => ({
   ip: getHeaders(event)['x-forwarded-for'] || getHeaders(event)['x-real-ip'] || 'unknown',
   userAgent: getHeader(event, 'user-agent') || '',
 });
 
 // Database operations
-const createUnsubscribeRecord = async (supabase: any, email: string, clientInfo: any) => {
+const createUnsubscribeRecord = async (
+  supabase: SupabaseClient<Database>,
+  email: string,
+  clientInfo: ClientInfo,
+) => {
   return await supabase.from('unsubscribes').upsert({
     email,
     ip_address: clientInfo.ip,
@@ -28,7 +40,7 @@ const createUnsubscribeRecord = async (supabase: any, email: string, clientInfo:
   });
 };
 
-const updateLeadMarketingConsent = async (supabase: any, email: string) => {
+const updateLeadMarketingConsent = async (supabase: SupabaseClient<Database>, email: string) => {
   return await supabase
     .from('leads')
     .update({
@@ -140,7 +152,7 @@ export default defineEventHandler(async (event) => {
     }
 
     return createSuccessPage(email);
-  } catch (error) {
+  } catch (_error) {
     throw createError({
       statusCode: 500,
       statusMessage: 'An error occurred while processing your unsubscribe request',

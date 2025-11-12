@@ -19,6 +19,14 @@ export interface LeadsFilterOptions {
   onFilterChange?: () => void | Promise<void>;
 }
 
+// Supabase query builder interface for filtering
+interface SupabaseQueryBuilder {
+  or: (filter: string) => SupabaseQueryBuilder;
+  eq: (column: string, value: unknown) => SupabaseQueryBuilder;
+  gte: (column: string, value: string) => SupabaseQueryBuilder;
+  lte: (column: string, value: string) => SupabaseQueryBuilder;
+}
+
 /**
  * Pure function to check if any filters are active
  */
@@ -29,7 +37,10 @@ const hasActiveFilters = (state: LeadsFilterState): boolean => {
 /**
  * Pure function to create Supabase query with filters
  */
-export const applyLeadsFilters = (query: any, filters: LeadsFilterState) => {
+export const applyLeadsFilters = (
+  query: SupabaseQueryBuilder,
+  filters: LeadsFilterState,
+): SupabaseQueryBuilder => {
   let filteredQuery = query;
 
   // Apply text search filter
@@ -174,7 +185,7 @@ export const useLeadsFilters = (options: LeadsFilterOptions = {}) => {
     clearFilters,
     clearFilter,
     setFromQueryParams,
-    applyToQuery: (query: any) => applyLeadsFilters(query, filterState.value),
+    applyToQuery: (query: SupabaseQueryBuilder) => applyLeadsFilters(query, filterState.value),
   };
 };
 

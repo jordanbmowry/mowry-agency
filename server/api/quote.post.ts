@@ -120,7 +120,7 @@ export default defineEventHandler(async (event) => {
     // Prepare email configuration
     const emailConfig = {
       host: config.smtpHost,
-      port: parseInt(config.smtpPort),
+      port: parseInt(config.smtpPort, 10),
       user: config.smtpUser,
       pass: config.smtpPass,
     };
@@ -150,9 +150,10 @@ export default defineEventHandler(async (event) => {
         "We'll provide competitive quotes from top-rated carriers",
       ],
     };
-  } catch (error: any) {
+  } catch (error) {
     // Enhanced error handling with user-friendly messages
-    if (error.statusCode) {
+    const errorObj = error as { statusCode?: number };
+    if (errorObj.statusCode) {
       throw error; // Re-throw createError errors
     }
 

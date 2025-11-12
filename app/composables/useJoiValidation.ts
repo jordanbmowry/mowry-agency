@@ -7,6 +7,18 @@ import type { QuoteFormData } from './useQuoteForm';
  * All schemas match database.types.ts constraints from the 'leads' table
  */
 
+// Type definitions for Joi validation errors
+interface JoiValidationErrorDetail {
+  message: string;
+  path: (string | number)[];
+  type: string;
+  context?: unknown;
+}
+
+interface JoiValidationError extends Error {
+  details?: JoiValidationErrorDetail[];
+}
+
 // Shared field validators matching database constraints
 const sharedValidators = {
   firstName: Joi.string().required().min(2).max(100).trim().messages({
@@ -51,7 +63,7 @@ const sharedValidators = {
     .required()
     .custom((value, helpers) => {
       const date = new Date(value);
-      if (isNaN(date.getTime())) {
+      if (Number.isNaN(date.getTime())) {
         return helpers.error('date.invalid');
       }
 
@@ -261,7 +273,7 @@ export const useQuoteFormValidation = () => {
   const isValidating = ref(false);
 
   // Validate a single field
-  const validateField = (fieldName: string, value: any): string => {
+  const validateField = (fieldName: string, value: unknown): string => {
     try {
       const fieldSchema = quoteFormValidationSchema.extract(fieldName);
       fieldSchema.validate(value, { abortEarly: true });
@@ -271,8 +283,9 @@ export const useQuoteFormValidation = () => {
         delete errors.value[fieldName];
       }
       return '';
-    } catch (error: any) {
-      const errorMessage = error.details?.[0]?.message || 'Invalid value';
+    } catch (error) {
+      const joiError = error as JoiValidationError;
+      const errorMessage = joiError.details?.[0]?.message || 'Invalid value';
       errors.value[fieldName] = errorMessage;
       return errorMessage;
     }
@@ -285,10 +298,11 @@ export const useQuoteFormValidation = () => {
 
     try {
       quoteFormValidationSchema.validate(data, { abortEarly: false });
-    } catch (error: any) {
-      if (error.details) {
-        error.details.forEach((detail: any) => {
-          newErrors[detail.path[0]] = detail.message;
+    } catch (error) {
+      const joiError = error as JoiValidationError;
+      if (joiError.details) {
+        joiError.details.forEach((detail: JoiValidationErrorDetail) => {
+          newErrors[detail.path[0] as string] = detail.message;
         });
       }
     }
@@ -342,7 +356,7 @@ export const useLeadEditValidation = () => {
   const isValidating = ref(false);
 
   // Validate a single field
-  const validateField = (fieldName: string, value: any): string => {
+  const validateField = (fieldName: string, value: unknown): string => {
     try {
       const fieldSchema = leadEditValidationSchema.extract(fieldName);
       fieldSchema.validate(value, { abortEarly: true });
@@ -352,8 +366,9 @@ export const useLeadEditValidation = () => {
         delete errors.value[fieldName];
       }
       return '';
-    } catch (error: any) {
-      const errorMessage = error.details?.[0]?.message || 'Invalid value';
+    } catch (error) {
+      const joiError = error as JoiValidationError;
+      const errorMessage = joiError.details?.[0]?.message || 'Invalid value';
       errors.value[fieldName] = errorMessage;
       return errorMessage;
     }
@@ -366,10 +381,11 @@ export const useLeadEditValidation = () => {
 
     try {
       leadEditValidationSchema.validate(data, { abortEarly: false });
-    } catch (error: any) {
-      if (error.details) {
-        error.details.forEach((detail: any) => {
-          newErrors[detail.path[0]] = detail.message;
+    } catch (error) {
+      const joiError = error as JoiValidationError;
+      if (joiError.details) {
+        joiError.details.forEach((detail: JoiValidationErrorDetail) => {
+          newErrors[detail.path[0] as string] = detail.message;
         });
       }
     }

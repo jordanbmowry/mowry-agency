@@ -23,8 +23,8 @@ export default defineEventHandler(async (event): Promise<LeadsApiResponse> => {
     const supabase = serverSupabaseServiceRole(event);
 
     // Parse query parameters
-    const page = parseInt(query.page as string) || 1;
-    const limit = parseInt(query.limit as string) || 10;
+    const page = parseInt(query.page as string, 10) || 1;
+    const limit = parseInt(query.limit as string, 10) || 10;
     const search = (query.search as string) || '';
     const status = (query.status as string) || '';
     const dateFrom = (query.dateFrom as string) || '';

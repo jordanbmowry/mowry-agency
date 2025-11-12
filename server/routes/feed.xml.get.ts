@@ -1,5 +1,5 @@
 import { Feed } from 'feed';
-import { createTimestamp, formatRSSDate } from '~/utils/dateUtils';
+import { createTimestamp } from '~/utils/dateUtils';
 
 export default defineEventHandler(async (event) => {
   const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000';

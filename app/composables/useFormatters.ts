@@ -172,7 +172,7 @@ export const formatHeight = (height: number | string | null): string => {
   if (!height) return 'N/A';
 
   const heightNum = typeof height === 'string' ? parseFloat(height) : height;
-  if (isNaN(heightNum)) return 'N/A';
+  if (Number.isNaN(heightNum)) return 'N/A';
 
   const feet = Math.floor(heightNum);
   const inches = Math.round((heightNum - feet) * 10);
@@ -187,7 +187,7 @@ export const formatWeight = (weight: number | string | null): string => {
   if (!weight) return 'N/A';
 
   const weightNum = typeof weight === 'string' ? parseFloat(weight) : weight;
-  if (isNaN(weightNum)) return 'N/A';
+  if (Number.isNaN(weightNum)) return 'N/A';
 
   return `${weightNum} lbs`;
 };
@@ -199,7 +199,7 @@ export const formatCurrency = (amount: number | string | null): string => {
   if (amount === null || amount === undefined) return 'N/A';
 
   const amountNum = typeof amount === 'string' ? parseFloat(amount) : amount;
-  if (isNaN(amountNum)) return 'N/A';
+  if (Number.isNaN(amountNum)) return 'N/A';
 
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
