@@ -14,7 +14,6 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9'
 
 jobs:
   # Quality Gates - Linting and Type Checking
@@ -25,19 +24,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
+
+      - name: Rebuild native dependencies
+        run: npm rebuild better-sqlite3
 
       - name: Setup environment variables for type checking
         run: |
@@ -46,10 +43,10 @@ jobs:
           echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
 
       - name: Run Biome linting
-        run: pnpm run ci
+        run: npm run ci
 
       - name: Run TypeScript type checking
-        run: pnpm run type-check
+        run: npm run type-check
 
   # Unit Tests
   unit-tests:
@@ -60,19 +57,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
+
+      - name: Rebuild native dependencies
+        run: npm rebuild better-sqlite3
 
       - name: Setup environment variables for testing
         run: |
@@ -81,7 +76,7 @@ jobs:
           echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
 
       - name: Run unit tests with coverage
-        run: pnpm run test:ci
+        run: npm run test:coverage
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -99,22 +94,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
+
+      - name: Rebuild native dependencies
+        run: npm rebuild better-sqlite3
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Setup environment variables for E2E tests
         run: |
@@ -124,10 +117,10 @@ jobs:
           echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" >> .env
 
       - name: Build application for E2E testing
-        run: pnpm run build
+        run: npm run build
 
       - name: Run accessibility and E2E tests
-        run: pnpm run test:e2e
+        run: npm run test:e2e
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -157,19 +150,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
+
+      - name: Rebuild native dependencies
+        run: npm rebuild better-sqlite3
 
       - name: Create environment file for ${{ matrix.environment }}
         run: |
@@ -188,7 +179,7 @@ jobs:
           fi
 
       - name: Build application for ${{ matrix.environment }}
-        run: pnpm run build
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
