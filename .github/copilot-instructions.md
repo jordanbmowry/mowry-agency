@@ -1859,6 +1859,7 @@ export const useLeadsFilters = () => {
 12. **No Static Cache Keys**: Avoid cache keys that never invalidate
 13. **No Untyped API Responses**: Always define proper interfaces for API data
 14. **No Direct Property Access**: Use optional chaining for nullable template data
+15. **No `any` Types**: Use proper TypeScript types (`unknown`, `Record<string, unknown>`, or specific interfaces) instead of `any`
 
 ### **Data Fetching Best Practices**
 

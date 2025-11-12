@@ -62,31 +62,18 @@ export const STATE_LICENSES: LicenseInfo[] = [
   { state: 'Wyoming', stateCode: 'WY', licenseNumber: '229623' },
 ];
 
-// Get runtime config values - this will work in both client and server contexts
-const getRuntimeBusinessInfo = (): BusinessInfo => {
-  if (process.client) {
-    const { $config } = useNuxtApp();
-    return {
-      businessName: 'Mowry Agency',
-      ownerEntity: 'Mowry Digital Enterprise LLC',
-      npn: $config.public.agencyNpn || getAgencyNpn(),
-      email: $config.public.agencyEmail || 'info@mowryagency.com',
-      phone: $config.public.agencyPhone || '(930) 322-1962',
-      website: $config.public.agencyWebsite || 'https://mowryagency.com',
-      address: $config.public.agencyAddress || '[Your business or mailing address]',
-    };
-  } else {
-    // Server-side fallback - actual values will be provided by the server components
-    return {
-      businessName: 'Mowry Agency',
-      ownerEntity: 'Mowry Digital Enterprise LLC',
-      npn: getAgencyNpn(),
-      email: process.env.AGENCY_EMAIL || 'info@mowryagency.com',
-      phone: process.env.AGENCY_PHONE || '(930) 322-1962',
-      website: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
-      address: process.env.AGENCY_ADDRESS || '[Your business or mailing address]',
-    };
-  }
+// Get runtime business info - static fallback values
+// Components should use useRuntimeConfig() directly for dynamic values
+export const getRuntimeBusinessInfo = (): BusinessInfo => {
+  return {
+    businessName: 'Mowry Agency',
+    ownerEntity: 'Mowry Digital Enterprise LLC',
+    npn: getAgencyNpn(),
+    email: 'info@mowryagency.com',
+    phone: '(930) 322-1962',
+    website: 'https://mowryagency.com',
+    address: '123 Main Street, Anytown, TX 75001',
+  };
 };
 
 // Business information - use runtime config when available

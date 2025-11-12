@@ -17,12 +17,15 @@
             class="h-8 w-8 object-contain"
             loading="eager"
             :key="carrier.name"
-            @error="$event.target.src = $event.target.src"
+            @error="
+              (event) => {
+                const target = event.target as HTMLImageElement;
+                if (target) target.src = target.src;
+              }
+            "
           />
         </div>
-        <h2
-          class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100"
-        >
+        <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
           <div class="relative">
             <div
               class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"
@@ -65,11 +68,10 @@
       class="mt-16 rounded-lg border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-700/40 dark:bg-zinc-800/50"
     >
       <p class="text-sm text-zinc-600 dark:text-zinc-400">
-        <strong>Disclaimer:</strong> Logos and trademarks are the property of
-        their respective owners. Mowry Agency and Symmetry Financial Group are
-        not owned by or directly affiliated with these carriers. We are
-        independent agents authorized to sell insurance products from these
-        companies.
+        <strong>Disclaimer:</strong> Logos and trademarks are the property of their
+        respective owners. Mowry Agency and Symmetry Financial Group are not owned by or
+        directly affiliated with these carriers. We are independent agents authorized to
+        sell insurance products from these companies.
       </p>
     </div>
   </SimpleLayout>

@@ -89,14 +89,16 @@ export const extractClientInfo = (event: H3Event): ClientInfo => {
 
 // TCPA compliance text - this should match exactly what's shown to users
 export const getTcpaConsentText = (version: string = 'v1.0'): string => {
+  const defaultText =
+    'By clicking Submit, you agree to be contacted by Mowry Agency and its agents at the number provided, including calls, texts, or emails. Consent is not a condition of purchase. Message and data rates may apply. You may opt out at any time.';
+
   const tcpaTexts: Record<string, string> = {
-    'v1.0':
-      'By clicking Submit, you agree to be contacted by Mowry Agency and its agents at the number provided, including calls, texts, or emails. Consent is not a condition of purchase. Message and data rates may apply. You may opt out at any time.',
+    'v1.0': defaultText,
     'v1.1':
       'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.',
   };
 
-  return tcpaTexts[version] || tcpaTexts['v1.0'];
+  return tcpaTexts[version] ?? defaultText;
 };
 
 // Form data sanitization
@@ -179,18 +181,18 @@ export const transformLeadData = (formData: FormData, clientInfo?: ClientInfo) =
     date_of_birth: formData.dateOfBirth,
     coverage_type: formData.coverageType,
     health_conditions: formData.healthConditions,
-    current_medications: formData.medications || formData.currentMedications,
-    message: formData.message,
+    current_medications: formData.medications || formData.currentMedications || 'None',
+    message: formData.message || null,
     city: formData.city,
     state: formData.state,
     sex: formData.sex,
-    height: height || null, // Ensure number or null
-    weight: weight || null, // Ensure number or null
+    height: height || 0, // Ensure number
+    weight: weight || 0, // Ensure number
     tcpa_consent: formData.tcpaConsent,
     tcpa_text: formData.tcpaText || getTcpaConsentText(formData.formVersion),
     email_marketing_consent: formData.emailMarketingConsent || false,
-    ip_address: clientInfo?.ip,
-    user_agent: clientInfo?.userAgent,
+    ip_address: clientInfo?.ip || null,
+    user_agent: clientInfo?.userAgent || null,
     form_version: formData.formVersion || 'v1.0',
     compliance_review_status: 'pending',
     lead_type: mapCoverageTypeToLeadType(formData.coverageType || 'not-sure'),

@@ -19,6 +19,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome format .",
     "format:fix": "biome format --write .",
+    "validate": "pnpm run type-check && pnpm run lint",
     "type-check": "nuxt typecheck",
     "ci": "biome ci .",
     "db:types": "cd ../mowry_leads_database && npm run sync-types",
@@ -63,6 +64,7 @@
     "radix-vue": "^1.9.8",
     "reka-ui": "^2.6.0",
     "tailwind-merge": "^2.5.5",
+    "types": "link:@vue-email/components/types",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
     "vue3-simple-typeahead": "^1.0.11"

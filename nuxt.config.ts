@@ -200,4 +200,8 @@ export default defineNuxtConfig({
     fallbackTitle: false,
     redirectToCanonicalSiteUrl: false, // Disable redirects for Netlify deployment
   },
+  typescript: {
+    typeCheck: true,
+    strict: true,
+  },
 });
