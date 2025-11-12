@@ -231,7 +231,7 @@ export const leadUpdateValidationSchema = Joi.object({
 
   status: Joi.string()
     .optional()
-    .valid('new', 'in_progress', 'contacted', 'quoted', 'closed')
+    .valid('new', 'contacted', 'qualified', 'converted', 'lost', 'closed', 'not_interested')
     .messages({
       'any.only': 'Please select a valid status',
     }),

@@ -518,9 +518,12 @@ const sexOptions = [
 
 const statusOptions = [
   { label: 'New', value: 'new' },
-  { label: 'In Progress', value: 'in_progress' },
   { label: 'Contacted', value: 'contacted' },
+  { label: 'Qualified', value: 'qualified' },
+  { label: 'Converted', value: 'converted' },
+  { label: 'Lost', value: 'lost' },
   { label: 'Closed', value: 'closed' },
+  { label: 'Not Interested', value: 'not_interested' },
 ];
 
 const coverageTypeOptions = [

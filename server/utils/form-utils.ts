@@ -91,6 +91,19 @@ export const isDuplicateEmailError = (error: any): boolean => {
   );
 };
 
+// Map coverage_type (user-facing) to lead_type (database constraint)
+export const mapCoverageTypeToLeadType = (coverageType: string): string => {
+  const mapping: Record<string, string> = {
+    'term-life': 'term',
+    'whole-life': 'whole_life',
+    iul: 'universal',
+    'mortgage-protection': 'mortgage_protection',
+    'final-expense': 'final_expense',
+    'not-sure': 'term', // Default to term if not sure
+  };
+  return mapping[coverageType] || 'term';
+};
+
 // Result type for async operations
 export type AsyncResult<T> = {
   success: boolean;
@@ -143,7 +156,7 @@ export const transformLeadData = (formData: any, clientInfo?: any) => {
     user_agent: clientInfo?.userAgent,
     form_version: formData.formVersion || 'v1.0',
     compliance_review_status: 'pending',
-    lead_type: 'insurance_quote',
+    lead_type: mapCoverageTypeToLeadType(formData.coverageType || 'not-sure'),
     lead_source: 'quote_form',
     status: 'new',
   };

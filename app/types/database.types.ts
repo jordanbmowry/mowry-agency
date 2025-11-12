@@ -26,6 +26,60 @@ export type Database = {
         };
         Relationships: [];
       };
+      campaign_analyses: {
+        Row: {
+          ai_cost: number | null;
+          ai_model: string;
+          analysis_result: Json;
+          campaign_name: string;
+          clicks: number;
+          conversions: number;
+          cost_per_lead: number;
+          cpc: number;
+          created_at: string;
+          ctr: number;
+          id: string;
+          impressions: number;
+          tokens_used: number | null;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          ai_cost?: number | null;
+          ai_model: string;
+          analysis_result: Json;
+          campaign_name: string;
+          clicks: number;
+          conversions: number;
+          cost_per_lead: number;
+          cpc: number;
+          created_at?: string;
+          ctr: number;
+          id?: string;
+          impressions: number;
+          tokens_used?: number | null;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          ai_cost?: number | null;
+          ai_model?: string;
+          analysis_result?: Json;
+          campaign_name?: string;
+          clicks?: number;
+          conversions?: number;
+          cost_per_lead?: number;
+          cpc?: number;
+          created_at?: string;
+          ctr?: number;
+          id?: string;
+          impressions?: number;
+          tokens_used?: number | null;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       google_ads_accounts: {
         Row: {
           account_id: string;
@@ -533,6 +587,20 @@ export type Database = {
       };
     };
     Views: {
+      campaign_trends: {
+        Row: {
+          analyses_count: number | null;
+          analysis_date: string | null;
+          avg_cost_per_lead: number | null;
+          avg_cpc: number | null;
+          avg_ctr: number | null;
+          avg_health_score: number | null;
+          campaign_name: string | null;
+          total_ai_cost: number | null;
+          total_conversions: number | null;
+        };
+        Relationships: [];
+      };
       compliance_dashboard: {
         Row: {
           compliance_review_status: string | null;

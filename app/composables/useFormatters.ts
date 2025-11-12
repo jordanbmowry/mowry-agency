@@ -57,6 +57,23 @@ export const formatCoverageType = (type: string | null): string => {
 };
 
 /**
+ * Format lead type (database value) for display
+ * Maps database constraint values to human-readable labels
+ */
+export const formatLeadType = (type: string | null): string => {
+  if (!type) return 'N/A';
+
+  const leadTypeMap: Record<string, string> = {
+    mortgage_protection: 'Mortgage Protection',
+    term: 'Term Life',
+    whole_life: 'Whole Life',
+    universal: 'Universal Life',
+    final_expense: 'Final Expense',
+  };
+  return leadTypeMap[type] || formatSnakeToTitle(type);
+};
+
+/**
  * Format status for display
  * Maps database values to human-readable labels
  */
@@ -65,10 +82,12 @@ export const formatStatus = (status: string | null): string => {
 
   const statusMap: Record<string, string> = {
     new: 'New',
-    in_progress: 'In Progress',
     contacted: 'Contacted',
-    quoted: 'Quoted',
+    qualified: 'Qualified',
+    converted: 'Converted',
+    lost: 'Lost',
     closed: 'Closed',
+    not_interested: 'Not Interested',
   };
 
   return statusMap[status] || formatSnakeToTitle(status);
@@ -221,6 +240,7 @@ export const useFormatters = () => {
     formatSnakeToTitle,
     formatKebabToTitle,
     formatCoverageType,
+    formatLeadType,
     formatStatus,
     formatSex,
     formatHealthConditions,

@@ -82,8 +82,11 @@ defineEmits<{
 const statusOptions = [
   { value: '', label: 'All Statuses' },
   { value: 'new', label: 'New' },
-  { value: 'in_progress', label: 'In Progress' },
   { value: 'contacted', label: 'Contacted' },
+  { value: 'qualified', label: 'Qualified' },
+  { value: 'converted', label: 'Converted' },
+  { value: 'lost', label: 'Lost' },
   { value: 'closed', label: 'Closed' },
+  { value: 'not_interested', label: 'Not Interested' },
 ];
 </script>
