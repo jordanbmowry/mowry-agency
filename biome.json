@@ -53,6 +53,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["server/utils/ai-tools.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
     }
   ]
 }

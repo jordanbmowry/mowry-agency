@@ -1,12 +1,35 @@
+import type { H3Event } from 'h3';
 import { serverSupabaseServiceRole } from '#supabase/server';
 import { sendQuoteEmails } from '../utils/email-service-vue';
 import { extractClientInfo, isDuplicateEmailError, transformLeadData } from '../utils/form-utils';
 import { quoteValidationSchema } from '../utils/validation';
 
-export default defineEventHandler(async (event) => {
+interface QuoteRequestBody {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  sex: string;
+  city: string;
+  state: string;
+  height: number | string;
+  weight: number | string;
+  coverageType: string;
+  healthConditions: string;
+  medications?: string;
+  currentMedications?: string;
+  tcpaConsent: boolean;
+  message?: string;
+  formVersion?: string;
+  tcpaText?: string;
+  emailMarketingConsent?: boolean;
+}
+
+export default defineEventHandler(async (event: H3Event) => {
   try {
     // Get request body
-    const body = await readBody(event);
+    const body = await readBody<QuoteRequestBody>(event);
 
     // Get runtime config
     const config = useRuntimeConfig();

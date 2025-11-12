@@ -31,5 +31,10 @@ clean-quote-schema.sql
 # Local Netlify folder
 .netlify
 
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
 # AI Agent Roadmap (contains business strategy)
 AI_AGENT_ROADMAP.md

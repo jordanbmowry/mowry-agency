@@ -121,6 +121,12 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
+      - name: Setup environment variables for e2e tests
+        run: |
+          echo "SUPABASE_URL=https://placeholder.supabase.co" >> $GITHUB_ENV
+          echo "SUPABASE_KEY=placeholder-key" >> $GITHUB_ENV
+          echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> $GITHUB_ENV
+
       - name: Run accessibility tests
         run: pnpm run test:e2e
 

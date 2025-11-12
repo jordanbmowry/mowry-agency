@@ -85,20 +85,7 @@ export default defineNuxtConfig({
     dataValue: 'theme', // This helps with SSR consistency
   },
   content: {
-    build: {
-      markdown: {
-        highlight: {
-          theme: 'dark-plus',
-        },
-      },
-    },
-    renderer: {
-      anchorLinks: {
-        h2: true,
-        h3: true,
-        h4: true,
-      },
-    },
+    // Markdown configuration
   },
   supabase: {
     // Disable authentication redirects for public website
@@ -195,17 +182,10 @@ export default defineNuxtConfig({
     minify: true,
   },
   vite: {
-    build: {
-      rollupOptions: {
-        external: [
-          '/Users/jordanmowry/Desktop/spotlight-nuxt/node_modules/nuxt/dist/app/components/test-component-wrapper',
-          'nuxt/dist/app/components/test-component-wrapper',
-        ],
-        output: {
-          manualChunks: {
-            vendor: ['vue', 'vue-router'],
-          },
-        },
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 1000,
       },
     },
   },

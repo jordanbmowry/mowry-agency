@@ -13,6 +13,8 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ui": "playwright test --ui",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format .",
@@ -68,6 +70,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.2",
     "@iconify-json/heroicons": "^1.2.3",
+    "@libsql/client": "^0.15.15",
     "@nuxt/test-utils": "^3.19.2",
     "@playwright/test": "^1.56.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -77,6 +80,7 @@
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^18.0.1",
     "lint-staged": "^16.2.6",
+    "node-gyp": "^12.0.0",
     "playwright-core": "^1.55.1",
     "simple-git-hooks": "^2.13.1",
     "tailwindcss": "^4.1.15",
@@ -92,5 +96,8 @@
     "*.{js,ts,jsx,tsx,vue,json,md}": [
       "biome check --write --no-errors-on-unmatched"
     ]
-  }
+  },
+  "bundleDependencies": [
+    "better-sqlite3"
+  ]
 }

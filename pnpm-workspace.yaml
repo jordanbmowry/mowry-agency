@@ -1,0 +1,10 @@
+ignoredBuiltDependencies:
+  - better-sqlite3
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - protobufjs
+  - sharp
+  - simple-git-hooks
+  - vue-demi

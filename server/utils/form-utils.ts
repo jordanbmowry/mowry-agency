@@ -1,5 +1,35 @@
 // Pure utility functions for form validation and processing
-import { calculateAge, createTimestamp, isValidAge } from '~/utils/dateUtils';
+import type { H3Event } from 'h3';
+import { getHeader, getHeaders } from 'h3';
+import { createTimestamp, isValidAge } from '~/utils/dateUtils';
+
+export interface ClientInfo {
+  ip: string;
+  userAgent: string;
+  timestamp: string;
+}
+
+export interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  coverageType: string;
+  healthConditions: string;
+  medications?: string;
+  currentMedications?: string;
+  message?: string;
+  city: string;
+  state: string;
+  sex: string;
+  height: number | string;
+  weight: number | string;
+  tcpaConsent: boolean;
+  tcpaText?: string;
+  emailMarketingConsent?: boolean;
+  formVersion?: string;
+}
 
 // Email validation
 export const validateEmail = (email: string): boolean => {
@@ -48,11 +78,14 @@ export const decodeEmailToken = (token: string): string => {
 };
 
 // Client information extraction for TCPA compliance
-export const extractClientInfo = (event: any) => ({
-  ip: getHeaders(event)['x-forwarded-for'] || getHeaders(event)['x-real-ip'] || 'unknown',
-  userAgent: getHeader(event, 'user-agent') || '',
-  timestamp: createTimestamp(),
-});
+export const extractClientInfo = (event: H3Event): ClientInfo => {
+  const headers = getHeaders(event);
+  return {
+    ip: (headers['x-forwarded-for'] as string) || (headers['x-real-ip'] as string) || 'unknown',
+    userAgent: getHeader(event, 'user-agent') || '',
+    timestamp: createTimestamp(),
+  };
+};
 
 // TCPA compliance text - this should match exactly what's shown to users
 export const getTcpaConsentText = (version: string = 'v1.0'): string => {
@@ -67,8 +100,8 @@ export const getTcpaConsentText = (version: string = 'v1.0'): string => {
 };
 
 // Form data sanitization
-export const sanitizeFormData = (data: Record<string, any>) => {
-  const sanitized: Record<string, any> = {};
+export const sanitizeFormData = (data: Record<string, unknown>): Record<string, unknown> => {
+  const sanitized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string') {
@@ -82,12 +115,16 @@ export const sanitizeFormData = (data: Record<string, any>) => {
 };
 
 // Database error handling
-export const isDuplicateEmailError = (error: any): boolean => {
+export const isDuplicateEmailError = (error: unknown): boolean => {
+  if (typeof error !== 'object' || error === null) return false;
+  const err = error as { code?: string; details?: string; message?: string };
   return (
-    error.code === '23505' &&
-    (error.details?.includes('unique_email_per_lead') ||
-      error.message?.includes('duplicate key') ||
-      error.message?.includes('unique_email'))
+    err.code === '23505' &&
+    !!(
+      err.details?.includes('unique_email_per_lead') ||
+      err.message?.includes('duplicate key') ||
+      err.message?.includes('unique_email')
+    )
   );
 };
 
@@ -127,7 +164,7 @@ export const safeAsync = async <T>(operation: () => Promise<T>): Promise<AsyncRe
 // Data transformation utilities with enhanced TCPA compliance
 // Pure function: transforms frontend form data (camelCase) to database format (snake_case)
 // Handles type conversions: string → number for height/weight
-export const transformLeadData = (formData: any, clientInfo?: any) => {
+export const transformLeadData = (formData: FormData, clientInfo?: ClientInfo) => {
   // Convert height and weight from strings to numbers
   const height =
     typeof formData.height === 'string' ? parseFloat(formData.height) : formData.height;

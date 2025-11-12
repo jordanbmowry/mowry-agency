@@ -29,7 +29,7 @@ export const quoteValidationSchema = Joi.object({
     .required()
     .custom((value, helpers) => {
       const date = new Date(value);
-      if (isNaN(date.getTime())) {
+      if (Number.isNaN(date.getTime())) {
         return helpers.error('date.invalid');
       }
 
@@ -155,7 +155,7 @@ export const leadUpdateValidationSchema = Joi.object({
     .optional()
     .custom((value, helpers) => {
       const date = new Date(value);
-      if (isNaN(date.getTime())) {
+      if (Number.isNaN(date.getTime())) {
         return helpers.error('date.invalid');
       }
 
