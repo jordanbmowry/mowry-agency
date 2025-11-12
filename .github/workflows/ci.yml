@@ -14,6 +14,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  PNPM_VERSION: '9'
 
 jobs:
   # Quality Gates - Linting and Type Checking
@@ -24,17 +25,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Rebuild native dependencies
-        run: npm rebuild better-sqlite3
+        run: pnpm rebuild better-sqlite3
 
       - name: Setup environment variables for type checking
         run: |
@@ -43,10 +49,10 @@ jobs:
           echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
 
       - name: Run Biome linting
-        run: npm run ci
+        run: pnpm run ci
 
       - name: Run TypeScript type checking
-        run: npm run type-check
+        run: pnpm run type-check
 
   # Unit Tests
   unit-tests:
@@ -57,17 +63,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Rebuild native dependencies
-        run: npm rebuild better-sqlite3
+        run: pnpm rebuild better-sqlite3
 
       - name: Setup environment variables for testing
         run: |
@@ -76,7 +87,7 @@ jobs:
           echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
 
       - name: Run unit tests with coverage
-        run: npm run test:coverage
+        run: pnpm run test:coverage
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -87,108 +98,56 @@ jobs:
 
   # Accessibility & E2E Tests
   accessibility-tests:
-    name: Accessibility & E2E Tests
+    name: Accessibility Tests
     runs-on: ubuntu-latest
-    needs: quality-checks
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Rebuild native dependencies
-        run: npm rebuild better-sqlite3
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
-      - name: Setup environment variables for E2E tests
-        run: |
-          echo "SUPABASE_URL=https://placeholder.supabase.co" >> .env
-          echo "SUPABASE_KEY=placeholder-key" >> .env
-          echo "NUXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env
-          echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" >> .env
-
-      - name: Build application for E2E testing
-        run: npm run build
-
-      - name: Run accessibility and E2E tests
-        run: npm run test:e2e
-
-      - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-${{ github.sha }}
-          path: playwright-report/
-          retention-days: 7
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-results-${{ github.sha }}
-          path: test-results/
-          retention-days: 7
+      - name: Run accessibility tests
+        run: pnpm run test:e2e
 
   # Build Application
   build:
-    name: Build Application
+    name: Build
     runs-on: ubuntu-latest
-    needs: [quality-checks, unit-tests, accessibility-tests]
-    strategy:
-      matrix:
-        environment: [staging, production]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Rebuild native dependencies
-        run: npm rebuild better-sqlite3
-
-      - name: Create environment file for ${{ matrix.environment }}
-        run: |
-          if [ "${{ matrix.environment }}" = "production" ]; then
-            echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
-            echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env
-            echo "NUXT_PUBLIC_SITE_URL=https://mowryagency.com" >> .env
-            echo "NUXT_PUBLIC_API_URL=https://mowryagency.com" >> .env
-            echo "NODE_ENV=production" >> .env
-          elif [ "${{ matrix.environment }}" = "staging" ]; then
-            echo "SUPABASE_URL=${{ secrets.SUPABASE_URL_STAGING }}" >> .env
-            echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY_STAGING }}" >> .env
-            echo "NUXT_PUBLIC_SITE_URL=https://staging--mowry-agency.netlify.app" >> .env
-            echo "NUXT_PUBLIC_API_URL=https://staging--mowry-agency.netlify.app" >> .env
-            echo "NODE_ENV=staging" >> .env
-          fi
-
-      - name: Build application for ${{ matrix.environment }}
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-${{ matrix.environment }}-${{ github.sha }}
-          path: |
-            .output/
-            dist/
-          retention-days: 7
+      - name: Build application
+        run: pnpm run build
 
   # Security Scanning with Trivy
   security:
