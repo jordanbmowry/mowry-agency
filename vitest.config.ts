@@ -11,6 +11,24 @@ export default defineVitestConfig({
       '**/dist/**',
       '**/.nuxt/**',
       '**/coverage/**',
+      '**/tests/e2e/**', // Exclude Playwright e2e tests
+      '**/playwright-report/**',
+      '**/test-results/**',
     ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/.nuxt/**',
+        '**/coverage/**',
+        '**/tests/e2e/**',
+        '**/playwright-report/**',
+        '**/test-results/**',
+        '**/*.config.{js,ts}',
+        '**/test/**',
+      ],
+    },
   },
 });
