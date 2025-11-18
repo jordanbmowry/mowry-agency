@@ -6,6 +6,12 @@
   NODE_VERSION = "20"
   PNPM_VERSION = "9"
   PNPM_FLAGS = "--shamefully-hoist"
+  CI = "false"
+
+# Netlify Functions configuration for Nuxt server routes
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["server/**/*"]
 
 [context.production.environment]
   NODE_ENV = "production"

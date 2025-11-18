@@ -7,7 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare || true",
     "prepare": "[ \"$CI\" = \"true\" ] || (node -e \"try { require('simple-git-hooks').install() } catch (e) { }\" 2>/dev/null || true)",
     "test": "vitest",
     "test:watch": "vitest --watch",

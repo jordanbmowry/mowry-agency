@@ -204,7 +204,7 @@ export default defineNuxtConfig({
     redirectToCanonicalSiteUrl: false, // Disable redirects for Netlify deployment
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: process.env.NODE_ENV === 'production' ? 'build' : true,
     strict: true,
   },
 });
