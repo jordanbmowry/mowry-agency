@@ -168,6 +168,7 @@ export default defineNuxtConfig({
     componentIslands: false, // Disable component islands to avoid test component issues
   },
   nitro: {
+    preset: 'netlify',
     prerender: {
       routes: [], // Let crawler find routes
     },
