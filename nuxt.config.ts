@@ -131,6 +131,8 @@ export default defineNuxtConfig({
         },
         { rel: 'manifest', href: '/favicon/site.webmanifest' },
       ],
+      // Google tag (gtag.js) scripts will be added via useHead in app.vue
+      // to access runtime config. This ensures they're in the initial HTML for detection.
     },
   },
   image: {
