@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     ],
     '@netlify/nuxt',
     '@formkit/auto-animate/nuxt',
+    'nuxt-gtag',
   ],
   css: ['~/assets/css/main.css'],
   fonts: {
@@ -131,9 +132,19 @@ export default defineNuxtConfig({
         },
         { rel: 'manifest', href: '/favicon/site.webmanifest' },
       ],
-      // Google tag (gtag.js) scripts will be added via useHead in app.vue
-      // to access runtime config. This ensures they're in the initial HTML for detection.
     },
+  },
+  // Google Tag (gtag.js) configuration via nuxt-gtag module
+  // The module automatically adds scripts during SSR for detection
+  // Supports both NUXT_PUBLIC_GTAG_ID and GOOGLE_TAG_ID environment variables
+  // See: https://nuxt.com/modules/gtag
+  gtag: {
+    // Use runtime config to access environment variables
+    // The module will use NUXT_PUBLIC_GTAG_ID automatically if set
+    id: process.env.NUXT_PUBLIC_GTAG_ID || process.env.GOOGLE_TAG_ID || '',
+    // Only enable if Google Tag ID is configured
+    enabled: !!(process.env.NUXT_PUBLIC_GTAG_ID || process.env.GOOGLE_TAG_ID),
+    // SSR-ready by default - scripts are added to initial HTML
   },
   image: {
     // Enable optimized image loading
