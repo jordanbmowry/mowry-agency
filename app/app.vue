@@ -58,11 +58,9 @@ useSchemaOrg([
   },
 ]);
 
-// Get runtime config for Google Tag ID
-const config = useRuntimeConfig();
-const googleTagId = config.public.googleTagId;
-
 // Set favicon and other head elements
+// Note: Google Tag (gtag.js) is now handled by nuxt-gtag module
+// which automatically adds scripts during SSR for detection
 useHead({
   htmlAttrs: {
     lang: 'en',
@@ -83,24 +81,6 @@ useHead({
       href: 'https://mowryagency.com',
     },
   ],
-  // Add Google tag (gtag.js) scripts during SSR so they're in the initial HTML
-  // This makes them detectable by the tracking detection tool
-  script: googleTagId
-    ? [
-        {
-          src: `https://www.googletagmanager.com/gtag/js?id=${googleTagId}`,
-          async: true,
-        },
-        {
-          children: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${googleTagId}');
-          `,
-        },
-      ]
-    : [],
 });
 </script>
 
