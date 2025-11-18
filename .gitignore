@@ -36,5 +36,9 @@ clean-quote-schema.sql
 /playwright-report/
 /playwright/.cache/
 
+# Coverage reports
+/coverage/
+/app/coverage/
+
 # AI Agent Roadmap (contains business strategy)
 AI_AGENT_ROADMAP.md

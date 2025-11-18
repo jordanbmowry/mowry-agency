@@ -88,14 +88,17 @@ export const extractClientInfo = (event: H3Event): ClientInfo => {
 };
 
 // TCPA compliance text - this should match exactly what's shown to users
-export const getTcpaConsentText = (version: string = 'v1.0'): string => {
+// Enhanced to include clear caller identity and opt-out information
+export const getTcpaConsentText = (version: string = 'v1.2'): string => {
   const defaultText =
-    'By clicking Submit, you agree to be contacted by Mowry Agency and its agents at the number provided, including calls, texts, or emails. Consent is not a condition of purchase. Message and data rates may apply. You may opt out at any time.';
+    'By checking this box and submitting this form, you consent to receive calls, text messages, and emails from Mowry Agency (owned by Mowry Digital Enterprise LLC) and our licensed insurance agents at the phone number and email address you provided. We will contact you to provide your personalized life insurance quotes and answer questions. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can opt-out at any time by replying STOP to text messages, calling us, or emailing us.';
 
   const tcpaTexts: Record<string, string> = {
-    'v1.0': defaultText,
+    'v1.0':
+      'By clicking Submit, you agree to be contacted by Mowry Agency and its agents at the number provided, including calls, texts, or emails. Consent is not a condition of purchase. Message and data rates may apply. You may opt out at any time.',
     'v1.1':
       'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.',
+    'v1.2': defaultText,
   };
 
   return tcpaTexts[version] ?? defaultText;

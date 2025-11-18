@@ -1088,6 +1088,11 @@ AGENCY_NPN=12345678
 NUXT_PUBLIC_SITE_URL=https://mowryagency.com
 NUXT_PUBLIC_AGENCY_PHONE=(930) 322-1962
 NUXT_PUBLIC_AGENCY_EMAIL=admin@mowryagency.com
+
+# Google Tag (gtag.js) - Optional
+# Get your tag ID from Google Ads, Analytics, or other Google products
+# See: https://developers.google.com/tag-platform/gtagjs
+GOOGLE_TAG_ID=G-XXXXXXXXXX
 ```
 
 ### DNS Configuration

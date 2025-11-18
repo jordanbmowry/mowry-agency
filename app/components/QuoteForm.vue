@@ -354,6 +354,21 @@
 
         <!-- TCPA Consent Section - Only shown on final step -->
         <div v-if="currentStep === 3" class="mt-6 space-y-4">
+          <!-- Caller Identity Disclosure -->
+          <div
+            class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4"
+          >
+            <h4 class="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-2">
+              Who Will Contact You?
+            </h4>
+            <p class="text-sm text-amber-800 dark:text-amber-200">
+              <strong>Mowry Agency</strong> (owned by Mowry Digital Enterprise LLC) and our
+              <strong>licensed insurance agents</strong> will contact you via phone, text message, and
+              email to provide your personalized life insurance quotes and answer any questions you
+              may have.
+            </p>
+          </div>
+
           <!-- Primary TCPA Consent -->
           <div class="flex items-start">
             <div class="flex items-center h-5">
@@ -370,6 +385,44 @@
                 <span class="text-red-500">*</span> {{ tcpaConsentText }}
               </label>
             </div>
+          </div>
+
+          <!-- Opt-Out Instructions -->
+          <div
+            class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4"
+          >
+            <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+              How to Opt-Out
+            </h4>
+            <p class="text-sm text-blue-800 dark:text-blue-200 mb-2">
+              You can opt-out of communications at any time by:
+            </p>
+            <ul class="text-sm text-blue-800 dark:text-blue-200 list-disc list-inside space-y-1">
+              <li>
+                <strong>Text messages:</strong> Reply <strong>STOP</strong> to any text message
+              </li>
+              <li>
+                <strong>Phone calls:</strong> Tell the agent you wish to be removed from the call
+                list
+              </li>
+              <li>
+                <strong>Email:</strong> Click the unsubscribe link in any email or contact us at
+                <a
+                  :href="`mailto:${agencyEmail}`"
+                  class="underline hover:text-blue-900 dark:hover:text-blue-100"
+                  >{{ agencyEmail }}</a
+                >
+              </li>
+              <li>
+                <strong>All communications:</strong> Call us at
+                <a
+                  :href="`tel:+1${agencyPhone.replace(/[^\\d]/g, '')}`"
+                  class="underline hover:text-blue-900 dark:hover:text-blue-100"
+                  >{{ agencyPhone }}</a
+                >
+                or email us to request removal
+              </li>
+            </ul>
           </div>
 
           <!-- Optional Email Marketing Consent -->
@@ -660,8 +713,9 @@ const agencyPhone = config.public.agencyPhone as string;
 const agencyEmail = config.public.agencyEmail as string;
 
 // TCPA compliance text - must match server-side version
+// Enhanced to include clear caller identity and opt-out information
 const tcpaConsentText =
-  'By submitting this form, you consent to receive calls, texts, and emails from Mowry Agency and our licensed agents at the contact information provided. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can unsubscribe at any time.';
+  'By checking this box and submitting this form, you consent to receive calls, text messages, and emails from Mowry Agency (owned by Mowry Digital Enterprise LLC) and our licensed insurance agents at the phone number and email address you provided. We will contact you to provide your personalized life insurance quotes and answer questions. This consent is not required as a condition of purchase. Standard message and data rates may apply. You can opt-out at any time by replying STOP to text messages, calling us, or emailing us.';
 
 // Form options for Nuxt UI components
 const { states } = useStatesData();

@@ -104,6 +104,7 @@ export default defineNuxtConfig({
         // Performance optimization: Resource hints for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+        { rel: 'dns-prefetch', href: 'https://www.googletagmanager.com' },
         {
           rel: 'preconnect',
           href: 'https://fonts.googleapis.com',
@@ -158,6 +159,8 @@ export default defineNuxtConfig({
       agencyAddress: process.env.AGENCY_ADDRESS || '1284 W Rangeview Cir, Bloomington, IN 47403',
       agencyWebsite: process.env.AGENCY_WEBSITE || 'https://mowryagency.com',
       agencyNpn: process.env.AGENCY_NPN || '16357772',
+      // Google tag ID for gtag.js (from Google Ads, Analytics, etc.)
+      googleTagId: process.env.GOOGLE_TAG_ID || '',
     },
   },
   experimental: {
