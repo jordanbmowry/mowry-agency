@@ -21,8 +21,7 @@
         <ArticleListItem
           v-for="(article, index) in articles"
           :key="
-            (article as any)?.path ||
-            (article as any)?._path ||
+            article.path ||
             `article-${index}`
           "
           :article="article"
