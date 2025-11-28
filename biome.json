@@ -26,6 +26,9 @@
     "lineWidth": 100
   },
   "linter": {
+    "domains": {
+      "vue": "recommended"
+    },
     "enabled": true,
     "rules": {
       "recommended": true,
